@@ -44,4 +44,5 @@ when satisified, commit the changes, and push them
 
 # Usage
 Please refer to the vignette FirnR.pdf for an overview
+[Click](https://bitbucket.org/ecus/firnr/raw/b32264a09492d13c0f9d1db7c59ebc1dd54b3b7b/FirnR.pdf)
 and the examples in the help file
