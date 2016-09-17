@@ -10,7 +10,7 @@ still private in the ECUS group... later  GPL v3
 install the devtools package
 Clone the repository to the target directory
 ```
-git clone https://USERNAME@bitbucket.org/ecus/firnR.git
+git clone https://USERNAME@bitbucket.org/ecus/FirnR.git
 ```
 install the package. On the R command line call
 
