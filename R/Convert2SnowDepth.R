@@ -10,7 +10,7 @@
 ##' @author Thomas Laepple
 ##' @examples
 ##'  temp<-DensityHL(rho.surface=340,t.mean=273.15-31.5,bdot=177,depth=0:150)
-##'  depth.we<-Convert2We(temp$rho,temp$depth)
+##'  depth.we<-Convert2WE(temp$rho,temp$depth)
 ##'  #Add zero depth
 ##'  depth.we<-c(0,depth.we)
 ##'  density<-c(temp$rho[1],temp$rho)

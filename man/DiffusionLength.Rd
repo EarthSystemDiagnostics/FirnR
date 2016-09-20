@@ -4,10 +4,10 @@
 \alias{DiffusionLength}
 \title{water isotope diffusion length in firn}
 \usage{
-DiffusionLength(z, rho, T, P = 650, bdot, dD = FALSE, bFill = TRUE)
+DiffusionLength(depth, rho, T, P = 650, bdot, dD = FALSE, bFill = TRUE)
 }
 \arguments{
-\item{z}{firn depth *vector* [m]; depth at which the diffusion is calculated}
+\item{depth}{firn depth [m] *vector*}
 
 \item{rho}{firn density [kg/m^3];, either scalar or *vector*  of size as z}
 
@@ -20,6 +20,8 @@ DiffusionLength(z, rho, T, P = 650, bdot, dD = FALSE, bFill = TRUE)
 \item{dD}{*logical*; if true, the diffusion length for d2H is returned, otherwise for d18O}
 
 \item{bFill}{*logical* if true, than fill the last value for which the density gradients are unknown with the same diffusion length}
+
+\item{z}{firn depth *vector* [m]; depth at which the diffusion is calculated}
 }
 \value{
 list(z=z,rho=rho,sigma=sigma), firn depth, density, diffusion length in cm

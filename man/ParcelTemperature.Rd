@@ -11,7 +11,7 @@ ParcelTemperature(startTime, depth, core)
 
 \item{depth}{depth vector (m)}
 
-\item{core}{list containing the core parameters (here A1,A2,phi1,phi2,T0,density and accum) are used}
+\item{core}{list containing the core parameters (here A1,A2,phi1,phi2,T0,rho.surface and bdot) are used}
 }
 \value{
 vector of temperatures at the depths given by the depth vector
@@ -22,7 +22,7 @@ based on the Fourier law of heat diffusion. This assumes a constant layer thickn
 }
 \examples{
 
-kohnen<-list(lat=-75.00,lon=0,accum=72,density=345,T0=273.15-44.5,A1=16.7,A2=6.6,phi1=0,phi2=0,P=0.65,name="Kohnen")
+kohnen<-list(lat=-75.00,lon=0,bdot=72,rho.surface=345,T0=273.15-44.5,A1=16.7,A2=6.6,phi1=0,phi2=0,P=650,name="Kohnen")
 depth<-seq(from=0,to=10,by=1/100)
 plot(depth,ParcelTemperature(0.5,depth,kohnen),main="Temperature of a parcel at Kohnen",xlab="snow depth",ylab="T",type="l")
 

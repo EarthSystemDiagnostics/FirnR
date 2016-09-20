@@ -4,7 +4,7 @@
 \alias{Convert2WE}
 \title{Convert snow depth to water equivalent depth}
 \usage{
-Convert2WE(rho, depth, bCorrectStart = FALSE, accum)
+Convert2WE(rho, depth, bCorrectStart = FALSE, bdot)
 }
 \arguments{
 \item{rho}{vector of density in [kg/m^3];}
@@ -13,7 +13,7 @@ Convert2WE(rho, depth, bCorrectStart = FALSE, accum)
 
 \item{bCorrectStart}{if TRUE, correct for the starting depth using the}
 
-\item{accum}{annual mean accumulation rate kg/m2/year, only has to be supplied if bCorrectStart=TRUE}
+\item{bdot}{annual mean accumulation rate kg/m2/year, only has to be supplied if bCorrectStart=TRUE}
 }
 \value{
 vector of depth in m w.e.

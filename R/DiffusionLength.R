@@ -3,13 +3,14 @@
 ##'
 ##' Thomas add details
 ##' @title water isotope diffusion length in firn
-##' @param z firn depth *vector* [m]; depth at which the diffusion is calculated 
+##' @param depth firn depth [m] *vector*
 ##' @param rho firn density [kg/m^3];, either scalar or *vector*  of size as z
 ##' @param T temperature [K], either scalar value or  vector of size as z
 ##' @param P surface pressure [mbar]
 ##' @param bdot accumulation rate in [kg/m^2/year]
 ##' @param dD *logical*; if true, the diffusion length for d2H is returned, otherwise for d18O
-##' @param bFill *logical* if true, than fill the last value for which the density gradients are unknown with the same diffusion length
+##' @param bFill *logical* if true, than fill the last value for which the density gradients are unknown with the same diffusion lengthcc
+##' @param z firn depth *vector* [m]; depth at which the diffusion is calculated 
 ##' @return list(z=z,rho=rho,sigma=sigma), firn depth, density, diffusion length in cm
 ##' @author Thomas Muench modified by Thomas Laepple
 ##' @examples
@@ -23,7 +24,7 @@
 ##' lines(sigma.dD,depth,lwd=2,col="red")
 ##' legend("topleft",col=c("black","red"),lwd=2,c("d18O","dD"),bty="n") 
 ##' @export
-DiffusionLength <- function(z,rho,T,P=650,bdot,dD=FALSE,bFill=TRUE){
+DiffusionLength <- function(depth,rho,T,P=650,bdot,dD=FALSE,bFill=TRUE){
                                         # Set constants
     R=8.314478    # Gas constant
     m=18.02e-3    # molar weight of H2O
@@ -31,6 +32,7 @@ DiffusionLength <- function(z,rho,T,P=650,bdot,dD=FALSE,bFill=TRUE){
     rho_d = 804.  # density at which ice becomes impermeable to diffusion
     rho_w = 1000. # density of water
 
+    z=depth
 
     if (length(T)==1) T<-rep(T,length(z))
     if (length(rho)==1) rho<-rep(rho,length(z))

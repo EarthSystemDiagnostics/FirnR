@@ -5,7 +5,7 @@
 ##'
 ##' @title Simulate the Firn temperature
 ##' @param t time in years
-##' @param z snow depth in m, surface = 0, 1 = 1m deep
+##' @param depth snow depth in m, surface = 0, 1 = 1m deep
 ##' @param core list of core parameters or alternativly NULL, in this case A1,A2 ...
 ##' have to be given explicitly
 ##' @param A1 Amplitude of first harmonic (~1/2 of seasonal range)
@@ -24,11 +24,11 @@
 ##' lines(FirnTemperature(iMonth/12,(0:1000)/50,A1=16.5,A2=3,phi1=0,phi2=0,T0=-31.5,kappa=KappaFirn(273-31.5,rho=320)),(0:1000)/50,col=iMonth)
 ##'
 ##' 
-FirnTemperature<-function(t,z,core=NULL,A1=core$A1,A2=core$A2,phi1=core$phi1,phi2=core$phi2,T0=core$T0,kappa)
+FirnTemperature<-function(t,depth,core=NULL,A1=core$A1,A2=core$A2,phi1=core$phi1,phi2=core$phi2,T0=core$T0,kappa)
     {
         seconds.in.year=3600*24*365
         t.second=t*seconds.in.year
         omega=(2*pi)/seconds.in.year
-        return(T0+A1*exp(-z*sqrt(omega/(2*kappa)))*cos(phi1+omega*t.second-z*sqrt(omega/(2*kappa)))
-               +A2*exp(-z*sqrt((2*omega)/(2*kappa)))*cos(phi2+(2*omega)*t.second-z*sqrt((2*omega)/(2*kappa))))
+        return(T0+A1*exp(-depth*sqrt(omega/(2*kappa)))*cos(phi1+omega*t.second-depth*sqrt(omega/(2*kappa)))
+               +A2*exp(-depth*sqrt((2*omega)/(2*kappa)))*cos(phi2+(2*omega)*t.second-depth*sqrt((2*omega)/(2*kappa))))
     }

@@ -9,14 +9,14 @@
 ##' @param rho vector of density in [kg/m^3]; 
 ##' @param depth snow depth in m, vector of same length as rho
 ##' @param bCorrectStart if TRUE, correct for the starting depth using the 
-##' @param accum  annual mean accumulation rate kg/m2/year, only has to be supplied if bCorrectStart=TRUE
+##' @param bdot  annual mean accumulation rate kg/m2/year, only has to be supplied if bCorrectStart=TRUE
 ##' @return vector of depth in m w.e.
 ##' @author Thomas Laepple
 ##' @examples
 ##'  temp<-DensityHL(rho.surface=340,t.mean=273.15-31.5,bdot=177,depth=0:150)
 ##'  Convert2WE(temp$rho,temp$depth)
 ##' @export
-Convert2WE<-function(rho,depth,bCorrectStart=FALSE,accum)
+Convert2WE<-function(rho,depth,bCorrectStart=FALSE,bdot)
 {
     warning("not 100% checked, normally start and end layers should be provided, unclear what should be done at the top boundary")
     if (length(rho) != length(depth)) stop("rho and depth vector have different lengths")
@@ -30,7 +30,7 @@ Convert2WE<-function(rho,depth,bCorrectStart=FALSE,accum)
 
     if (bCorrectStart)
         {
-            index<-which(depth.we<accum)
+            index<-which(depth.we<bdot)
             layer0 = mean(na.omit(rho)[index])*depth[1]/1000
             depth.we<-depth.we+layer0
         }

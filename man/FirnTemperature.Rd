@@ -4,13 +4,13 @@
 \alias{FirnTemperature}
 \title{Simulate the Firn temperature}
 \usage{
-FirnTemperature(t, z, core = NULL, A1 = core$A1, A2 = core$A2,
+FirnTemperature(t, depth, core = NULL, A1 = core$A1, A2 = core$A2,
   phi1 = core$phi1, phi2 = core$phi2, T0 = core$T0, kappa)
 }
 \arguments{
 \item{t}{time in years}
 
-\item{z}{snow depth in m, surface = 0, 1 = 1m deep}
+\item{depth}{snow depth in m, surface = 0, 1 = 1m deep}
 
 \item{core}{list of core parameters or alternativly NULL, in this case A1,A2 ...
 have to be given explicitly}
