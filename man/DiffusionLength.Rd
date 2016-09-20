@@ -4,22 +4,22 @@
 \alias{DiffusionLength}
 \title{water isotope diffusion length in firn}
 \usage{
-DiffusionLength(rho = NULL, z, dz, T, P = 0.65, b = 0.064, dD = FALSE)
+DiffusionLength(z, rho, T, P = 650, bdot, dD = FALSE, bFill = TRUE)
 }
 \arguments{
-\item{rho}{firn density *vector* [kg/m^3]; if not provided, a linear density profile is used}
+\item{z}{firn depth *vector* [m]; depth at which the diffusion is calculated}
 
-\item{z}{firn depth *vector* [m]; observation points of 'rho', must be of same length as 'rho'}
+\item{rho}{firn density [kg/m^3];, either scalar or *vector*  of size as z}
 
-\item{dz}{depth resolution *vector* [m]; may vary over 'z', must be of same length as 'z'}
+\item{T}{temperature [K], either scalar value or  vector of size as z}
 
-\item{T}{temperature [K], either a scalar value or a vector of the same length a rho}
+\item{P}{surface pressure [mbar]}
 
-\item{P}{surface pressure [atm]}
-
-\item{b}{annual mean accumulation rate m.w.e per year?}
+\item{bdot}{accumulation rate in [kg/m^2/year]}
 
 \item{dD}{*logical*; if true, the diffusion length for d2H is returned, otherwise for d18O}
+
+\item{bFill}{*logical* if true, than fill the last value for which the density gradients are unknown with the same diffusion length}
 }
 \value{
 list(z=z,rho=rho,sigma=sigma), firn depth, density, diffusion length in cm
@@ -31,15 +31,15 @@ Diffusion length in firn
 Thomas add details
 }
 \examples{
-depth<-0:150
+depth<-0:150  
 t.mean<-273.15-30
 bdot=200
-rho<-DensityHL(rho.surface=340,t.mean=273.15-31.5,bdot=bdot,depth=depth)$rho
-result.dO18<-DiffusionLength(rho,depth,dz=1,T=t.mean,b=bdot/1000,dD=FALSE)
-result.dD<-DiffusionLength(rho,depth,dz=1,T=t.mean,b=bdot/1000,dD=TRUE)
-plot(result.dO18$sigma,result.dO18$z,ylim=c(150,0),xlim=c(0,12),xlab="diffusion length (cm)",ylab="depth (m)",type="l",lwd=2,main="NorthGrip, no thinning")
-lines(result.dD$sigma,result.dD$z,lwd=2,col="red")
-legend("topleft",col=c("black","red"),lwd=2,c("d18O","dD"),bty="n")
+rho<-DensityHL(rho.surface=340,t.mean=t.mean,bdot=bdot,depth=depth)$rho
+sigma.dO18<-DiffusionLength(depth,rho,T=t.mean,bdot=bdot,dD=FALSE)
+sigma.dD<-DiffusionLength(depth,rho,T=t.mean,bdot=bdot,dD=TRUE)
+plot(sigma.dO18,depth,ylim=c(150,0),xlim=c(0,12),xlab="diffusion length (cm)",ylab="depth (m)",type="l",lwd=2,main="NorthGrip, no thinning")
+lines(sigma.dD,depth,lwd=2,col="red")
+legend("topleft",col=c("black","red"),lwd=2,c("d18O","dD"),bty="n") 
 }
 \author{
 Thomas Muench modified by Thomas Laepple

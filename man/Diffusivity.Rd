@@ -11,7 +11,7 @@ Diffusivity(rho, T, P, dD = FALSE)
 
 \item{T}{annual mean temperature [K]}
 
-\item{P}{surface pressure [atm]}
+\item{P}{surface pressure [mBar]}
 
 \item{dD}{dD  - *logical*; if true, the diffusivity for d2H is returned, otherwise for d18O}
 }
@@ -26,8 +26,8 @@ Thomas: add details / references
 }
 \examples{
 T<-(-60:0)
-plot(T,Diffusivity(rho=340,T=273.15+T,P=0.65,dD=FALSE),type="l",lwd=2,main="temperature dependence of diffusivity",xlab="T (Celcius)",ylab="diffusivity (cm^2/s)")
-lines(T,Diffusivity(rho=340,T=273.15+T,P=0.65,dD=TRUE),col="red",lwd=2)
+plot(T,Diffusivity(rho=340,T=273.15+T,P=650,dD=FALSE),type="l",lwd=2,main="temperature dependence of diffusivity",xlab="T (Celcius)",ylab="diffusivity (cm^2/s)")
+lines(T,Diffusivity(rho=340,T=273.15+T,P=650,dD=TRUE),col="red",lwd=2)
 legend("topleft",col=c("black","red"),lwd=2,c("d18O","dD"))
 }
 \author{
