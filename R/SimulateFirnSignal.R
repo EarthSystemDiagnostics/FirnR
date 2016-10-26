@@ -103,7 +103,7 @@ SimulateFirnSignal<-function(core,simLength,fractionSeasonal=1,res=1/1000,res.we
                          #Cutoff frequency for the noise in water equivalent = increases the frequency as we compress it
                         f.cutoff.noise.we<-f.cutoff.noise/(core$rho.surface)*1000
                         
-                        filter.length<-round((1/(f.cutoff.noise.we*res.we)))*k+1
+                        filter.length<-round((1/(f.cutoff.noise.we*res.we)))*k.filter+1
                         filter.lp<-Lowpass(f.cutoff.noise.we,filter.length,sample=1/res.we)
 
                         noise.we<-rnorm(length(depth.we.equidistant)+filter.length+2)
@@ -140,4 +140,6 @@ SimulateFirnSignal<-function(core,simLength,fractionSeasonal=1,res=1/1000,res.we
         return(list(depth=depth.snow,time=time,signal=signal*rescaling.factor,noise.snow=noise.snow))
         
     }
+
+
 
