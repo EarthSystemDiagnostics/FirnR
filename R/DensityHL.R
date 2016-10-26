@@ -8,7 +8,7 @@
 ##' @param t.mean 10 firn mean temperature in Kelvin
 ##' @param bdot  accumulation rate in kg/m^2/year
 ##' @param depth snow depth in m
-##' @return list(depth, rho) with snow depth and density in kg/m^3
+##' @return density in kg/m^3
 ##' @author Thomas Laepple
 ##' examples
 ##' result=DensityHL(rho.surface=340,t.mean=273.15-31.5,bdot=177,depth=0:150)
@@ -47,6 +47,6 @@ DensityHL<-function(rho.surface,t.mean,bdot,depth=0:9000/100)
    # t[index.lower]=(log(kRho.ice-kRho.c)-log(kRho.ice-rho[index.lower]))/c1+tc; 
                                         # depth.we=t*bdot/kRho.ice
     #
-    return(list(depth=depth,rho=rho))
+    return(rho)
 
 }

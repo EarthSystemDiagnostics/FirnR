@@ -16,7 +16,7 @@
 ##' @examples
 ##' core<-list(lat=-75.00,lon=0,bdot=72,rho.surface=345,T0=273.15-44.5,A1=16.7,A2=6.6,phi1=0,phi2=0,P=650,name="Kohnen")
 ##' depth<-seq(from=0,to=20,by=1/100)
-##' rho<-DensityHL(core$rho.surface,t.mean=core$T0,bdot=core$bdot,depth=depth)$rho
+##' rho<-DensityHL(core$rho.surface,t.mean=core$T0,bdot=core$bdot,depth=depth)
 ##' sigma.dO18.uni<-DiffusionLength(depth,rho,T=core$T0,bdot=core$bdot,dD=FALSE)
 ##' sigma.dO18.Tparcel<-DiffusionLengthPolythermal(core,depth,rho,bParcel=TRUE,dD=FALSE)
 ##' sigma.dO18.TFirn<-DiffusionLengthPolythermal(core,depth,rho,bParcel=FALSE,dD=FALSE)

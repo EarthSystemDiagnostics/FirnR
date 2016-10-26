@@ -13,8 +13,9 @@
 ##' @return vector of depth in m w.e.
 ##' @author Thomas Laepple
 ##' @examples
-##'  temp<-DensityHL(rho.surface=340,t.mean=273.15-31.5,bdot=177,depth=0:150)
-##'  Convert2WE(temp$rho,temp$depth)
+##' depth=0:150
+##'  rho<-DensityHL(rho.surface=340,t.mean=273.15-31.5,bdot=177,depth=depth)
+##'  Convert2WE(rho,depth)
 ##' @export
 Convert2WE<-function(rho,depth,bCorrectStart=FALSE,bdot)
 {

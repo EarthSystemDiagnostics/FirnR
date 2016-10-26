@@ -17,7 +17,7 @@
 ##' depth<-0:150  
 ##' t.mean<-273.15-30
 ##' bdot=200
-##' rho<-DensityHL(rho.surface=340,t.mean=t.mean,bdot=bdot,depth=depth)$rho
+##' rho<-DensityHL(rho.surface=340,t.mean=t.mean,bdot=bdot,depth=depth)
 ##' sigma.dO18<-DiffusionLength(depth,rho,T=t.mean,bdot=bdot,dD=FALSE)
 ##' sigma.dD<-DiffusionLength(depth,rho,T=t.mean,bdot=bdot,dD=TRUE)
 ##' plot(sigma.dO18,depth,ylim=c(150,0),xlim=c(0,12),xlab="diffusion length (cm)",ylab="depth (m)",type="l",lwd=2,main="NorthGrip, no thinning")
