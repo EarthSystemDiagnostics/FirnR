@@ -27,8 +27,9 @@ the water equivalent depth is missing the top part, if bCorrectStart is choosen,
 from the exisiting density is estimated and the depth is extrapolated to the surface
 }
 \examples{
- temp<-DensityHL(rho.surface=340,t.mean=273.15-31.5,bdot=177,depth=0:150)
- Convert2WE(temp$rho,temp$depth)
+depth=0:150
+ rho<-DensityHL(rho.surface=340,t.mean=273.15-31.5,bdot=177,depth=depth)
+ Convert2WE(rho,depth)
 }
 \author{
 Thomas Laepple

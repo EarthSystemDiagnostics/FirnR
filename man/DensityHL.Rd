@@ -16,7 +16,7 @@ DensityHL(rho.surface, t.mean, bdot, depth = 0:9000/100)
 \item{depth}{snow depth in m}
 }
 \value{
-list(depth, rho) with snow depth and density in kg/m^3
+density in kg/m^3
 }
 \description{
 Herron Langway firn density model, analytical solution

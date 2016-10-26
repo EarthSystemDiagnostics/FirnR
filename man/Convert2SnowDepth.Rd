@@ -22,13 +22,14 @@ list(depth,data,rho) snow depth and data / rho interpolated to the snow depth
 Convert data in water equivalent depth to snow depth
 }
 \examples{
- temp<-DensityHL(rho.surface=340,t.mean=273.15-31.5,bdot=177,depth=0:150)
- depth.we<-Convert2WE(temp$rho,temp$depth)
+depth=0:150
+ rho<-DensityHL(rho.surface=340,t.mean=273.15-31.5,bdot=177,depth=0:150)
+ depth.we<-Convert2WE(rho,depth)
  #Add zero depth
  depth.we<-c(0,depth.we)
- density<-c(temp$rho[1],temp$rho)
+ density<-c(rho[1],rho)
  inSnow<-Convert2SnowDepth(rho=density,depth.we=depth.we,data=density)
- plot(temp$depth,temp$rho,type="l",xlab="snow depth",ylab="density")
+ plot(depth,rho,type="l",xlab="snow depth",ylab="density")
  lines(inSnow$depth,inSnow$rho,col="red")
 legend("topleft",col=c("black","red"),lwd=2,c("original","after forth and back conversion"))
 

@@ -1,7 +1,6 @@
 Package: FirnR
 Title: Tools for simulating snow and firn cores including their isotopic composition
 Version: 0.0.0.9000
-Authors@R: c(person("Thomas", "Laepple", email = "tlaepple@awi.de", role = c("aut", "cre")), person("Thomas", "Muench", email = "tmuench@awi.de", role = c("aut")))
 Description: What the package does (one paragraph).
 Depends:
     R (>= 3.3.1)
