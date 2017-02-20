@@ -34,4 +34,3 @@ depth=0:150
 \author{
 Thomas Laepple
 }
-

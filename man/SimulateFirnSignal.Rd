@@ -101,4 +101,3 @@ LLines(SpecMTM(pTs(signal.05.var1mm$signal,signal.1$depth)),col="cyan",conf=FALS
 \author{
 Thomas Laepple
 }
-

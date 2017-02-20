@@ -25,7 +25,7 @@
 ##' legend("topleft",col=c("black","red"),lwd=2,c("d18O","dD"),bty="n") 
 ##' @export
 DiffusionLength <- function(depth,rho,T,P=650,bdot,dD=FALSE,bFill=TRUE){
-                                        # Set constants
+    # Set constants
     R=8.314478    # Gas constant
     m=18.02e-3    # molar weight of H2O
     rho_s = 350.  # surface density [kg/m3]
@@ -34,28 +34,33 @@ DiffusionLength <- function(depth,rho,T,P=650,bdot,dD=FALSE,bFill=TRUE){
 
     z=depth
 
-    if (length(T)==1) T<-rep(T,length(z))
-    if (length(rho)==1) rho<-rep(rho,length(z))
-
-    if (length(T) != length(rho)) stop("T and rho have a different length")
-    if (length(z) != length(rho)) stop("z and rho have a different length")
+    if (length(rho) == 1) rho <- rep(rho, length(z))
+    if (length(rho) != length(z)) stop("depth and rho have different lengths")
     
-                                        # Set density profile if not given as input
-    dz<-c(diff(z),mean(diff(z)))        #get dz in (cm) from the z vector (in m) + extend with the mean   #CHECK#
+    # Set density profile if not given as input
+    dz<-c(diff(z),mean(diff(z)))        #get dz in (m) from the z vector (in m) + extend with the mean   #CHECK#
     
-                                        # Set time scale accounting for densification
+    # Set time scale accounting for densification
     time_d=cumsum(dz/(bdot/1000)*rho/rho_w)
     ts=time_d*365.25*24*3600      # convert years to seconds
 
-                                        # Integrate diffusivity along the density gradient to obtain diffusion length
+    # Integrate diffusivity along the density gradient to obtain diffusion length
     drho = c(diff(rho),0)
     dtdrho = c(diff(ts)/diff(rho),0) #extend with 0 to continue with a constant diffusion; if bFill = FALSE, this value gets not returned
 
-    D<-vector()
-    for (i in 1:length(rho)) D[i]<-Diffusivity(rho[i],T[i],P,dD=dD)
+    D <- vector()
+    if (length(T) == 1) {
+        D[1] <- Diffusivity(rho, T, P, dD = dD)
+    } else {
+        if (length(T) != length(rho))
+            stop(paste("T and rho must the have same length",
+                       "for polythermal diffusivity calculation"))
+        for (i in 1 : length(rho))
+            D[i] <- Diffusivity(rho[i], T[i], P, dD = dD)
+    }
    
 
-                                        # Integrate diffusion length [cm]
+    # Integrate diffusion length [cm]
     sigma_sqrd_dummy = 2*(rho^2)*dtdrho*D
     sigma_sqrd = cumsum(sigma_sqrd_dummy*drho)
     sigma=sqrt(1/(rho^2)*sigma_sqrd)

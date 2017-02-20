@@ -37,4 +37,3 @@ legend("topleft",col=c("black","red"),lwd=2,c("original","after forth and back c
 \author{
 Thomas Laepple
 }
-

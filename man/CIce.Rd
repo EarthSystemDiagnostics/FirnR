@@ -21,4 +21,3 @@ J. Geophys. Res., 108(D24), 4792, doi:10.1029/2002JD003319.
 \author{
 Thomas Laepple
 }
-

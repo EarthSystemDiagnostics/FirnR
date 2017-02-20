@@ -33,4 +33,3 @@ lines(diffused,col="red")
 \author{
 Thomas Muench, modified my Thomas Laepple
 }
-

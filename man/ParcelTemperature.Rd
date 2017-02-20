@@ -30,4 +30,3 @@ plot(depth,ParcelTemperature(0.5,depth,kohnen),main="Temperature of a parcel at 
 \author{
 Thomas Laepple
 }
-

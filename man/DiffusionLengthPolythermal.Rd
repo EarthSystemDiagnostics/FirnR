@@ -41,4 +41,3 @@ legend("topleft",col=c("black","red","green"),lwd=2,c("mean Temperature","parcel
 \author{
 Thomas Laepple
 }
-

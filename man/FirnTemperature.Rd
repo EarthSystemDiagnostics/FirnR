@@ -45,4 +45,3 @@ lines(FirnTemperature(iMonth/12,(0:1000)/50,A1=16.5,A2=3,phi1=0,phi2=0,T0=-31.5,
 \author{
 Thomas Laepple
 }
-

@@ -46,4 +46,3 @@ legend("topleft",col=c("black","red"),lwd=2,c("d18O","dD"),bty="n")
 \author{
 Thomas Muench modified by Thomas Laepple
 }
-

@@ -15,4 +15,3 @@ thermal diffusivity m^2/s
 \author{
 Thomas Laepple
 }
-

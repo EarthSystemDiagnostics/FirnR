@@ -31,4 +31,3 @@ examples
 result=DensityHL(rho.surface=340,t.mean=273.15-31.5,bdot=177,depth=0:150)
 plot(result$rho,result$depth,ylim=c(150,0),xlim=c(200,1000),xlab="firn density",ylab="depth (m)",type="l",lwd=2,main="NorthGrip simulated density")
 }
-
