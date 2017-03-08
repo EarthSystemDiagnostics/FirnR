@@ -52,8 +52,8 @@
 ##' @param dD if \code{TRUE} the diffusion length for deuterium is returned,
 ##'     otherwise for oxygen-18. Defaults to \code{FALSE}.
 ##' @param bFill if \code{TRUE} (the default) use the last known density
-##'     gradient for the  value at the bottom of \code{depth} to calculate the
-##'     final diffusion length; see Details.
+##'     and related gradients for the  value at the bottom of \code{depth} to
+##'     calculate the final diffusion length; see Details.
 ##' @return A numeric vector of the calculated diffusion lengths in cm at the
 ##'     depths given by \code{depth}.
 ##' @author Thomas Muench modified by Thomas Laepple
@@ -87,23 +87,28 @@ DiffusionLength <- function(depth, rho, T = 273.15 - 44.5, P = 677, bdot = 64,
     #if (length(rho) == 1) rho <- rep(rho, length(z))
     if (length(rho) != length(z)) stop("depth and rho have different lengths")
     
-    # Calculate density and related gradients
+    # Depth increments
     # CHECK (tlaepple): get dz in (m) from the z vector (in m) + extend with the
     # mean
     dz <- c(diff(z), mean(diff(z)))
     
     # Set time scale accounting for densification
     time_d <- cumsum(dz/(bdot/kRhoW) * rho/kRhoW)
-    # Convert time scale from years to seconds
+    # Convert from years to seconds
     ts <- time_d * 365.25 * 24 * 3600
 
-    # Integrate diffusivity along the density gradient to obtain diffusion
-    # length
-    drho <- c(diff(rho), 0)
-    dtdrho <- c(diff(ts)/diff(rho), 0) #extend with 0 to continue with a
-                                       #constant diffusion; if bFill = FALSE,
-                                       #this value is not returned
-    
+    # Approximate density and related gradients
+    drho <- diff(rho)
+    dtdrho <- diff(ts)/diff(rho)
+
+    # Fill unknown gradients at final depth
+    ifelse(bFill,
+           fill.gradient <- c(drho[length(drho)], dtdrho[length(dtdrho)]),
+           fill.gradient <- rep(NA, 2))
+    drho <- c(drho, fill.gradient[1])
+    dtdrho <- c(dtdrho, fill.gradient[2])
+
+    # Calculate diffusivity
     D <- vector(mode = "numeric", length = length(rho))
     if (length(T) == 1) {
         D <- Diffusivity(rho, T, P, dD = dD)
@@ -114,16 +119,12 @@ DiffusionLength <- function(depth, rho, T = 273.15 - 44.5, P = 677, bdot = 64,
         for (i in 1 : length(rho))
             D[i] <- Diffusivity(rho[i], T[i], P, dD = dD)
     }
-   
-
-    # Integrate diffusion length [cm]
+    
+    # Integrate diffusivity along the density gradient
+    # to obtain diffusion length [cm]
     sigma_sqrd_dummy <- 2 * (rho^2) * dtdrho * D
     sigma_sqrd <- cumsum(sigma_sqrd_dummy * drho)
     sigma <- sqrt(1/(rho^2) * sigma_sqrd)
-
-    # Don't return the last value (filled with a constant diffusion rate) if
-    # bFill=FALSE
-    if (!bFill) sigma<-sigma[-length(sigma)]
 
     return(sigma)
 

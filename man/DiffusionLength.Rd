@@ -28,8 +28,8 @@ mean value at Kohnen Station.}
 otherwise for oxygen-18. Defaults to \code{FALSE}.}
 
 \item{bFill}{if \code{TRUE} (the default) use the last known density
-gradient for the  value at the bottom of \code{depth} to calculate the
-final diffusion length; see Details.}
+and related gradients for the  value at the bottom of \code{depth} to
+calculate the final diffusion length; see Details.}
 }
 \value{
 A numeric vector of the calculated diffusion lengths in cm at the
