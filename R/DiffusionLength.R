@@ -1,59 +1,115 @@
 
-##' Diffusion length in firn
+##' Calculate the diffusion length in polar firn.
 ##'
-##' Thomas add details
-##' @title water isotope diffusion length in firn
-##' @param depth firn depth [m] *vector*
-##' @param rho firn density [kg/m^3];, either scalar or *vector*  of size as z
-##' @param T temperature [K], either scalar value or  vector of size as z
-##' @param P surface pressure [mbar]
-##' @param bdot accumulation rate in [kg/m^2/year]
-##' @param dD *logical*; if true, the diffusion length for d2H is returned, otherwise for d18O
-##' @param bFill *logical* if true, than fill the last value for which the density gradients are unknown with the same diffusion lengthcc
-##' @param z firn depth *vector* [m]; depth at which the diffusion is calculated 
-##' @return list(z=z,rho=rho,sigma=sigma), firn depth, density, diffusion length in cm
+##' This function calculates the diffusion length in polar firn for the stable
+##' water isotopes oxygen-18 and deuterium, depending on site-specific
+##' parameters.
+##'
+##' The calculation of the diffusion length in firn is an implementation of
+##' Eq. (8) in Gkinis et al. (2014) and is partly inspired by the corresponding
+##' implementation of the PRYSM model
+##' (\url{https://github.com/sylvia-dee/PRYSM}) presented in Dee et al. (2015).
+##'
+##' As input, a depth and a density vector have to be provided. If only a single
+##' density value is passed to the function, the function silently repeats this
+##' density value to build a density vector that matches the length of
+##' \code{depth} and calculates the diffusion length for zero strain rate (not
+##' yet implemented!). For a single temperature value as input, one diffusivity
+##' value from calling the \code{\link{Diffusivity}} function is used to
+##' calculate the diffusion length. Providing a vector of temperatures (which
+##' length has to match \code{depth}, otherwise the function exits with an
+##' error), results in polythermal diffusivity calculation where for each set of
+##' depth, density and temperature, the diffusivity is calculated. This
+##' depth-dependent diffusivity is then used to calculate the diffusion
+##' lengths.
+##'
+##' \code{bFill} controls the output of the final diffusion length value at the
+##' bottom of \code{depth}. This value depends on the unknown density and
+##' related gradients at this position. For \code{bFill = TRUE} (the default),
+##' the last known gradients are used for the calculation of the final diffusion
+##' length value. Otherwise \code{NA} is returned.
+##' @section References:
+##' Gkinis, V., Simonsen, S. B., Buchardt, S. L., White, J. W. C., and Vinther,
+##' B. M.: Water isotope diffusion rates from the North-GRIP ice core for the
+##' last 16,000 years – Glaciological and paleoclimatic implications, Earth
+##' Planet. Sc. Lett., 405, 132–141, doi:10.1016/j.epsl.2014.08.022, 2014.
+##' 
+##' Dee, S., Emile-Geay, J., Evans, M. N., Allam, A., Steig, E. J., and
+##' Thompson, D. M.: PRYSM: An open-source framework for PRoxY System Modeling,
+##' with applications to oxygen-isotope systems, J. Adv. Model. Earth Syst., 7,
+##' 1220–1247, doi:10.1002/2015MS000447, 2015.
+##' @param depth Numeric vector of firn depths [m] at which diffusion length is
+##'     calculated.
+##' @param rho Numeric vector of firn density [kg/m^3], either of length one or
+##'     of same length as \code{depth}.
+##' @param T Numeric vector of firn temperature [K], either of length one or of
+##'     same length as \code{depth}. Defaults to 10 m firn temperature at Kohnen
+##'     Station.
+##' @param P local surface pressure in [mbar]. Defaults to mean AWS9 value at
+##'     Kohnen Station.
+##' @param bdot local accumulation rate in [kg/m^2/year]. Defaults to long-time
+##'     mean value at Kohnen Station.
+##' @param dD if \code{TRUE} the diffusion length for deuterium is returned,
+##'     otherwise for oxygen-18. Defaults to \code{FALSE}.
+##' @param bFill if \code{TRUE} (the default) use the last known density
+##'     gradient for the  value at the bottom of \code{depth} to calculate the
+##'     final diffusion length; see Details.
+##' @return A numeric vector of the calculated diffusion lengths in cm at the
+##'     depths given by \code{depth}.
 ##' @author Thomas Muench modified by Thomas Laepple
 ##' @examples
-##' depth<-0:150  
-##' t.mean<-273.15-30
-##' bdot=200
-##' rho<-DensityHL(rho.surface=340,t.mean=t.mean,bdot=bdot,depth=depth)
-##' sigma.dO18<-DiffusionLength(depth,rho,T=t.mean,bdot=bdot,dD=FALSE)
-##' sigma.dD<-DiffusionLength(depth,rho,T=t.mean,bdot=bdot,dD=TRUE)
-##' plot(sigma.dO18,depth,ylim=c(150,0),xlim=c(0,12),xlab="diffusion length (cm)",ylab="depth (m)",type="l",lwd=2,main="NorthGrip, no thinning")
-##' lines(sigma.dD,depth,lwd=2,col="red")
-##' legend("topleft",col=c("black","red"),lwd=2,c("d18O","dD"),bty="n") 
+##' ## Diffusion length for NGRIP site
+##' depth <- 0 : 150  
+##' t.mean <- 273.15 - 31.5
+##' bdot <- 200
+##' pressure <- 650
+##' rho <- DensityHL(rho.surface = 340, t.mean = t.mean, bdot = bdot,
+##'                  depth = depth)
+##' sigma.d18O <- DiffusionLength(depth, rho, T = t.mean, P = pressure,
+##'                               bdot = bdot, dD = FALSE)
+##' sigma.dD <- DiffusionLength(depth, rho, T = t.mean, bdot = bdot, dD = TRUE)
+##' plot(sigma.d18O, depth, ylim = c(150, 0), xlim = c(0, 12), type = "l",
+##'      xlab = "diffusion length (cm)", ylab = "depth (m)",
+##'      main = "NorthGRIP, no thinning", lwd = 2, las = 1)
+##' lines(sigma.dD, depth, lwd = 2, col = "red")
+##' legend("topleft", c("d18O", "dD"),
+##'        col = c("black", "red"), lwd = 2, bty = "n") 
 ##' @export
-DiffusionLength <- function(depth,rho,T,P=650,bdot,dD=FALSE,bFill=TRUE){
-    # Set constants
-    R=8.314478    # Gas constant
-    m=18.02e-3    # molar weight of H2O
-    rho_s = 350.  # surface density [kg/m3]
-    rho_d = 804.  # density at which ice becomes impermeable to diffusion
-    rho_w = 1000. # density of water
+DiffusionLength <- function(depth, rho, T = 273.15 - 44.5, P = 677, bdot = 64,
+                            dD = FALSE, bFill = TRUE) {
+    
+    # Density of water
+    kRhoW <- 1000.
 
-    z=depth
+    z <- depth
 
-    if (length(rho) == 1) rho <- rep(rho, length(z))
+    # TODO (tmuench): implement zero-strain rate solution
+    #if (length(rho) == 1) rho <- rep(rho, length(z))
     if (length(rho) != length(z)) stop("depth and rho have different lengths")
     
-    # Set density profile if not given as input
-    dz<-c(diff(z),mean(diff(z)))        #get dz in (m) from the z vector (in m) + extend with the mean   #CHECK#
+    # Calculate density and related gradients
+    # CHECK (tlaepple): get dz in (m) from the z vector (in m) + extend with the
+    # mean
+    dz <- c(diff(z), mean(diff(z)))
     
     # Set time scale accounting for densification
-    time_d=cumsum(dz/(bdot/1000)*rho/rho_w)
-    ts=time_d*365.25*24*3600      # convert years to seconds
+    time_d <- cumsum(dz/(bdot/kRhoW) * rho/kRhoW)
+    # Convert time scale from years to seconds
+    ts <- time_d * 365.25 * 24 * 3600
 
-    # Integrate diffusivity along the density gradient to obtain diffusion length
-    drho = c(diff(rho),0)
-    dtdrho = c(diff(ts)/diff(rho),0) #extend with 0 to continue with a constant diffusion; if bFill = FALSE, this value gets not returned
-
-    D <- vector()
+    # Integrate diffusivity along the density gradient to obtain diffusion
+    # length
+    drho <- c(diff(rho), 0)
+    dtdrho <- c(diff(ts)/diff(rho), 0) #extend with 0 to continue with a
+                                       #constant diffusion; if bFill = FALSE,
+                                       #this value is not returned
+    
+    D <- vector(mode = "numeric", length = length(rho))
     if (length(T) == 1) {
-        D[1] <- Diffusivity(rho, T, P, dD = dD)
+        D <- Diffusivity(rho, T, P, dD = dD)
     } else {
         if (length(T) != length(rho))
-            stop(paste("T and rho must the have same length",
+            stop(paste("T and depth must have the same length",
                        "for polythermal diffusivity calculation"))
         for (i in 1 : length(rho))
             D[i] <- Diffusivity(rho[i], T[i], P, dD = dD)
@@ -61,20 +117,16 @@ DiffusionLength <- function(depth,rho,T,P=650,bdot,dD=FALSE,bFill=TRUE){
    
 
     # Integrate diffusion length [cm]
-    sigma_sqrd_dummy = 2*(rho^2)*dtdrho*D
-    sigma_sqrd = cumsum(sigma_sqrd_dummy*drho)
-    sigma=sqrt(1/(rho^2)*sigma_sqrd)
+    sigma_sqrd_dummy <- 2 * (rho^2) * dtdrho * D
+    sigma_sqrd <- cumsum(sigma_sqrd_dummy * drho)
+    sigma <- sqrt(1/(rho^2) * sigma_sqrd)
 
-    if (!bFill) sigma<-sigma[-length(sigma)]  #Don't return the last value (filled with a constant diffusion rate) if bFill=FALSE
+    # Don't return the last value (filled with a constant diffusion rate) if
+    # bFill=FALSE
+    if (!bFill) sigma<-sigma[-length(sigma)]
 
     return(sigma)
 
 }
-
-
-
-
-
-
 
 
