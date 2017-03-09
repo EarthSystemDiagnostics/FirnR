@@ -47,8 +47,8 @@
 ##'     Station.
 ##' @param P local surface pressure in [mbar]. Defaults to mean AWS9 value at
 ##'     Kohnen Station.
-##' @param bdot local accumulation rate in [kg/m^2/year]. Defaults to long-time
-##'     mean value at Kohnen Station.
+##' @param bdot local mass accumulation rate in [kg/m^2/year]. Defaults to
+##'     long-time mean value at Kohnen Station.
 ##' @param dD if \code{TRUE} the diffusion length for deuterium is returned,
 ##'     otherwise for oxygen-18. Defaults to \code{FALSE}.
 ##' @param bFill if \code{TRUE} (the default) use the last known density

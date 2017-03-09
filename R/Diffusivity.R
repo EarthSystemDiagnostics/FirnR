@@ -54,7 +54,7 @@
 Diffusivity <- function(rho, T, P, dD = FALSE) {
     
     # Set physical constants
-    kR <- 8.314478               # Gas constant [J/(kg * mol)]
+    kR <- 8.314478               # Gas constant [J/(K * mol)]
     kM <- 18.02e-3               # molar weight of H2O molecule [kg/mol]
     kP0 <- 1013.25               # standard atmospheric pressure [mbar]
     kRhoIce <- 920.              # density of ice [kg/m3]
