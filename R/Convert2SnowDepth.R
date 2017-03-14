@@ -1,55 +1,63 @@
-##' Convert data in water equivalent depth to snow depth
+##' Conversion from water equivalent depth to snow depth.
 ##'
-##' 
-##' @title Water equivalent depth to snow depth conversion
-##' @param rho vector of density [kg/m^3]; 
-##' @param depth.we vector of depth in m w.e
-##' @param data some data vector
-##' @param dZOut output resolution (m) 
-##' @return list(depth,data,rho) snow depth and data / rho interpolated to the snow depth
+##' This function converts data recorded on a water equivalent depth scale to
+##' true snow depths based on given firn densities and linear interpolation.
+##' The implementation is preliminary and unfinished!
+##' @param rho Numeric vector of firn density [kg/m^3] corresponding to the
+##' depths given by \code{depth}.
+##' @param depth.we Numeric vector of the depths in [m w.e] at which the data in
+##' \code{data} are given.
+##' @param data Numeric vector providing the data to be converted.
+##' @param dZOut Output resolution of the snow depth scale in [m]. 
+##' @return A list with three elements:
+##'     \itemize{
+##'     \item \code{depth}: Numeric vector of snow depths in [m] onto which
+##'     \code{rho} and \code{depth} have been interpolated.
+##'     \item \code{data}: Input data interpolated to snow depths.
+##'     \item \code{rho}: Input density interpolated to snow depths.}
 ##' @author Thomas Laepple
 ##' @examples
-##' depth=0:150
-##'  rho<-DensityHL(rho.surface=340,t.mean=273.15-31.5,bdot=177,depth=0:150)
-##'  depth.we<-Convert2WE(rho,depth)
-##'  #Add zero depth
-##'  depth.we<-c(0,depth.we)
-##'  density<-c(rho[1],rho)
-##'  inSnow<-Convert2SnowDepth(rho=density,depth.we=depth.we,data=density)
-##'  plot(depth,rho,type="l",xlab="snow depth",ylab="density")
-##'  lines(inSnow$depth,inSnow$rho,col="red")
-##' legend("topleft",col=c("black","red"),lwd=2,c("original","after forth and back conversion"))
+##' ## Convert Herron-Langway firn density from water equivalent to snow depth
+##' ## scale and compare it to original solution on snow depth scale
 ##' 
+##' depth <- 0 : 150
+##' hl <- DensityHL(depth = depth, rho.surface = 340, T = 273.15 - 31.5,
+##'                 bdot = 177)
+##' in.snow <- Convert2SnowDepth(rho = hl$rho, depth.we = hl$depth.we,
+##'                              data = hl$rho, dZOut = 1)
+##' 
+##' plot(depth, hl$rho, type = "l", las = 1,
+##'      xlab = "snow depth (m)", ylab = "density (kg/m^3)")
+##' lines(in.snow$depth, in.snow$rho, col = "red")
+##' legend("topleft", c("original", "after conversion"), lty = 1,
+##'        col = c("black", "red"), bty = "n")
 ##' @export
+Convert2SnowDepth <- function(rho, depth.we, data, dZOut = 0.01) {
 
-Convert2SnowDepth<-function(rho,depth.we,data,dZOut=0.01)
-{
- ### Convert the data from water equivalents to snow-depth
-    ## --------------------------------------------------------------------------------------------
-    ## INPUT:
-    ## rho - vector of density [kg/m^3]; 
-    ## depth.we  - vector of depth in m.w.e, has to be equidistant in the moment
-    ## data   - vector of scalar values in m.w.e
-   
-    ## --------------------------------------------------------------------------------------------
-    ## Output:
-    ## List of (depth, rho,data)
-    ## --------------------------------------------------------------------------------------------   # Known bugs: depth has to start from 0
-
-                                       
-    if (diff(range(length(rho),length(depth.we),length(data)))>0) stop("All vectors have to have the same length")
-
+    # Known bugs: depth has to start from 0
+    
+    if (diff(range(length(rho), length(depth.we), length(data))) > 0) {
+        stop("Conflicting INPUT: All vectors must have the same length.")
+    }
+    
     if (depth.we[1] != 0) stop("depth has to start at 0 in this preelimnary version")
-    
-    depth.we.midpoint<-(depth.we[-1]+depth.we[-length(depth.we)])/2
-    rho.midpoint<-approx(depth.we,rho,depth.we.midpoint)$y/1000
-    
-    depth.water<-c(0,cumsum(diff(depth.we)/rho.midpoint))
 
-    outDepth<-seq(from=0,to=max(depth.water),by=dZOut)
-    data.out<-approx(depth.water,data,outDepth)$y
-    rho.out<-approx(depth.water,rho,outDepth)$y
+    # Density of water
+    kRhoW <- 1000.
 
-    return(list(depth=outDepth,data=data.out,rho=rho.out))
+    # Get midpoint values of given water eq. depth scale
+    depth.we.midpoint <- 0.5 * (depth.we[-length(depth.we)] + depth.we[-1])
+    # Interpolate density to midpoint values
+    rho.midpoint <- approx(depth.we, rho, depth.we.midpoint)$y
+
+    # Snow depth scale corresponding to given water eq. depth scale
+    depth.snow <- c(0, cumsum(diff(depth.we) / rho.midpoint)) * kRhoW
+
+    # Interpolate onto equidistant snow depth scale
+    outDepth <- seq(from = 0, to = max(depth.snow), by = dZOut)
+    data.out <- approx(depth.snow, data, outDepth)$y
+    rho.out  <- approx(depth.snow, rho, outDepth)$y
+
+    return(list(depth = outDepth, data = data.out, rho = rho.out))
 
 }

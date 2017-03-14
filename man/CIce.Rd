@@ -2,21 +2,28 @@
 % Please edit documentation in R/CIce.R
 \name{CIce}
 \alias{CIce}
-\title{Specific heat capacity of ice}
+\title{Specific heat capacity of ice.}
 \usage{
 CIce(T)
 }
 \arguments{
-\item{T}{ice temperature [K]}
+\item{T}{Numeric vector of ice temperature in [K].}
 }
 \value{
-specific heat capacity of ice J/(kg K)
+Numeric vector of the specific heat capacity in [J/(kg*K)].
 }
 \description{
-#Paterson 1994
-copied from Goujon, C., J.-M. Barnola, and C. Ritz (2003), Modeling the densification of polar firn including heat diffusion:
-Application to close-off characteristics and gas isotopic fractionation for Antarctica and Greenland sites,
-J. Geophys. Res., 108(D24), 4792, doi:10.1029/2002JD003319.
+This function calculates the specific heat capacity of ice at constant
+pressure depending on ambient temperature.
+}
+\details{
+The implementation is based on the formula given in Goujon et al. (2003).
+}
+\references{
+Goujon, C., Barnola, J.-M., and Ritz, C.: Modeling the densification of
+polar firn including heat diffusion: Application to close-off
+characteristics and gas isotopic fractionation for Antarctica and Greenland
+sites, J. Geophys. Res., 108(D24), 4792, 2003.
 }
 \author{
 Thomas Laepple

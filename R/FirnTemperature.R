@@ -1,34 +1,78 @@
-##' Simulate the firn gemperature based on the Fourier law of heat diffusion
-##' with an input signal given as the superposition of the annual cycle and its second harmonics
+
+##' Simulate depth-dependent firn temperature.
 ##' 
+##' This function simulates depth-dependent firn temperature based on Fourier's
+##' law of heat diffusion according to an input signal given as the
+##' superposition of the annual cycle and its first two harmonics.
 ##'
-##'
-##' @title Simulate the Firn temperature
-##' @param t time in years
-##' @param depth snow depth in m, surface = 0, 1 = 1m deep
-##' @param core list of core parameters or alternativly NULL, in this case A1,A2 ...
-##' have to be given explicitly
-##' @param A1 Amplitude of first harmonic (~1/2 of seasonal range)
-##' @param A2 Amplitude of second harmonic
-##' @param phi1 Phase of first harmonic
-##' @param phi2 Phase of second harmonic
-##' @param T0 Mean temperature in Kelvin
-##' @param kappa Thermal diffusivity of firn  m^2/s
-##' @return vector of temperature at time t at the depth levels z
+##' The temperature profile of the firn simulated here is the solution to the
+##' general heat transfer equation for constant thermal diffusivity, neglecting
+##' heat advection, assuming no internal heat production, and given the boundary
+##' condition of sinousoidal surface temperature variations (Paterson, 2002,
+##' p. 224). The phase \code{phi1 = 0}, \code{phi2 = 0} marks January 1.
+##' @references
+##' Paterson, W. S. B.: The Physics of Glaciers, Butterworth-Heinemann, 3rd
+##' Edn. 1994, 496 p., reprinted with corrections 1998, 2001, 2002, 2002.
+##' @param t Time in [years].
+##' @param depth Numeric vector of snow depth in [m] increasing from 0 at the
+##' surface downwards.
+##' @param core List of the site parameters \code{A1}, \code{A2},
+##' \code{phi1}, \code{phi2}, and \code{T0} (see below), alternativly
+##' \code{NULL}. In this case, the parameters have to be given explicitly.
+##' @param A1 Amplitude (half peak-peak) of the first harmonic of the seasonal
+##' cycle in temperature, units of [K].
+##' @param A2 Amplitude of the second harmonic in [K].
+##' @param phi1 Phase of the first harmonic of the seasonal
+##' cycle in temperature, units of [degree].
+##' @param phi2 Phase of the second harmonic in [degree].
+##' @param T0 Mean firn temperature in [K].
+##' @param kappa Thermal diffusivity of firn in [m^2/s].
+##' @return Numeric vector of temperature at the depth levels given by
+##' \code{depth} evaluated at time \code{t}.
 ##' @author Thomas Laepple
-##' @export
 ##' @examples
-##'
-##' plot(1:10,type="n",xlim=c(-45,-10),ylim=c(20,0),main="NGRIP")
-##' for (iMonth in 1:12)
-##' lines(FirnTemperature(iMonth/12,(0:1000)/50,A1=16.5,A2=3,phi1=0,phi2=0,T0=-31.5,kappa=KappaFirn(273-31.5,rho=320)),(0:1000)/50,col=iMonth)
-##'
+##' ## Simulated EDML firn temperature profile for each month of the year
 ##' 
-FirnTemperature<-function(t,depth,core=NULL,A1=core$A1,A2=core$A2,phi1=core$phi1,phi2=core$phi2,T0=core$T0,kappa)
-    {
-        seconds.in.year=3600*24*365
-        t.second=t*seconds.in.year
-        omega=(2*pi)/seconds.in.year
-        return(T0+A1*exp(-depth*sqrt(omega/(2*kappa)))*cos(phi1+omega*t.second-depth*sqrt(omega/(2*kappa)))
-               +A2*exp(-depth*sqrt((2*omega)/(2*kappa)))*cos(phi2+(2*omega)*t.second-depth*sqrt((2*omega)/(2*kappa))))
-    }
+##' t <- (1 : 12) / 12
+##' depth <- (0 : 1000) / 50
+##' core <- list(name = "Kohnen", rho.surface = 345, T0 = 273.15 - 44.5,
+##'              A1 = 13.2, A2 = 4.9, phi1 = -3.2, phi2 = 5.9)
+##' 
+##' plot(1 : 10, type = "n", xlim = c(-55, -25), ylim = c(20, 0), las = 1,
+##'      xlab = "firn temperature (degree C)", ylab = "depth (m)",
+##'      main = "Firn temperature at Kohnen (EDML)")
+##' for (i in t) {
+##'     j <- 12 * i
+##'     T.firn <- FirnTemperature(i, depth, core,
+##'                               kappa = KappaFirn(T = core$T0,
+##'                                                 rho = core$rho.surface))
+##'     lines(T.firn - 273.15, depth, col = j, lty = ifelse(j <= 8, 1, 2))
+##' }
+##' legend("bottomright", month.name, lty = c(rep(1, 8), rep(2, 4)),
+##'        col = 1 : 12, bty = "n")
+##' @export
+FirnTemperature <- function(t, depth, core = NULL, A1 = core$A1, A2 = core$A2,
+                            phi1 = core$phi1, phi2 = core$phi2,
+                            T0 = core$T0, kappa) {
+
+    # convert input phases from degree to radian
+    deg2rad <- pi / 180.
+    phi1 <- deg2rad * phi1
+    phi2 <- deg2rad * phi2
+    
+    # convert input years to seconds
+    seconds.in.year <- 3600 * 24 * 365
+    t.second <- t * seconds.in.year
+
+    omega <- (2 * pi) / seconds.in.year
+    omega.rel <- omega / (2 * kappa)
+
+    T.firn <- T0
+    T.firn <- T.firn + A1 * exp(-depth * sqrt(omega.rel)) *
+        cos(phi1 + omega * t.second - depth * sqrt(omega.rel))
+    T.firn <- T.firn + A2 * exp(-depth * sqrt(2 * omega.rel)) *
+        cos(phi2 + 2 * omega * t.second - depth * sqrt(2 * omega.rel))
+    
+    return(T.firn)
+    
+}

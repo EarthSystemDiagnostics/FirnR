@@ -2,21 +2,28 @@
 % Please edit documentation in R/KIce.R
 \name{KIce}
 \alias{KIce}
-\title{Thermal conductivity of ice W/(mK)}
+\title{Thermal conductivity of ice.}
 \usage{
 KIce(T)
 }
 \arguments{
-\item{T}{firn temperature [K]}
+\item{T}{Numeric vector of ambient firn temperature in [K].}
 }
 \value{
-Thermal conductivity of ice W/(m K)
+Numeric vector of thermal conductivity of ice in [W/(m*K)].
 }
 \description{
-Thermal conductivity of ice W/(mK) Weller and Schwerdtfeger 1971
-copied from Goujon, C., J.-M. Barnola, and C. Ritz (2003), Modeling the densification of polar firn including heat diffusion:
-Application to close-off characteristics and gas isotopic fractionation for Antarctica and Greenland sites,
-J. Geophys. Res., 108(D24), 4792, doi:10.1029/2002JD003319.
+This function calculates the thermal conductivity of ice depending on
+ambient temperature.
+}
+\details{
+The implementation is based on the formula given in Goujon et al. (2003).
+}
+\references{
+Goujon, C., Barnola, J.-M., and Ritz, C.: Modeling the densification of
+polar firn including heat diffusion: Application to close-off
+characteristics and gas isotopic fractionation for Antarctica and Greenland
+sites, J. Geophys. Res., 108(D24), 4792, 2003.
 }
 \author{
 Thomas Laepple

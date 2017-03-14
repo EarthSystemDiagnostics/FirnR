@@ -2,37 +2,49 @@
 % Please edit documentation in R/Convert2SnowDepth.R
 \name{Convert2SnowDepth}
 \alias{Convert2SnowDepth}
-\title{Water equivalent depth to snow depth conversion}
+\title{Conversion from water equivalent depth to snow depth.}
 \usage{
 Convert2SnowDepth(rho, depth.we, data, dZOut = 0.01)
 }
 \arguments{
-\item{rho}{vector of density [kg/m^3];}
+\item{rho}{Numeric vector of firn density [kg/m^3] corresponding to the
+depths given by \code{depth}.}
 
-\item{depth.we}{vector of depth in m w.e}
+\item{depth.we}{Numeric vector of the depths in [m w.e] at which the data in
+\code{data} are given.}
 
-\item{data}{some data vector}
+\item{data}{Numeric vector providing the data to be converted.}
 
-\item{dZOut}{output resolution (m)}
+\item{dZOut}{Output resolution of the snow depth scale in [m].}
 }
 \value{
-list(depth,data,rho) snow depth and data / rho interpolated to the snow depth
+A list with three elements:
+    \itemize{
+    \item \code{depth}: Numeric vector of snow depths in [m] onto which
+    \code{rho} and \code{depth} have been interpolated.
+    \item \code{data}: Input data interpolated to snow depths.
+    \item \code{rho}: Input density interpolated to snow depths.}
 }
 \description{
-Convert data in water equivalent depth to snow depth
+This function converts data recorded on a water equivalent depth scale to
+true snow depths based on given firn densities and linear interpolation.
+The implementation is preliminary and unfinished!
 }
 \examples{
-depth=0:150
- rho<-DensityHL(rho.surface=340,t.mean=273.15-31.5,bdot=177,depth=0:150)
- depth.we<-Convert2WE(rho,depth)
- #Add zero depth
- depth.we<-c(0,depth.we)
- density<-c(rho[1],rho)
- inSnow<-Convert2SnowDepth(rho=density,depth.we=depth.we,data=density)
- plot(depth,rho,type="l",xlab="snow depth",ylab="density")
- lines(inSnow$depth,inSnow$rho,col="red")
-legend("topleft",col=c("black","red"),lwd=2,c("original","after forth and back conversion"))
+## Convert Herron-Langway firn density from water equivalent to snow depth
+## scale and compare it to original solution on snow depth scale
 
+depth <- 0 : 150
+hl <- DensityHL(depth = depth, rho.surface = 340, T = 273.15 - 31.5,
+                bdot = 177)
+in.snow <- Convert2SnowDepth(rho = hl$rho, depth.we = hl$depth.we,
+                             data = hl$rho, dZOut = 1)
+
+plot(depth, hl$rho, type = "l", las = 1,
+     xlab = "snow depth (m)", ylab = "density (kg/m^3)")
+lines(in.snow$depth, in.snow$rho, col = "red")
+legend("topleft", c("original", "after conversion"), lty = 1,
+       col = c("black", "red"), bty = "n")
 }
 \author{
 Thomas Laepple

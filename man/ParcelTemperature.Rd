@@ -2,30 +2,51 @@
 % Please edit documentation in R/ParcelTemperature.R
 \name{ParcelTemperature}
 \alias{ParcelTemperature}
-\title{Temperature of a snow parcel}
+\title{Simulate snow parcel temperature.}
 \usage{
 ParcelTemperature(startTime, depth, core)
 }
 \arguments{
-\item{startTime}{time in the year when the parcel started (years)}
+\item{startTime}{Time of the year when the parcel is started at the surface
+[years].}
 
-\item{depth}{depth vector (m)}
+\item{depth}{Numeric vector of snow depths in [m] marking the positions of
+the snow parcel as it moves downwards in the firn.}
 
-\item{core}{list containing the core parameters (here A1,A2,phi1,phi2,T0,rho.surface and bdot) are used}
+\item{core}{List containing the site parameters; here \code{A1},
+\code{A2}, \code{phi1}, \code{phi2}, \code{T0}, \code{rho.surface} and
+\code{bdot} are needed (see also \code{\link{FirnTemperature}}).}
 }
 \value{
-vector of temperatures at the depths given by the depth vector
+Numeric vector of temperatures experienced by the snow parcel at the
+depths given by \code{depth}.
 }
 \description{
-Simulate temperature against depth for a snow parcel starting at a particular season
-based on the Fourier law of heat diffusion. This assumes a constant layer thickness, thus ignoring densification. As the temperature below 5m is close to constant, this approximation should be reasonable.
+This function simulates the temperature against depth experienced by a snow
+parcel starting at a particular season of the year based on Fourier's law of
+heat diffusion.
+}
+\details{
+For each given parcel depth, the time elapsed since the parcel has been at
+the surface is calculated assuming constant layer thickness, thus ignoring
+densification. For each of these times, the firn temperature at the
+corresponding depth is extracted from the current seasonal firn temperature
+profile. The approximation of constant layer thickness is reasonable here
+since the firn temperature is already below 5 m close to constant.
 }
 \examples{
+## Simulated EDML temperature profile of a snow parcel starting in June
 
-kohnen<-list(lat=-75.00,lon=0,bdot=72,rho.surface=345,T0=273.15-44.5,A1=16.7,A2=6.6,phi1=0,phi2=0,P=650,name="Kohnen")
-depth<-seq(from=0,to=10,by=1/100)
-plot(depth,ParcelTemperature(0.5,depth,kohnen),main="Temperature of a parcel at Kohnen",xlab="snow depth",ylab="T",type="l")
-
+core <- list(name = "Kohnen", rho.surface = 345, T0 = 273.15 - 44.5,
+             bdot = 72, A1 = 13.2, A2 = 4.9, phi1 = -3.2, phi2 = 5.9)
+depth <- seq(from = 0, to = 10, by = 1 / 100)
+plot(depth, ParcelTemperature(0.5, depth, core) - 273.15,
+     type = "l", las = 1, ylim = c(-55, -25),
+     main = "Temperature of a snow parcel at Kohnen started in June",
+     xlab = "depth (m)", ylab = "parcel temperature (degree C)")
+}
+\seealso{
+\code{\link{FirnTemperature}}
 }
 \author{
 Thomas Laepple

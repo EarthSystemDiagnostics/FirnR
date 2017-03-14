@@ -2,34 +2,55 @@
 % Please edit documentation in R/Convert2WE.R
 \name{Convert2WE}
 \alias{Convert2WE}
-\title{Convert snow depth to water equivalent depth}
+\title{Conversion from snow depth to water equivalent depth.}
 \usage{
 Convert2WE(rho, depth, bCorrectStart = FALSE, bdot)
 }
 \arguments{
-\item{rho}{vector of density in [kg/m^3];}
+\item{rho}{Numeric vector of firn density [kg/m^3] corresponding to the
+depths given by \code{depth}.}
 
-\item{depth}{snow depth in m, vector of same length as rho}
+\item{depth}{Numeric vector of snow depths in [m] of the same length as
+\code{rho}. Important: What do these depths denote -- position of midpoints
+or top/bottom points of layer?}
 
-\item{bCorrectStart}{if TRUE, correct for the starting depth using the}
+\item{bCorrectStart}{if \code{TRUE} correct for the starting depth. Defaults
+to \code{FALSE}.}
 
-\item{bdot}{annual mean accumulation rate kg/m2/year, only has to be supplied if bCorrectStart=TRUE}
+\item{bdot}{annual mean accumulation rate -> [kg/m2/year] or [m w.e./year]?
+Only has to be supplied if \code{bCorrectStart = TRUE}.}
 }
 \value{
-vector of depth in m w.e.
+Numeric vector of depths in [m w.e.].
 }
 \description{
-Convert snow depth to water equivalent depth by summing up the layers, unfinished
+This function converts a given snow depth scale to water equivalent depths
+according to given firn densities. The implementation is preliminary and
+unfinished!
 }
 \details{
-often the first density measurement is not directly at the surface. In this case
-the water equivalent depth is missing the top part, if bCorrectStart is choosen, the mean density of the approx. one year
-from the exisiting density is estimated and the depth is extrapolated to the surface
+Often the first density measurement is not directly at the surface. In this
+case, the water equivalent depth is missing the top part. If bCorrectStart
+is chosen, the mean density of the approx. one year from the exisiting
+density is estimated and the depth is extrapolated to the surface.
 }
 \examples{
-depth=0:150
- rho<-DensityHL(rho.surface=340,t.mean=273.15-31.5,bdot=177,depth=depth)
- Convert2WE(rho,depth)
+## Convert Herron-Langway firn density from snow depth to water equivalent
+## depth scale and compare it to original solution on w.e. scale
+
+## In this current implementation, the converted w.e. scale is shifted by
+## one bin compared to the 'true' HL scale! (see following example)
+
+depth <- 0 : 150
+hl <- DensityHL(depth = depth, rho.surface = 340, T = 273.15 - 31.5,
+                bdot = 177)
+depth.we <- Convert2WE(rho = hl$rho, depth = depth)
+
+plot(hl$depth.we, hl$rho, type = "l", las = 1,
+     xlab = "depth (m w.e.)", ylab = "density (kg/m^3)")
+lines(depth.we, hl$rho, col = "red")
+legend("topleft", c("original", "after conversion"), lty = 1,
+       col = c("black", "red"), bty = "n")
 }
 \author{
 Thomas Laepple

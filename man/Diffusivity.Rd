@@ -7,7 +7,7 @@
 Diffusivity(rho, T, P, dD = FALSE)
 }
 \arguments{
-\item{rho}{Numeric vector of firn densities [kg/m^3] at which diffusivity
+\item{rho}{Numeric vector of firn densities [kg/m^3] for which diffusivity
 is calculated.}
 
 \item{T}{firn temperature in [K].}
@@ -35,12 +35,22 @@ dependence of the fractionation factors as well as the diffusivities in air
 for oxygen-18 and deuterium are given in the text on p. 127. Note that here,
 Johnsen et al. accidentally mix the factors controlling the isotope
 diffusivities in air (compare the original reference Merlivat and Jouzel,
-1979). This has been accounted for. Instead of the expression given on
-p. 126, for the water vapour saturation vapour pressure over ice we use the
+1979). This has been accounted for. For the water vapour saturation vapour
+pressure over ice we use, instead of the expression given on p. 126, the
 parameterization given in van der Wel et al. (2015) (Eq. 5).
 }
-\section{References}{
-
+\examples{
+T <- (-60 : 0)
+plot(T, Diffusivity(rho = 340, T = 273.15 + T, P = 650, dD = FALSE) * 10^6,
+     type = "l", lwd = 2, las = 1,
+     main = "temperature dependence of diffusivity",
+     xlab="temperature (Celcius)", ylab = "diffusivity (10^-6 cm^2/s)")
+lines(T, Diffusivity(rho = 340, T = 273.15 + T, P = 650, dD = TRUE) * 10^6,
+      col = "red", lwd = 2)
+legend("topleft", c("d18O", "dD"), col = c("black", "red"),
+       lwd = 2, bty = "n")
+}
+\references{
 Johnsen, S. J., Clausen, H. B., Cuffey, K. M., Hoffmann, G., Schwander, J.,
 and Creyts, T.: Diffusion of stable isotopes in polar firn and ice: the
 isotope effect in firn diffusion, in: Physics of ice core records, edited
@@ -56,18 +66,6 @@ H. A. J. Meijer: Constraints on the d2H diffusion rate in firn from
 field measurements at Summit, Greenland. The Cryosphere, 9, 1089–1103, doi:
 10.5194/tc-9-1089-2015, 2015.
 }
-
-\examples{
-T <- (-60 : 0)
-plot(T, Diffusivity(rho = 340, T = 273.15 + T, P = 650, dD = FALSE) * 10^6,
-     type = "l", lwd = 2, las = 1,
-     main = "temperature dependence of diffusivity",
-     xlab="temperature (Celcius)", ylab = "diffusivity (10^-6 cm^2/s)")
-lines(T, Diffusivity(rho = 340, T = 273.15 + T, P = 650, dD = TRUE) * 10^6,
-      col = "red", lwd = 2)
-legend("topleft", c("d18O", "dD"), col = c("black", "red"),
-       lwd = 2, bty = "n")
-}
 \author{
-Thomas Muench modified by Thomas Laepple
+Thomas Muench, modified by Thomas Laepple
 }

@@ -2,15 +2,22 @@
 % Please edit documentation in R/KappaIce.R
 \name{KappaIce}
 \alias{KappaIce}
-\title{thermal diffusivity of ice}
+\title{Thermal diffusivity of ice.}
 \usage{
 KappaIce(T)
 }
 \arguments{
-\item{T}{ice temperature [K]}
+\item{T}{Numeric vector of ice temperature in [K].}
 }
 \value{
-thermal diffusivity m^2/s
+Numeric vector of thermal diffusivity [m^2/s].
+}
+\description{
+This function calculates the thermal diffusivity of ice from its thermal
+conductivity, density and heat capacity.
+}
+\seealso{
+\code{\link{KIce}}, \code{\link{CIce}}
 }
 \author{
 Thomas Laepple

@@ -1,10 +1,18 @@
-##' @title thermal diffusivity of ice
-##' @param T ice temperature [K]
-##' @return thermal diffusivity m^2/s
+
+##' Thermal diffusivity of ice.
+##'
+##' This function calculates the thermal diffusivity of ice from its thermal
+##' conductivity, density and heat capacity.
+##' @param T Numeric vector of ice temperature in [K].
+##' @return Numeric vector of thermal diffusivity [m^2/s].
 ##' @author Thomas Laepple
+##' @seealso \code{\link{KIce}}, \code{\link{CIce}}
 ##' @export
-KappaIce<-function(T) #Checked at 0 degree
-    {
-          rho.ice=920 
-        return(KIce(T)/(rho.ice*CIce(T)))
-      }
+KappaIce<-function(T) {
+
+    kRhoIce <- 920.
+    kappa <- KIce(T) / (kRhoIce * CIce(T))
+    
+    return(kappa)
+
+}

@@ -2,24 +2,39 @@
 % Please edit documentation in R/KFirn.R
 \name{KFirn}
 \alias{KFirn}
-\title{Thermal conductivity of firn}
+\title{Thermal conductivity of firn.}
 \usage{
 KFirn(T, rho)
 }
 \arguments{
-\item{T}{firn temperature [K]}
+\item{T}{Numeric vector of ambient firn temperature in [K].}
 
-\item{rho}{firn density [kg/m^3]}
+\item{rho}{Numeric vector of firn density [kg/m^3].}
 }
 \value{
-Thermal conductivity of firn W/(mK)
+Numeric vector of the thermal conductivity of firn in [W/(m*K)].
 }
 \description{
-Thermal conductivity of firn W/(m K) Schwander et al., 1997
-copied from Goujon, C., J.-M. Barnola, and C. Ritz (2003), Modeling the densification of polar firn including heat diffusion: Application to close-off charact##' eristics and gas isotopic fractionation for Antarctica and Greenland sites, J. Geophys. Res., 108(D24), 4792, doi:10.1029/2002JD003319.
+This function calculates the thermal conductivity of firn based on its
+density and the thermal conductivity of ice.
+}
+\details{
+The implementation is based on the formula given in Goujon et al. (2003).
+
+Different lengths of \code{T} and \code{rho} are supported: The function
+accepts both parameters constant, constant \code{T} and varying \code{rho},
+or vive cersa, and varying \code{T} and \code{rho}. However, in the latter
+case both vectors must have the same length, otherwise the function exits
+with an error.
 }
 \references{
-Schwander et al., 1997
+Goujon, C., Barnola, J.-M., and Ritz, C.: Modeling the densification of
+polar firn including heat diffusion: Application to close-off
+characteristics and gas isotopic fractionation for Antarctica and Greenland
+sites, J. Geophys. Res., 108(D24), 4792, 2003.
+}
+\seealso{
+\code{\link{KIce}}
 }
 \author{
 Thomas Laepple

@@ -8,8 +8,8 @@ DiffusionLength(depth, rho, T = 273.15 - 44.5, P = 677, bdot = 64,
   dD = FALSE, bFill = TRUE)
 }
 \arguments{
-\item{depth}{Numeric vector of firn depths [m] at which diffusion length is
-calculated.}
+\item{depth}{Numeric vector of firn depths [m] at which the diffusion
+lengths are calculated.}
 
 \item{rho}{Numeric vector of firn density [kg/m^3], either of length one or
 of same length as \code{depth}.}
@@ -28,11 +28,11 @@ long-time mean value at Kohnen Station.}
 otherwise for oxygen-18. Defaults to \code{FALSE}.}
 
 \item{bFill}{if \code{TRUE} (the default) use the last known density
-and related gradients for the  value at the bottom of \code{depth} to
+and related gradients for the value at the bottom of \code{depth} to
 calculate the final diffusion length; see Details.}
 }
 \value{
-A numeric vector of the calculated diffusion lengths in cm at the
+Numeric vector of the calculated diffusion lengths in [cm] at the
     depths given by \code{depth}.
 }
 \description{
@@ -65,27 +65,14 @@ related gradients at this position. For \code{bFill = TRUE} (the default),
 the last known gradients are used for the calculation of the final diffusion
 length value. Otherwise \code{NA} is returned.
 }
-\section{References}{
-
-Gkinis, V., Simonsen, S. B., Buchardt, S. L., White, J. W. C., and Vinther,
-B. M.: Water isotope diffusion rates from the North-GRIP ice core for the
-last 16,000 years – Glaciological and paleoclimatic implications, Earth
-Planet. Sc. Lett., 405, 132–141, doi:10.1016/j.epsl.2014.08.022, 2014.
-
-Dee, S., Emile-Geay, J., Evans, M. N., Allam, A., Steig, E. J., and
-Thompson, D. M.: PRYSM: An open-source framework for PRoxY System Modeling,
-with applications to oxygen-isotope systems, J. Adv. Model. Earth Syst., 7,
-1220–1247, doi:10.1002/2015MS000447, 2015.
-}
-
 \examples{
 ## Diffusion length for NGRIP site
 depth <- 0 : 150  
 t.mean <- 273.15 - 31.5
 bdot <- 200
 pressure <- 650
-rho <- DensityHL(rho.surface = 340, t.mean = t.mean, bdot = bdot,
-                 depth = depth)
+rho <- DensityHL(depth = depth, rho.surface = 340,
+                 T = t.mean, bdot = bdot)$rho
 sigma.d18O <- DiffusionLength(depth, rho, T = t.mean, P = pressure,
                               bdot = bdot, dD = FALSE)
 sigma.dD <- DiffusionLength(depth, rho, T = t.mean, bdot = bdot, dD = TRUE)
@@ -96,6 +83,20 @@ lines(sigma.dD, depth, lwd = 2, col = "red")
 legend("topleft", c("d18O", "dD"),
        col = c("black", "red"), lwd = 2, bty = "n") 
 }
+\references{
+Gkinis, V., Simonsen, S. B., Buchardt, S. L., White, J. W. C., and Vinther,
+B. M.: Water isotope diffusion rates from the North-GRIP ice core for the
+last 16,000 years – Glaciological and paleoclimatic implications, Earth
+Planet. Sc. Lett., 405, 132–141, doi:10.1016/j.epsl.2014.08.022, 2014.
+
+Dee, S., Emile-Geay, J., Evans, M. N., Allam, A., Steig, E. J., and
+Thompson, D. M.: PRYSM: An open-source framework for PRoxY System Modeling,
+with applications to oxygen-isotope systems, J. Adv. Model. Earth Syst., 7,
+1220–1247, doi:10.1002/2015MS000447, 2015.
+}
+\seealso{
+\code{\link{Diffusivity}}
+}
 \author{
-Thomas Muench modified by Thomas Laepple
+Thomas Muench, modified by Thomas Laepple
 }

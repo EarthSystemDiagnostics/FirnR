@@ -12,7 +12,7 @@ calculated.}
 
 \item{rho.surface}{surface density in [kg/m^3].}
 
-\item{T}{10 m firn temperature in [K].}
+\item{T}{mean firn temperature in [K].}
 
 \item{bdot}{local mass accumulation rate in [kg/m^2/year].}
 }
@@ -20,7 +20,7 @@ calculated.}
 A list with two elements:
     \itemize{
     \item \code{depth.we}: Numeric vector of water-equivalent depth in [m]
-    corresponding to the true firn depth given by \code{depth}.
+    corresponding to the true firn depths given by \code{depth}.
     \item \code{rho}: Numeric vector (length of \code{depth}) of firn
     density in [kg/m^3].}
 }
@@ -40,30 +40,6 @@ Antarctic firn cores. The correction factors of Johnsen et al. (2000) (set
 for \code{JohnsenCorr = TRUE}) have been introduced to further improve the
 match with central Greenland firn core data.
 }
-\section{References}{
-
-Herron, M. M. and Langway Jr., C. C.: Firn densification: an empirical
-model, J. Glaciol., 25(93), 373-385, 1980.
-
-Grinsted, A.: Steady state snow and firn density model,
-\url{https://www.mathworks.com/matlabcentral/fileexchange/47386-steady-state-snow-and-firn-density-model/content//densitymodel.m}, 2014. 
-
-Arthern, J. A., Vaughan, D. G., Rankin, A. M., Mulvaney, R., and Thomas,
-E. R.: In situ measurements of Antarctic snow compaction compared with
-predictions of models, J. Geophys. Res., 115(F03011), 2010.
-
-van der Wel, L. G.: Analyses of water isotope diffusion in firn:
-contributions to a better palaoclimatic interpretation of ice cores, Doctor
-of Philosophy, University of Groningen,
-\url{http://www.rug.nl/research/portal/files/2408704/Thesis.pdf}, 2012.
-
-Johnsen, S. J., Clausen, H. B., Cuffey, K. M., Hoffmann, G., Schwander, J.,
-and Creyts, T.: Diffusion of stable isotopes in polar firn and ice: the
-isotope effect in firn diffusion, in: Physics of ice core records, edited
-by: Hondoh, T., vol. 159, Hokkaido Univ. Press, Sapporo, Japan, 121–140,
-2000.
-}
-
 \examples{
 ## Firn density for NGRIP site
 depth <- 0 : 150  
@@ -95,6 +71,28 @@ legend("bottomleft", c("HL steady state",
                     "HL steady state with Johnsen (2000) correction"),
        col = 1, lwd = c(2, 1.5), lty = c(1, 2), bty = "n")
 }
+\references{
+Herron, M. M. and Langway Jr., C. C.: Firn densification: an empirical
+model, J. Glaciol., 25(93), 373-385, 1980.
+
+Grinsted, A.: Steady state snow and firn density model,
+\url{https://www.mathworks.com/matlabcentral/fileexchange/47386-steady-state-snow-and-firn-density-model/content//densitymodel.m}, 2014. 
+
+Arthern, J. A., Vaughan, D. G., Rankin, A. M., Mulvaney, R., and Thomas,
+E. R.: In situ measurements of Antarctic snow compaction compared with
+predictions of models, J. Geophys. Res., 115(F03011), 2010.
+
+van der Wel, L. G.: Analyses of water isotope diffusion in firn:
+contributions to a better palaoclimatic interpretation of ice cores, Doctor
+of Philosophy, University of Groningen,
+\url{http://www.rug.nl/research/portal/files/2408704/Thesis.pdf}, 2012.
+
+Johnsen, S. J., Clausen, H. B., Cuffey, K. M., Hoffmann, G., Schwander, J.,
+and Creyts, T.: Diffusion of stable isotopes in polar firn and ice: the
+isotope effect in firn diffusion, in: Physics of ice core records, edited
+by: Hondoh, T., vol. 159, Hokkaido Univ. Press, Sapporo, Japan, 121–140,
+2000.
+}
 \author{
-Thomas Laepple modified by Thomas Muench
+Thomas Laepple, modified by Thomas Muench
 }

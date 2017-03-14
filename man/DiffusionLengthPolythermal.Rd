@@ -2,41 +2,97 @@
 % Please edit documentation in R/DiffusionLengthPolythermal.R
 \name{DiffusionLengthPolythermal}
 \alias{DiffusionLengthPolythermal}
-\title{Diffusion length, accounting for the seasonal cycle of temperature in the firn}
+\title{Calculate diffusion length accounting for seasonal firn temperatures.}
 \usage{
 DiffusionLengthPolythermal(core = NULL, depth = core$depth,
-  rho = core$rho, bParcel = FALSE, dD = FALSE)
+  rho = core$rho, bParcel = FALSE, dD = FALSE, bFill = TRUE)
 }
 \arguments{
-\item{core}{list of core parameters (minimum A1,A2,phi1,phi2,T0,bdot,P)
-have to be given explicitly}
+\item{core}{List containing the site parameters; here the minimum of
+\code{A1}, \code{A2}, \code{phi1}, \code{phi2}, \code{T0},
+\code{rho.surface}, \code{bdot} and \code{P} are needed.}
 
-\item{depth}{snow depth in m, vector of same length as rho, alterativly this can be supplied in the core list}
+\item{depth}{Numeric vector of firn depths [m] at which the diffusion
+lengths are calculated. Alternatively, this argument can be supplied via
+the \code{core} list.}
 
-\item{rho}{snow density in (kg/m3), vector of same length as depth, alterativly this can be supplied in the core list}
+\item{rho}{Numeric vector of firn density [kg/m^3] of same length as
+\code{depth}. Alternatively, this argument can be supplied via the
+\code{core} list.}
 
-\item{bParcel}{(FALSE) calculate the mean diffusion of the firn columns of every month, (TRUE) calculate the mean diffusion of snow parcels, starting every month}
+\item{bParcel}{if \code{FALSE} (the default) calculate the mean diffusion
+length across the firn columns for every month; if \code{TRUE} calculate
+the mean diffusion length corresponding to snow parcels that start every
+month.}
 
-\item{dD}{*logical*; if true, the diffusion length for d2H is returned, otherwise for d18O}
+\item{dD}{if \code{TRUE} the diffusion length for deuterium is returned,
+otherwise for oxygen-18. Defaults to \code{FALSE}.}
+
+\item{bFill}{if \code{TRUE} (the default) use the last known density
+and related gradients for the value at the bottom of \code{depth} to
+calculate the final diffusion length; see
+\code{\link{DiffusionLength}}.}
 }
 \value{
-vector of diffusion length in (cm) on the depths provided by the depth vector
+Numeric vector of the calculated diffusion lengths in [cm] at the
+    depths given by \code{depth}.
 }
 \description{
-Diffusion length, accounting for the seasonal cycle of temperature in the firn
+This function calculates the diffusion length in polar firn for the stable
+water isotopes oxygen-18 and deuterium, depending on site-specific
+parameters, accounting for the seasonal cycle of firn temperature.
+}
+\details{
+For \code{bParcel = TRUE}, 12 depth-dependent firn temperature realizations
+are calculated as experienced by snow parcels starting monthly from January
+to December; see \code{\link{ParcelTemperature}}. For \code{bParcel =
+FALSE}, 12 depth-dependent firn temperatures are obtained from the 12
+temperature profiles as observed in each month of the year; see
+\code{\link{FirnTemperature}}. For both sets of realizations, diffusion
+lengths are then calculated accounting for depth-dependent
+temperatures. The function returns the average over the diffusion length
+values for either of the 12 realizations of firn temperatures. This
+implementation is motivated by the work of Simonsen et al. (2012).
 }
 \examples{
-core<-list(lat=-75.00,lon=0,bdot=72,rho.surface=345,T0=273.15-44.5,A1=16.7,A2=6.6,phi1=0,phi2=0,P=650,name="Kohnen")
-depth<-seq(from=0,to=20,by=1/100)
-rho<-DensityHL(core$rho.surface,t.mean=core$T0,bdot=core$bdot,depth=depth)
-sigma.dO18.uni<-DiffusionLength(depth,rho,T=core$T0,bdot=core$bdot,dD=FALSE)
-sigma.dO18.Tparcel<-DiffusionLengthPolythermal(core,depth,rho,bParcel=TRUE,dD=FALSE)
-sigma.dO18.TFirn<-DiffusionLengthPolythermal(core,depth,rho,bParcel=FALSE,dD=FALSE)
-plot(sigma.dO18.uni,depth,ylim=rev(range(depth)),xlim=c(0,10),xlab="diffusion length (cm)",ylab="depth (m)",type="l",lwd=2,main="Kohnen d18O")
-lines(sigma.dO18.Tparcel,depth,lwd=2,col="red")
- lines(sigma.dO18.TFirn,depth,lwd=2,col="green")
-legend("topleft",col=c("black","red","green"),lwd=2,c("mean Temperature","parcel T","firn T"),bty="n") 
+## Comparison of firn diffusion lengths at Kohnen depending on firn
+## temperature input
 
+core <- list(name = "Kohnen", rho.surface = 345, T0 = 273.15 - 44.5,
+             bdot = 72, A1 = 13.2, A2 = 4.9, phi1 = -3.2, phi2 = 5.9,
+             P = 677)
+depth <- seq(from = 0, to = 20, by = 1 / 100)
+rho <- DensityHL(depth = depth, core$rho.surface,
+                 T = core$T0, bdot = core$bdot)$rho
+
+sigma.d18O.uni <-     DiffusionLength(depth, rho, T = core$T0,
+                                      bdot = core$bdot)
+sigma.d18O.tparcel <- DiffusionLengthPolythermal(core, depth, rho,
+                                                 bParcel = TRUE)
+sigma.d18O.tfirn <-   DiffusionLengthPolythermal(core, depth, rho,
+                                                 bParcel = FALSE)
+
+plot(sigma.d18O.uni, depth, type = "l", las = 1, lwd = 2,
+     xlim = c(0, 10), ylim = rev(range(depth)),
+     xlab = "diffusion length (cm)", ylab = "depth (m)",
+     main = "d18O diffusion length at Kohnen")
+lines(sigma.d18O.tparcel, depth, lwd = 2, col = "red")
+lines(sigma.d18O.tfirn, depth, lwd = 2, col = "blue")
+legend("bottomleft", c("mean firn temperature", "seasonal firn temperature",
+                       "parcel temperature"),
+       col = c("black", "blue", "red"), lwd = 2, bty = "n")
+}
+\references{
+Simonsen, S. B., Johnsen, S. J., Popp, T. J., Vinther, B. M., Gkinis, V.,
+and Steen-Larsen, H. C.: Past surface temperatures at the NorthGRIP drill
+site from the difference in firn diffusion of water isotopes, Clim. Past,
+7(4), 1327–1335, 2011.
+}
+\seealso{
+\code{\link{FirnTemperature}} and \code{\link{ParcelTemperature}}
+for calculating depth-dependent firn temperatures;
+\code{\link{DiffusionLength}} for calculating depth-dependent diffusion
+lengths
 }
 \author{
 Thomas Laepple

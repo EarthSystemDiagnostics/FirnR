@@ -2,17 +2,31 @@
 % Please edit documentation in R/KappaFirn.R
 \name{KappaFirn}
 \alias{KappaFirn}
-\title{thermal diffusivity of firn}
+\title{Thermal diffusivity of firn.}
 \usage{
 KappaFirn(T, rho)
 }
 \arguments{
-\item{T}{firn temperature [K]}
+\item{T}{Numeric vector of firn temperature [K].}
 
-\item{rho}{firn density [kg/m^3]}
+\item{rho}{Numeric vector of firn density [kg/m^3].}
 }
 \value{
-thermal diffusivity of firn m^2/s
+Numeric vector of thermal diffusivity of firn [m^2/s].
+}
+\description{
+This function calculates the thermal diffusivity of firn from its thermal
+conductivity and density and from the heat capacity of ice.
+}
+\details{
+Different lengths of \code{T} and \code{rho} are supported: The function
+accepts both parameters constant, constant \code{T} and varying \code{rho},
+or vive cersa, and varying \code{T} and \code{rho}. However, in the latter
+case both vectors must have the same length, otherwise the function exits
+with an error.
+}
+\seealso{
+\code{\link{KFirn}}, \code{\link{CIce}}
 }
 \author{
 Thomas Laepple

@@ -28,7 +28,7 @@
 ##' related gradients at this position. For \code{bFill = TRUE} (the default),
 ##' the last known gradients are used for the calculation of the final diffusion
 ##' length value. Otherwise \code{NA} is returned.
-##' @section References:
+##' @references
 ##' Gkinis, V., Simonsen, S. B., Buchardt, S. L., White, J. W. C., and Vinther,
 ##' B. M.: Water isotope diffusion rates from the North-GRIP ice core for the
 ##' last 16,000 years – Glaciological and paleoclimatic implications, Earth
@@ -38,8 +38,8 @@
 ##' Thompson, D. M.: PRYSM: An open-source framework for PRoxY System Modeling,
 ##' with applications to oxygen-isotope systems, J. Adv. Model. Earth Syst., 7,
 ##' 1220–1247, doi:10.1002/2015MS000447, 2015.
-##' @param depth Numeric vector of firn depths [m] at which diffusion length is
-##'     calculated.
+##' @param depth Numeric vector of firn depths [m] at which the diffusion
+##'     lengths are calculated.
 ##' @param rho Numeric vector of firn density [kg/m^3], either of length one or
 ##'     of same length as \code{depth}.
 ##' @param T Numeric vector of firn temperature [K], either of length one or of
@@ -52,19 +52,20 @@
 ##' @param dD if \code{TRUE} the diffusion length for deuterium is returned,
 ##'     otherwise for oxygen-18. Defaults to \code{FALSE}.
 ##' @param bFill if \code{TRUE} (the default) use the last known density
-##'     and related gradients for the  value at the bottom of \code{depth} to
+##'     and related gradients for the value at the bottom of \code{depth} to
 ##'     calculate the final diffusion length; see Details.
-##' @return A numeric vector of the calculated diffusion lengths in cm at the
+##' @return Numeric vector of the calculated diffusion lengths in [cm] at the
 ##'     depths given by \code{depth}.
-##' @author Thomas Muench modified by Thomas Laepple
+##' @author Thomas Muench, modified by Thomas Laepple
+##' @seealso \code{\link{Diffusivity}}
 ##' @examples
 ##' ## Diffusion length for NGRIP site
 ##' depth <- 0 : 150  
 ##' t.mean <- 273.15 - 31.5
 ##' bdot <- 200
 ##' pressure <- 650
-##' rho <- DensityHL(rho.surface = 340, t.mean = t.mean, bdot = bdot,
-##'                  depth = depth)
+##' rho <- DensityHL(depth = depth, rho.surface = 340,
+##'                  T = t.mean, bdot = bdot)$rho
 ##' sigma.d18O <- DiffusionLength(depth, rho, T = t.mean, P = pressure,
 ##'                               bdot = bdot, dD = FALSE)
 ##' sigma.dD <- DiffusionLength(depth, rho, T = t.mean, bdot = bdot, dD = TRUE)
@@ -85,7 +86,8 @@ DiffusionLength <- function(depth, rho, T = 273.15 - 44.5, P = 677, bdot = 64,
 
     # TODO (tmuench): implement zero-strain rate solution
     #if (length(rho) == 1) rho <- rep(rho, length(z))
-    if (length(rho) != length(z)) stop("depth and rho have different lengths")
+    if (length(rho) != length(z))
+        stop("Conflicting INPUT: 'depth' and 'rho' have different lengths")
     
     # Depth increments
     # CHECK (tlaepple): get dz in (m) from the z vector (in m) + extend with the
@@ -93,13 +95,13 @@ DiffusionLength <- function(depth, rho, T = 273.15 - 44.5, P = 677, bdot = 64,
     dz <- c(diff(z), mean(diff(z)))
     
     # Set time scale accounting for densification
-    time_d <- cumsum(dz/(bdot/kRhoW) * rho/kRhoW)
+    time_d <- cumsum(dz / (bdot / kRhoW) * (rho / kRhoW))
     # Convert from years to seconds
     ts <- time_d * 365.25 * 24 * 3600
 
     # Approximate density and related gradients
     drho <- diff(rho)
-    dtdrho <- diff(ts)/diff(rho)
+    dtdrho <- diff(ts) / diff(rho)
 
     # Fill unknown gradients at final depth
     ifelse(bFill,
@@ -124,7 +126,7 @@ DiffusionLength <- function(depth, rho, T = 273.15 - 44.5, P = 677, bdot = 64,
     # to obtain diffusion length [cm]
     sigma_sqrd_dummy <- 2 * (rho^2) * dtdrho * D
     sigma_sqrd <- cumsum(sigma_sqrd_dummy * drho)
-    sigma <- sqrt(1/(rho^2) * sigma_sqrd)
+    sigma <- sqrt(1 / (rho^2) * sigma_sqrd)
 
     return(sigma)
 

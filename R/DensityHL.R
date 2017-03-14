@@ -1,4 +1,4 @@
-                                       
+
 ##' Analytical solution of Herron-Langway firn densification model.
 ##'
 ##' This function calculates firn density depending on depth based on the
@@ -14,7 +14,7 @@
 ##' Antarctic firn cores. The correction factors of Johnsen et al. (2000) (set
 ##' for \code{JohnsenCorr = TRUE}) have been introduced to further improve the
 ##' match with central Greenland firn core data.
-##' @section References:
+##' @references
 ##' Herron, M. M. and Langway Jr., C. C.: Firn densification: an empirical
 ##' model, J. Glaciol., 25(93), 373-385, 1980.
 ##'
@@ -38,15 +38,15 @@
 ##' @param depth Numeric vector of firn depths [m] at which firn density is
 ##'     calculated.
 ##' @param rho.surface surface density in [kg/m^3].
-##' @param T 10 m firn temperature in [K].
+##' @param T mean firn temperature in [K].
 ##' @param bdot  local mass accumulation rate in [kg/m^2/year].
 ##' @return A list with two elements:
 ##'     \itemize{
 ##'     \item \code{depth.we}: Numeric vector of water-equivalent depth in [m]
-##'     corresponding to the true firn depth given by \code{depth}.
+##'     corresponding to the true firn depths given by \code{depth}.
 ##'     \item \code{rho}: Numeric vector (length of \code{depth}) of firn
 ##'     density in [kg/m^3].}
-##' @author Thomas Laepple modified by Thomas Muench
+##' @author Thomas Laepple, modified by Thomas Muench
 ##' @examples
 ##' ## Firn density for NGRIP site
 ##' depth <- 0 : 150  
@@ -78,7 +78,7 @@
 ##'                     "HL steady state with Johnsen (2000) correction"),
 ##'        col = 1, lwd = c(2, 1.5), lty = c(1, 2), bty = "n")
 ##' @export
-DensityHL <- function(depth = (0 : 9000)/100, rho.surface, T, bdot,
+DensityHL <- function(depth = (0 : 9000) / 100, rho.surface, T, bdot,
                       JohnsenCorr = FALSE) {
 
     # Constants
@@ -101,21 +101,21 @@ DensityHL <- function(depth = (0 : 9000)/100, rho.surface, T, bdot,
 
     # Rate constants for time-dependent densification
     # (original Eq. (4) in Herron and Langway et al. (1980))
-    A <- bdot/kRhoW
+    A <- bdot / kRhoW
     c0 <- k0 * A
     c1 <- k1 * sqrt(A)
 
     # Rate constants for depth-dependent steady-state densification
     # (from converting the full time derivative to a depth derivative
     # neglecting the partial time derivative to get steady-state solution)
-    d0 <- c0/bdot
-    d1 <- c1/bdot
+    d0 <- c0 / bdot
+    d1 <- c1 / bdot
 
-    fac.r0 <- rho.surface/(kRhoIce - rho.surface)
-    fac.rc <- kRhoC/(kRhoIce - kRhoC)
+    fac.r0 <- rho.surface / (kRhoIce - rho.surface)
+    fac.rc <- kRhoC / (kRhoIce - kRhoC)
     
     # Critical depth at which density reaches kRhoC
-    z.c <- log(fac.rc/fac.r0)/(kRhoIce * d0)
+    z.c <- log(fac.rc / fac.r0) / (kRhoIce * d0)
 
     index.upper <- which(depth <= z.c)
     index.lower <- which(depth > z.c)
@@ -124,18 +124,18 @@ DensityHL <- function(depth = (0 : 9000)/100, rho.surface, T, bdot,
     q <- rep(NA, length(depth))
     q[index.upper] <- fac.r0 * exp(d0 * kRhoIce * depth[index.upper])
     q[index.lower] <- fac.rc * exp(d1 * kRhoIce* (depth[index.lower] - z.c))
-    rho <- kRhoIce * (q/(1+q))
+    rho <- kRhoIce * (q / (1+q))
 
     # Time when critical depth is reached
-    tmp <- (kRhoIce - rho.surface)/(kRhoIce - kRhoC)
-    t.c <- log(tmp)/c0
+    tmp <- (kRhoIce - rho.surface) / (kRhoIce - kRhoC)
+    t.c <- log(tmp) / c0
     
     # Steady-state time - water-equivalent depth relation
     t <- rep(NA, length(depth))
-    tmp <- (kRhoIce - rho.surface)/(kRhoIce - rho[index.upper])
-    t[index.upper] <- log(tmp)/c0
-    tmp <- (kRhoIce - kRhoC)/(kRhoIce - rho[index.lower])
-    t[index.lower] <- log(tmp)/c1 + t.c
+    tmp <- (kRhoIce - rho.surface) / (kRhoIce - rho[index.upper])
+    t[index.upper] <- log(tmp) / c0
+    tmp <- (kRhoIce - kRhoC) / (kRhoIce - rho[index.lower])
+    t[index.lower] <- log(tmp) / c1 + t.c
 
     depth.we <- A * t
 
