@@ -4,7 +4,7 @@
 \alias{DiffuseRecord}
 \title{Diffuse a record.}
 \usage{
-DiffuseRecord(rec, sigma, res = 1)
+DiffuseRecord(rec, sigma, res = 1, debug = FALSE)
 }
 \arguments{
 \item{rec}{Numeric vector containing the record that is to be diffused.}
@@ -14,6 +14,10 @@ depths at which \code{rec} is tabulated. In units of the resolution of
 \code{rec} (typically [cm]).}
 
 \item{res}{Resolution of \code{rec} in the same units as \code{sigma}.}
+
+\item{debug}{if \code{TRUE} the values at top and bottom of the diffused
+record which are potentially affected by the finite record length are set to
+\code{NA}. Defaults to \code{FALSE}. See also Details.}
 }
 \value{
 Numeric vector containing the diffused version of \code{rec}.
@@ -31,7 +35,9 @@ constant diffusion length \code{sigma.const}, provide
 The input diffusion length is internally scaled according to the resolution
 of the record given by \code{res}. The convolution integral is then
 solved by a simple summation over the kernel width set to ~ 10 times the
-current diffusion length. To avoid \code{NAs} at both ends of the diffused
+current diffusion length.
+
+For \code{debug = FALSE}: To avoid \code{NAs} at both ends of the diffused
 version of \code{rec} resulting from the kernel extending beyond the record
 ends, the kernel is clipped at the upper end to the range below the
 surface. At the lower end, the record is extended by ~ 10 times the maximum
@@ -49,5 +55,5 @@ legend('topleft', c("original record", "diffused record"),
        lty = 1, col = 1 : 2, bty = "n")
 }
 \author{
-Thomas Muench, modified my Thomas Laepple
+Thomas Muench, modified by Thomas Laepple
 }

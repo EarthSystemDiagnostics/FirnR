@@ -12,7 +12,9 @@
 ##' The input diffusion length is internally scaled according to the resolution
 ##' of the record given by \code{res}. The convolution integral is then
 ##' solved by a simple summation over the kernel width set to ~ 10 times the
-##' current diffusion length. To avoid \code{NAs} at both ends of the diffused
+##' current diffusion length.
+##'
+##' For \code{debug = FALSE}: To avoid \code{NAs} at both ends of the diffused
 ##' version of \code{rec} resulting from the kernel extending beyond the record
 ##' ends, the kernel is clipped at the upper end to the range below the
 ##' surface. At the lower end, the record is extended by ~ 10 times the maximum
@@ -22,8 +24,11 @@
 ##' depths at which \code{rec} is tabulated. In units of the resolution of
 ##' \code{rec} (typically [cm]).
 ##' @param res Resolution of \code{rec} in the same units as \code{sigma}.
+##' @param debug if \code{TRUE} the values at top and bottom of the diffused
+##' record which are potentially affected by the finite record length are set to
+##' \code{NA}. Defaults to \code{FALSE}. See also Details.
 ##' @return Numeric vector containing the diffused version of \code{rec}.
-##' @author Thomas Muench, modified my Thomas Laepple
+##' @author Thomas Muench, modified by Thomas Laepple
 ##' @examples
 ##' ## Diffuse white noise with a linearly increasing diffusion length
 ##' rec <- rnorm(n = 1000)
@@ -35,7 +40,7 @@
 ##' legend('topleft', c("original record", "diffused record"),
 ##'        lty = 1, col = 1 : 2, bty = "n")
 ##' @export
-DiffuseRecord <- function(rec, sigma, res = 1){
+DiffuseRecord <- function(rec, sigma, res = 1, debug = FALSE){
     
     n <- length(rec)
 
@@ -47,43 +52,44 @@ DiffuseRecord <- function(rec, sigma, res = 1){
     sigma <- sigma / res
 
     # pad end of record with mean of record to avoid NA's
-    # at the end of diffused record 
-    rec <- c(rec, rep(mean(rec, na.rm = TRUE), 10 * max(sigma)))
-
-    # update record length
-    nn <- length(rec)
+    # at the end of diffused record
+    if (!debug) rec <- c(rec, rep(mean(rec, na.rm = TRUE), 10 * max(sigma)))
 
     # vector to store diffused data
-    rec.diffused <- rep(NA, nn)
+    rec.diffused <- rep(NA, n)
 
     # loop over record
-    for (i in 1 : nn){
+    for (i in 1 : n) {
 
-        # diffusion length for current depth;
-        # set to last existing value for the extended part of the record
-        if (i > n){
-            sig <- sigma[n]
-        } else {
-            sig <- sigma[i]
-        }
+        # diffusion length for current depth
+        sig <- sigma[i]
    
         # set range of convolution integral (= 2*imax + 1) to ~ 10*sig
         imax <- ceiling(5 * sig)
-        range <- (i - imax) : (i + imax)
-        # skip part of range that extends above surface
-        range <- range[range > 0]
-        # relative range for convolution kernel
-        rel.range <- i - range
+        ran <- (i - imax) : (i + imax)
+
+        # if part of range extends above surface, set diffused value to 'NA' for
+        # 'debug = TRUE', else skip that part of range in the convolution
+        # integral
         
-        # convolution kernel
-        kernel <- exp(-(rel.range)^2 / (2 * sig^2))
-        kernel <- kernel / sum(kernel)
+        if (!all(ran > 0) & debug) {
+            diff.value <- NA
+        } else {
+            ran <- ran[ran > 0]
+            # relative range for convolution kernel
+            rel.ran <- i - ran
         
-        # diffuse data at current depth bin
-        rec.diffused[i] <- sum(rec[range] * kernel)
-    
+            # convolution kernel
+            kernel <- exp(-(rel.ran)^2 / (2 * sig^2))
+            kernel <- kernel / sum(kernel)
+
+            # diffuse data at current depth bin
+            diff.value <- sum(rec[ran] * kernel)
+        }
+
+        rec.diffused[i] <- diff.value
     }
 
-    return(rec.diffused[1 : n])
+    return(rec.diffused)
 
 }
