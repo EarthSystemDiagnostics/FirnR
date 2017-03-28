@@ -21,12 +21,15 @@
 ##' site from the difference in firn diffusion of water isotopes, Clim. Past,
 ##' 7(4), 1327–1335, 2011.
 ##' @param core List containing the site parameters; here the minimum of
-##'     \code{A1}, \code{A2}, \code{phi1}, \code{phi2}, \code{T0},
-##'     \code{rho.surface}, \code{bdot} and \code{P} are needed.
+##'     \code{A1}, \code{A2}, \code{phi1}, \code{phi2} (amplitude and phase of
+##'     first two harmonics of the seasonal cycle in surface temperature), \code{T0}
+##'     (mean firn temperature), \code{rho.surface} (surface firn density),
+##'     \code{bdot} (mass accumulation rate) and \code{P} (surface pressure) are
+##'     needed.
 ##' @param depth Numeric vector of firn depths [m] at which the diffusion
 ##'     lengths are calculated. Alternatively, this argument can be supplied via
 ##'     the \code{core} list.
-##' @param rho Numeric vector of firn density [kg/m^3] of same length as
+##' @param rho Numeric vector of firn density [kg/m^3] at the depths given by
 ##'     \code{depth}. Alternatively, this argument can be supplied via the
 ##'     \code{core} list.
 ##' @param bParcel if \code{FALSE} (the default) calculate the mean diffusion
@@ -80,15 +83,17 @@ DiffusionLengthPolythermal<-function(core = NULL, depth = core$depth,
 
     if (length(rho) != length(depth))
         stop("Conflicting INPUT: 'depth' and 'rho' have different lengths")
+
+    # constant thermal firn diffusivity
+    kappa <- KappaFirn(core$T0, core$rho.surface)
     
     save <- matrix(NA, 12, length(depth))
     for (i in 1 : 12) {
         
         if (bParcel) {
-            T <- ParcelTemperature(i / 12, depth, core)
+            T <- ParcelTemperature(i / 12, depth, core, kappa = kappa)
         } else {
-            T <- FirnTemperature(i / 12, depth, core,
-                                 kappa = KappaFirn(core$T0, rho = rho))
+            T <- FirnTemperature(i / 12, depth, core, kappa = kappa)
         }
         
         sigma <- DiffusionLength(depth = depth, rho = rho, T = T, P = core$P,

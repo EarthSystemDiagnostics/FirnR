@@ -9,14 +9,17 @@ DiffusionLengthPolythermal(core = NULL, depth = core$depth,
 }
 \arguments{
 \item{core}{List containing the site parameters; here the minimum of
-\code{A1}, \code{A2}, \code{phi1}, \code{phi2}, \code{T0},
-\code{rho.surface}, \code{bdot} and \code{P} are needed.}
+\code{A1}, \code{A2}, \code{phi1}, \code{phi2} (amplitude and phase of
+first two harmonics of the seasonal cycle in surface temperature), \code{T0}
+(mean firn temperature), \code{rho.surface} (surface firn density),
+\code{bdot} (mass accumulation rate) and \code{P} (surface pressure) are
+needed.}
 
 \item{depth}{Numeric vector of firn depths [m] at which the diffusion
 lengths are calculated. Alternatively, this argument can be supplied via
 the \code{core} list.}
 
-\item{rho}{Numeric vector of firn density [kg/m^3] of same length as
+\item{rho}{Numeric vector of firn density [kg/m^3] at the depths given by
 \code{depth}. Alternatively, this argument can be supplied via the
 \code{core} list.}
 
