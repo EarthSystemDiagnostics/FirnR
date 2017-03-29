@@ -52,23 +52,33 @@ ParcelTemperature <- function(startTime, depth, core = NULL, A1 = core$A1,
                               T0 = core$T0, rho.surface = core$rho.surface,
                               bdot = core$bdot, kappa = NULL) {
 
-    # fill core list if empty
-    if (is.null(core)) {
-        core <- list(
-            A1 = A1, A2 = A2, phi1 = phi1, phi2 = phi2, T0 = T0,
-            rho.surface = rho.surface, bdot = bdot)
+    # check of input parameters
+    needed.args <- c("A1", "A2", "phi1", "phi2", "T0", "rho.surface", "bdot")
+
+    core.args <- match(needed.args, names(core))
+    expl.args <- match(needed.args, names(match.call()))
+    missing.args <- needed.args[apply(rbind(core.args, expl.args), 2,
+                                      function(x) {all(is.na(x))})]
+    
+    if (length(missing.args) != 0) {
+
+        msg <- paste("Required arguments missing: ",
+                     paste(missing.args, collapse = ", "),
+                     ". Provide these either via 'core' list or explicitly.",
+                     sep = "")
+        stop(msg)
     }
     
-    T.parcel <- vector()
-
     # constant thermal firn diffusivity calculated from
     # surface density and mean temperature (default)
     if (is.null(kappa)) kappa <- KappaFirn(T0, rho.surface)
-    
+
+    T.parcel <- vector()
+
     for (i in 1 : length(depth)) {
 
-        # time elapsed since the parcel has been at the surface assuming
-        # constant layer thickness
+        # time elapsed since the parcel has been at the surface
+        # assuming constant layer thickness
         delta.t <- depth[i] * rho.surface / bdot
 
         T.parcel[i] <- FirnTemperature(t = startTime + delta.t,

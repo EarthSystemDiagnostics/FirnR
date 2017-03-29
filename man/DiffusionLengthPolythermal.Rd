@@ -4,16 +4,16 @@
 \alias{DiffusionLengthPolythermal}
 \title{Calculate diffusion length accounting for seasonal firn temperatures.}
 \usage{
-DiffusionLengthPolythermal(core = NULL, depth = core$depth,
-  rho = core$rho, bParcel = FALSE, dD = FALSE, bFill = TRUE)
+DiffusionLengthPolythermal(core, depth = core$depth, rho = core$rho,
+  bParcel = FALSE, dD = FALSE, bFill = TRUE)
 }
 \arguments{
 \item{core}{List containing the site parameters; here the minimum of
 \code{A1}, \code{A2}, \code{phi1}, \code{phi2} (amplitude and phase of
-first two harmonics of the seasonal cycle in surface temperature), \code{T0}
-(mean firn temperature), \code{rho.surface} (surface firn density),
-\code{bdot} (mass accumulation rate) and \code{P} (surface pressure) are
-needed.}
+first two harmonics of the seasonal cycle in surface temperature),
+\code{T0} (mean firn temperature), \code{rho.surface} (surface firn
+density), \code{bdot} (mass accumulation rate) and \code{P} (surface
+pressure) are needed.}
 
 \item{depth}{Numeric vector of firn depths [m] at which the diffusion
 lengths are calculated. Alternatively, this argument can be supplied via
@@ -43,7 +43,7 @@ Numeric vector of the calculated diffusion lengths in [cm] at the
 \description{
 This function calculates the diffusion length in polar firn for the stable
 water isotopes oxygen-18 and deuterium, depending on site-specific
-parameters, accounting for the seasonal cycle of firn temperature.
+parameters, accounting for the seasonal cycle in firn temperature.
 }
 \details{
 For \code{bParcel = TRUE}, 12 depth-dependent firn temperature realizations

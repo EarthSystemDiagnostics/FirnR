@@ -19,9 +19,8 @@
 ##' @param depth Numeric vector of snow depth in [m] increasing from 0 at the
 ##' surface downwards.
 ##' @param core List of the site parameters \code{A1}, \code{A2}, \code{phi1},
-##' \code{phi2}, \code{T0}, \code{rho.surface} and \code{bdot} (see below),
-##' alternativly \code{NULL}. In this case, the parameters have to be given
-##' explicitly.
+##' \code{phi2}, \code{T0} and \code{rho.surface} (see below), alternativly
+##' \code{NULL}. In this case, the parameters have to be given explicitly.
 ##' @param A1 Amplitude (half peak-peak) of the first harmonic of the seasonal
 ##' cycle in temperature, units of [K].
 ##' @param A2 Amplitude of the second harmonic in [K].
@@ -30,7 +29,6 @@
 ##' @param phi2 Phase of the second harmonic in [degree].
 ##' @param T0 Mean firn temperature in [K].
 ##' @param rho.surface Surface density in [kg/m^3].
-##' @param bdot Local mass accumulation rate in [kg/m^2/year].
 ##' @param kappa Thermal diffusivity of firn in [m^2/s]. Defaults to \code{NULL}
 ##' which forces internal calculation with the surface density and mean firn
 ##' temperature as provided by \code{core} or given explicitly.
@@ -58,8 +56,25 @@
 ##' @export
 FirnTemperature <- function(t, depth, core = NULL, A1 = core$A1, A2 = core$A2,
                             phi1 = core$phi1, phi2 = core$phi2, T0 = core$T0,
-                            rho.surface = core$rho.surface, bdot = core$bdot,
-                            kappa = NULL) {
+                            rho.surface = core$rho.surface, kappa = NULL) {
+
+    # check of input parameters
+    needed.args <- c("A1", "A2", "phi1", "phi2", "T0", "rho.surface")
+    if (!is.null(kappa)) needed.args <- needed.args[-6]
+
+    core.args <- match(needed.args, names(core))
+    expl.args <- match(needed.args, names(match.call()))
+    missing.args <- needed.args[apply(rbind(core.args, expl.args), 2,
+                                      function(x) {all(is.na(x))})]
+    
+    if (length(missing.args) != 0) {
+
+        msg <- paste("Required arguments missing: ",
+                     paste(missing.args, collapse = ", "),
+                     ". Provide these either via 'core' list or explicitly.",
+                     sep = "")
+        stop(msg)
+    }
 
     # convert input phases from degree to radian
     deg2rad <- pi / 180.
@@ -86,3 +101,4 @@ FirnTemperature <- function(t, depth, core = NULL, A1 = core$A1, A2 = core$A2,
     return(T.firn)
     
 }
+

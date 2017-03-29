@@ -6,7 +6,7 @@
 \usage{
 FirnTemperature(t, depth, core = NULL, A1 = core$A1, A2 = core$A2,
   phi1 = core$phi1, phi2 = core$phi2, T0 = core$T0,
-  rho.surface = core$rho.surface, bdot = core$bdot, kappa = NULL)
+  rho.surface = core$rho.surface, kappa = NULL)
 }
 \arguments{
 \item{t}{Time in [years].}
@@ -15,9 +15,8 @@ FirnTemperature(t, depth, core = NULL, A1 = core$A1, A2 = core$A2,
 surface downwards.}
 
 \item{core}{List of the site parameters \code{A1}, \code{A2}, \code{phi1},
-\code{phi2}, \code{T0}, \code{rho.surface} and \code{bdot} (see below),
-alternativly \code{NULL}. In this case, the parameters have to be given
-explicitly.}
+\code{phi2}, \code{T0} and \code{rho.surface} (see below), alternativly
+\code{NULL}. In this case, the parameters have to be given explicitly.}
 
 \item{A1}{Amplitude (half peak-peak) of the first harmonic of the seasonal
 cycle in temperature, units of [K].}
@@ -32,8 +31,6 @@ temperature, units of [degree].}
 \item{T0}{Mean firn temperature in [K].}
 
 \item{rho.surface}{Surface density in [kg/m^3].}
-
-\item{bdot}{Local mass accumulation rate in [kg/m^2/year].}
 
 \item{kappa}{Thermal diffusivity of firn in [m^2/s]. Defaults to \code{NULL}
 which forces internal calculation with the surface density and mean firn

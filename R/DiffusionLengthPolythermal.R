@@ -3,7 +3,7 @@
 ##'
 ##' This function calculates the diffusion length in polar firn for the stable
 ##' water isotopes oxygen-18 and deuterium, depending on site-specific
-##' parameters, accounting for the seasonal cycle of firn temperature.
+##' parameters, accounting for the seasonal cycle in firn temperature.
 ##'
 ##' For \code{bParcel = TRUE}, 12 depth-dependent firn temperature realizations
 ##' are calculated as experienced by snow parcels starting monthly from January
@@ -22,10 +22,10 @@
 ##' 7(4), 1327–1335, 2011.
 ##' @param core List containing the site parameters; here the minimum of
 ##'     \code{A1}, \code{A2}, \code{phi1}, \code{phi2} (amplitude and phase of
-##'     first two harmonics of the seasonal cycle in surface temperature), \code{T0}
-##'     (mean firn temperature), \code{rho.surface} (surface firn density),
-##'     \code{bdot} (mass accumulation rate) and \code{P} (surface pressure) are
-##'     needed.
+##'     first two harmonics of the seasonal cycle in surface temperature),
+##'     \code{T0} (mean firn temperature), \code{rho.surface} (surface firn
+##'     density), \code{bdot} (mass accumulation rate) and \code{P} (surface
+##'     pressure) are needed.
 ##' @param depth Numeric vector of firn depths [m] at which the diffusion
 ##'     lengths are calculated. Alternatively, this argument can be supplied via
 ##'     the \code{core} list.
@@ -77,10 +77,27 @@
 ##'                        "parcel temperature"),
 ##'        col = c("black", "blue", "red"), lwd = 2, bty = "n")
 ##' @export
-DiffusionLengthPolythermal<-function(core = NULL, depth = core$depth,
-                                     rho = core$rho, bParcel = FALSE,
-                                     dD = FALSE, bFill = TRUE) {
+DiffusionLengthPolythermal<-function(core, depth = core$depth, rho = core$rho,
+                                     bParcel = FALSE, dD = FALSE,
+                                     bFill = TRUE) {
 
+    # check of input parameters
+    needed.args <- c("A1", "A2", "phi1", "phi2", "T0", "rho.surface",
+                     "bdot", "P", "depth", "rho")
+    expl.args <- match(needed.args, names(match.call()))
+    core.args <- match(needed.args, names(core))
+    missing.args <- needed.args[apply(rbind(core.args, expl.args), 2,
+                                      function(x) {all(is.na(x))})]
+
+    if (length(missing.args) != 0) {
+
+        msg <- paste("Required arguments missing: ",
+                     paste(missing.args, collapse = ", "),
+                     ". Provide these either via 'core' list or explicitly.",
+                     sep = "")
+        stop(msg)
+    }
+    
     if (length(rho) != length(depth))
         stop("Conflicting INPUT: 'depth' and 'rho' have different lengths")
 
