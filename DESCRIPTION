@@ -1,10 +1,16 @@
 Package: FirnR
-Title: Tools for simulating snow and firn cores including their isotopic composition
+Title: Simulate Polar Snow and Firn Cores.
 Version: 0.0.0.9000
-Description: What the package does (one paragraph).
+Authors@R: c(person("Thomas", "Laepple", email = "tlaepple@awi.de", role = c("aut", "cre")), person("Thomas", "Muench", email = "tmuench@awi.de", role = c("aut")))
+Description: This R package provides tools for the simulation of polar snow and
+    firn cores including their isotopic composition. Methods implemented include
+    the depth-dependent simulation of firn temperature, density, diffusion
+    length for stable water isotopologues, and isotopologue profiles based on
+    the parameterization with the seasonal cycle in air temperature and a
+    fraction of white noise.
 Depends:
     R (>= 3.3.1)
-License: ECUS private
+License: Private. Do not distribute outside of Alfred Wegener Institute without the authors' consent.
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
