@@ -3,7 +3,7 @@
 ##' This function fits a two-mode harmonic model to given daily data based on
 ##' a standard R optimization routine.
 ##'
-##' For optimization, the base R function \link{\code{optim}} is used applying
+##' For optimization, the base R function \code{\link{optim}} is used applying
 ##' the \code{"L-BFGS-B"} method. Per default, the optimization procedure is
 ##' initialised with a standard sinusoid, thus with \code{mean = mean(data)},
 ##' amplitude of first  mode equal to half peak-peak (\code{0.5 *
