@@ -3,10 +3,10 @@
 ##' This function fits a two-mode harmonic model to given daily data based on
 ##' a standard R optimization routine.
 ##'
-##' For optimization, the base R function \code{\link{optim}} is used applying
-##' the \code{"L-BFGS-B"} method. Per default, the optimization procedure is
-##' initialised with a standard sinusoid, thus with \code{mean = mean(data)},
-##' amplitude of first  mode equal to half peak-peak (\code{0.5 *
+##' For optimization, the base R function \code{\link[stats]{optim}} is used
+##' applying the \code{"L-BFGS-B"} method. Per default, the optimization
+##' procedure is initialised with a standard sinusoid, thus with \code{mean =
+##' mean(data)}, amplitude of first  mode equal to half peak-peak (\code{0.5 *
 ##' diff(range(data))}), and all other parameters zero. Alternatively, initial
 ##' parameters can be specified directly. Results can be monitored on the fly by
 ##' setting \code{bPlot = TRUE}. The optimization routine may result in negative
@@ -31,7 +31,7 @@
 ##' \item{phi1:}{Phase shift of first mode in [degree].}
 ##' \item{phi2:}{Phase shift of second mode in [degree].}}
 ##' @author Thomas Laepple
-##' @seealso \code{\link{optim}}, \code{\link{HarmonicModel}}
+##' @seealso \code{\link[stats]{optim}}, \code{\link{HarmonicModel}}
 ##' @examples
 ##' ## Optimize standard sinusoid to fit an arbitrary two-mode harmonic
 ##' days <- 1 : 365
@@ -55,7 +55,7 @@ FitHarmonicModel <- function(data, initial.par = NULL, bPlot = FALSE) {
     rmse <- function(x, y) return(sqrt(mean((x - y)^2)))
     fn <- function(x, data) return(rmse(data, HarmonicModel(x)))
 
-    fit <- optim(par = initial.par, fn = fn,
+    fit <- stats::optim(par = initial.par, fn = fn,
                  method = "L-BFGS-B", data = data)
 
     optim.par <- fit$par
@@ -83,17 +83,19 @@ FitHarmonicModel <- function(data, initial.par = NULL, bPlot = FALSE) {
     
     if (bPlot) {
 
-        plot(data, type = "l", las = 1, lwd = 2.5,
+        graphics::plot(data, type = "l", las = 1, lwd = 2.5,
              xlab = "day of year", ylab = "data (a.u.)",
              main = paste("optimal parameters (T0, A1, A2, phi1, phi2):\n",
                           toString(sprintf("%2.2f", optim.par))))
-        lines(HarmonicModel(initial.par), lty = 2)
-        lines(HarmonicModel(optim.par), col = "blue")
-        legend("bottomleft",
+        graphics::lines(HarmonicModel(initial.par), lty = 2)
+        graphics::lines(HarmonicModel(optim.par), col = "blue")
+        graphics::legend("bottomleft",
                c("data", "initial fit", "optimized fit"),
-               lty = c(1, 2.5, 1), lwd = c(2, 1, 1), col = c(1, 1, 4), bty = "n")
-        legend("bottomright", sprintf("minimum misfit: %1.2g", fit$value),
-               lty = NULL, bty = "n")
+               lty = c(1, 2.5, 1), lwd = c(2, 1, 1), col = c(1, 1, 4),
+               bty = "n")
+        graphics::legend("bottomright",
+                         sprintf("minimum misfit: %1.2g", fit$value),
+                         lty = NULL, bty = "n")
     }
 
     return(optim.par)

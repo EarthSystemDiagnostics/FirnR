@@ -48,15 +48,15 @@ Convert2SnowDepth <- function(rho, depth.we, data, dZOut = 0.01) {
     # Get midpoint values of given water eq. depth scale
     depth.we.midpoint <- 0.5 * (depth.we[-length(depth.we)] + depth.we[-1])
     # Interpolate density to midpoint values
-    rho.midpoint <- approx(depth.we, rho, depth.we.midpoint)$y
+    rho.midpoint <- stats::approx(depth.we, rho, depth.we.midpoint)$y
 
     # Snow depth scale corresponding to given water eq. depth scale
     depth.snow <- c(0, cumsum(diff(depth.we) / rho.midpoint)) * kRhoW
 
     # Interpolate onto equidistant snow depth scale
     outDepth <- seq(from = 0, to = max(depth.snow), by = dZOut)
-    data.out <- approx(depth.snow, data, outDepth)$y
-    rho.out  <- approx(depth.snow, rho, outDepth)$y
+    data.out <- stats::approx(depth.snow, data, outDepth)$y
+    rho.out  <- stats::approx(depth.snow, rho, outDepth)$y
 
     return(list(depth = outDepth, data = data.out, rho = rho.out))
 

@@ -30,9 +30,8 @@ SimulateFirnSignal(core, simLength, fractionSeasonal = 1, res = 1/1000,
 
 \item{f.integrate.variance}{frequency that determines which part of the spectrum is considered in the noise variance 1/[snow length in m] (e.g. 1/(1/50) = 50) = corresponding to a sampling on 1cm = Nyquist of 2cm}
 
-\item{method}{}
-
-\item{f.measure}{frequency in mm at which the}
+\item{method}{specifies the interpolation method to be used. Choices are
+\code{"linear"} or \code{"constant"}; see \code{\link[stats]{approx}}.}
 }
 \value{
 list(depth=depth.snow,time=time,signal=signal*rescaling.factor,noise.snow=noise.snow)  snow depth in m, time in years, signal, noise.snow (for further use)
@@ -41,11 +40,12 @@ list(depth=depth.snow,time=time,signal=signal*rescaling.factor,noise.snow=noise.
 The signal is created against time (on a w.e. scale) and than transferred to snow-depth
 }
 \examples{
+\dontrun{
  ##' 
 
   core<-list(lat=-75.00,lon=0,bdot=72,rho.surface=345,T0=273.15-44.5,A1=16.7,A2=6.6,phi1=0,phi2=0,P=650,name="Kohnen")
   core$depth<-seq(from=0,to=20,by=1/100)
-  core$rho<-DensityHL(core$rho.surface,t.mean=core$T0,bdot=core$bdot,depth=core$depth)
+  core$rho<-DensityHL(rho.surface=core$rho.surface,T=core$T0,bdot=core$bdot,depth=core$depth)
 
 signal.1<-SimulateFirnSignal(core,simLength=30,fractionSeasonal=1)
 signal.05<-SimulateFirnSignal(core,simLength=30,fractionSeasonal=0.5)
@@ -96,7 +96,7 @@ LLines(SpecMTM(pTs(signal.05$signal,signal.1$depth)),col="red",conf=FALSE)
 LLines(SpecMTM(pTs(signal.05.noise.1cm$signal,signal.1$depth)),col="green",conf=FALSE)
 LLines(SpecMTM(pTs(signal.05.var1mm$signal,signal.1$depth)),col="cyan",conf=FALSE)
 
-
+}
 }
 \author{
 Thomas Laepple

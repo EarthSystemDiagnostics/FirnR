@@ -4,7 +4,8 @@
 \alias{DensityHL}
 \title{Analytical solution of Herron-Langway firn densification model.}
 \usage{
-DensityHL(depth = (0:9000)/100, rho.surface, T, bdot, JohnsenCorr = FALSE)
+DensityHL(depth = (0:9000)/100, rho.surface, T, bdot,
+  JohnsenCorr = FALSE)
 }
 \arguments{
 \item{depth}{Numeric vector of firn depths [m] at which firn density is
@@ -15,6 +16,9 @@ calculated.}
 \item{T}{mean firn temperature in [K].}
 
 \item{bdot}{local mass accumulation rate in [kg/m^2/year].}
+
+\item{JohnsenCorr}{logical; whether or not to apply the Johnsen correction
+to the Arrhenius rate constants for central Greenland sites.}
 }
 \value{
 A list with two elements:

@@ -64,7 +64,7 @@ Convert2WE<-function(rho, depth, bCorrectStart = FALSE, bdot) {
     if (bCorrectStart) {
         
         index    <- which(depth.we < bdot)
-        layer0   <- mean(na.omit(rho)[index]) * (depth[1] / kRhoW)
+        layer0   <- mean(stats::na.omit(rho)[index]) * (depth[1] / kRhoW)
         depth.we <- depth.we + layer0
     }
 

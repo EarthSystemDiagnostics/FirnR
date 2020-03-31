@@ -35,10 +35,10 @@ This function fits a two-mode harmonic model to given daily data based on
 a standard R optimization routine.
 }
 \details{
-For optimization, the base R function \code{\link{optim}} is used applying
-the \code{"L-BFGS-B"} method. Per default, the optimization procedure is
-initialised with a standard sinusoid, thus with \code{mean = mean(data)},
-amplitude of first  mode equal to half peak-peak (\code{0.5 *
+For optimization, the base R function \code{\link[stats]{optim}} is used
+applying the \code{"L-BFGS-B"} method. Per default, the optimization
+procedure is initialised with a standard sinusoid, thus with \code{mean =
+mean(data)}, amplitude of first  mode equal to half peak-peak (\code{0.5 *
 diff(range(data))}), and all other parameters zero. Alternatively, initial
 parameters can be specified directly. Results can be monitored on the fly by
 setting \code{bPlot = TRUE}. The optimization routine may result in negative
@@ -53,7 +53,7 @@ data <- HarmonicModel(x)
 optim <- FitHarmonicModel(data, bPlot = TRUE)
 }
 \seealso{
-\code{\link{optim}}, \code{\link{HarmonicModel}}
+\code{\link[stats]{optim}}, \code{\link{HarmonicModel}}
 }
 \author{
 Thomas Laepple

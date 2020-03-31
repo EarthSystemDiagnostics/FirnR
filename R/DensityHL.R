@@ -39,7 +39,9 @@
 ##'     calculated.
 ##' @param rho.surface surface density in [kg/m^3].
 ##' @param T mean firn temperature in [K].
-##' @param bdot  local mass accumulation rate in [kg/m^2/year].
+##' @param bdot local mass accumulation rate in [kg/m^2/year].
+##' @param JohnsenCorr logical; whether or not to apply the Johnsen correction
+##'   to the Arrhenius rate constants for central Greenland sites.
 ##' @return A list with two elements:
 ##'     \itemize{
 ##'     \item \code{depth.we}: Numeric vector of water-equivalent depth in [m]

@@ -15,16 +15,17 @@
 ##' @param rescaling.factor slope between temperature and the signal of interest (e.g. dO18)
 ##' @param f.cutoff.noise cutoff frequency on the noise in 1/[surface snow length in m] (e.g. 1/(1/100) = 100) = 10mm
 ##' @param f.integrate.variance frequency that determines which part of the spectrum is considered in the noise variance 1/[snow length in m] (e.g. 1/(1/50) = 50) = corresponding to a sampling on 1cm = Nyquist of 2cm
-##' @param method 
-##' @param f.measure frequency in mm at which the
+##' @param method specifies the interpolation method to be used. Choices are
+##'   \code{"linear"} or \code{"constant"}; see \code{\link[stats]{approx}}.
 ##' @return  list(depth=depth.snow,time=time,signal=signal*rescaling.factor,noise.snow=noise.snow)  snow depth in m, time in years, signal, noise.snow (for further use)
 ##' @author Thomas Laepple
 ##' @examples
+##' \dontrun{
 ##'  ##' 
 ##' 
 ##'   core<-list(lat=-75.00,lon=0,bdot=72,rho.surface=345,T0=273.15-44.5,A1=16.7,A2=6.6,phi1=0,phi2=0,P=650,name="Kohnen")
 ##'   core$depth<-seq(from=0,to=20,by=1/100)
-##'   core$rho<-DensityHL(core$rho.surface,t.mean=core$T0,bdot=core$bdot,depth=core$depth)
+##'   core$rho<-DensityHL(rho.surface=core$rho.surface,T=core$T0,bdot=core$bdot,depth=core$depth)
 ##' 
 ##' signal.1<-SimulateFirnSignal(core,simLength=30,fractionSeasonal=1)
 ##' signal.05<-SimulateFirnSignal(core,simLength=30,fractionSeasonal=0.5)
@@ -75,7 +76,7 @@
 ##' LLines(SpecMTM(pTs(signal.05.noise.1cm$signal,signal.1$depth)),col="green",conf=FALSE)
 ##' LLines(SpecMTM(pTs(signal.05.var1mm$signal,signal.1$depth)),col="cyan",conf=FALSE)
 ##' 
-##' 
+##' }
 ##' @export
 SimulateFirnSignal<-function(core,simLength,fractionSeasonal=1,res=1/1000,res.we=res/3,bRandomPhase=FALSE,noise.snow=NULL,rescaling.factor=0.5,f.cutoff.noise=NULL,
                       f.integrate.variance=50,method="constant") 
@@ -89,7 +90,7 @@ SimulateFirnSignal<-function(core,simLength,fractionSeasonal=1,res=1/1000,res.we
         targetVariance<-(core$A1^2/2)+(core$A2^2/2) #Variance of the pure seasonal cycle
         depth.snow<-seq(from=0,to=simLength,by=res) #snow depth on which the simulation takes place (in m)
         
-        rho.interpolated<-approx(core$depth,core$rho,depth.snow,rule=2)$y #interpolate the density to the target snow-depth
+        rho.interpolated<-stats::approx(core$depth,core$rho,depth.snow,rule=2)$y #interpolate the density to the target snow-depth
         depth.we<-Convert2WE(rho.interpolated,depth.snow)  #and get the (non-equidistant) w.e. depth corresponding to the target snow-depth layers
 
         time=depth.we/core$bdot*1000 #get the corresponding time in years
@@ -106,9 +107,9 @@ SimulateFirnSignal<-function(core,simLength,fractionSeasonal=1,res=1/1000,res.we
                         filter.length<-round((1/(f.cutoff.noise.we*res.we)))*k.filter+1
                         filter.lp<-Lowpass(f.cutoff.noise.we,filter.length,sample=1/res.we)
 
-                        noise.we<-rnorm(length(depth.we.equidistant)+filter.length+2)
+                        noise.we<-stats::rnorm(length(depth.we.equidistant)+filter.length+2)
                         noise.we.filtered<-ApplyFilter(noise.we,filter.lp)[seq(depth.we.equidistant)+filter.length/2+1]
-                    } else noise.we.filtered<-rnorm(length(depth.we.equidistant))
+                    } else noise.we.filtered<-stats::rnorm(length(depth.we.equidistant))
                 
 
                  #frequency that determines which part of the spectrum is considered in the noise variance in water equivalent = increases the frequency as we compress it
@@ -119,7 +120,7 @@ SimulateFirnSignal<-function(core,simLength,fractionSeasonal=1,res=1/1000,res.we
                 f.nyquist<-0.5/res.we
                 variance.noise<-f.integrate.variance.we / f.nyquist
                 noise.we.filtered.rescaled<-noise.we.filtered/sqrt(variance.noise)*sqrt(targetVariance)
-                noise.snow<-approx(depth.we.equidistant, noise.we.filtered.rescaled,depth.we,method=method)$y
+                noise.snow<-stats::approx(depth.we.equidistant, noise.we.filtered.rescaled,depth.we,method=method)$y
             }
 
         if (length(noise.snow) != length(depth.snow)) stop("length of noise.snow vector != required length")
@@ -127,7 +128,7 @@ SimulateFirnSignal<-function(core,simLength,fractionSeasonal=1,res=1/1000,res.we
         if (fractionSeasonal == 0) signal=noise.snow
         else {
             phase=0
-            if (bRandomPhase) phase=runif(1,min=0,max=2*pi)
+            if (bRandomPhase) phase=stats::runif(1,min=0,max=2*pi)
             signal.seasonal<-core$A1*cos(phase+depth.we*2*pi/core$bdot*1000)+core$A2*cos(2*phase+depth.we*4*pi/core$bdot*1000)
          
             
