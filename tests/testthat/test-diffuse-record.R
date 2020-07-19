@@ -17,7 +17,18 @@ test_that("input arguments are valid", {
 test_that("diffusion works", {
 
   # test return of input for zero diffusion length
-  # TBD
+
+  rec <- rnorm(100)
+
+  diffused1 <- DiffuseRecord(rec, sigma = 0)
+
+  sigma <- seq(0.1, 10, 0.1)
+  i <- c(11, 33, 56, 98)
+  sigma[i] <- 0
+  diffused2 <- DiffuseRecord(rec, sigma = sigma)
+
+  expect_equal(diffused1, rec)
+  expect_equal(diffused2[i], rec[i])
 
   # test diffusion for constant diffusion length
 
