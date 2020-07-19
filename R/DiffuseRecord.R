@@ -5,9 +5,8 @@
 ##' diffusion length by convolution with a Gaussian kernel.
 ##'
 ##' This function expects a numeric vector with the depth-dependent diffusion
-##' lengths of the same length as \code{rec}. To calculate the simple case of a
-##' constant diffusion length \code{sigma.const}, provide
-##' \code{sigma = rep(sigma.const, length(rec))} as input.
+##' lengths of the same length as \code{rec}, or a single value to use a
+##' constant diffusion length.
 ##'
 ##' The input diffusion length is internally scaled according to the resolution
 ##' of the record given by \code{res}. The convolution integral is then
@@ -21,8 +20,9 @@
 ##' of \code{sigma} and filled with the mean average value of \code{rec}.
 ##' @param rec Numeric vector containing the record that is to be diffused.
 ##' @param sigma Numeric vector of the diffusion lengths corresponding to the
-##' depths at which \code{rec} is tabulated. In units of the resolution of
-##' \code{rec} (typically [cm]).
+##' depths at which \code{rec} is tabulated, or of length one to diffuse
+##' \code{rec} with a constant diffusion length. Must be in units of the
+##' resolution of \code{rec} (typically [cm]).
 ##' @param res Resolution of \code{rec} in the same units as \code{sigma}.
 ##' @param debug if \code{TRUE} the values at top and bottom of the diffused
 ##' record which are potentially affected by the finite record length are set to
@@ -41,12 +41,26 @@
 ##'        lty = 1, col = 1 : 2, bty = "n")
 ##' @export
 DiffuseRecord <- function(rec, sigma, res = 1, debug = FALSE){
-    
+
+    if (missing(sigma)) {
+      stop("No diffusion length passed as input.", call. = FALSE)
+    }
+    if (any(!is.finite(sigma))) {
+      stop("Missing values passed as diffusion length.", call. = FALSE)
+    }
+
+    ns <- length(sigma)
     n <- length(rec)
 
-    # record and sigma must have same length
-    if (n != length(sigma))
-        stop("Conflicting INPUT: rec and sigma must have same length.")
+    if (ns != 1 & ns != n) {
+      stop("Diffusion length neither of length 1 nor matches length of record.",
+           call. = FALSE)
+    }
+
+    # recycle sigma if needed
+    if (ns == 1) {
+      sigma <- rep(sigma, n)
+    }
 
     # scale diffusion length according to resolution of record
     sigma <- sigma / res
