@@ -4,9 +4,19 @@
 \alias{TemporalDiffusionLength}
 \title{Calculate the diffusion length in years}
 \usage{
-TemporalDiffusionLength(core.length = 1000, z.res = 0.01, nt = 2000,
-  t.res = 1, T = 273.15 - 44.5, P = 677, bdot = 64,
-  rho.surface = 340, dD = FALSE, JohnsenCorr = FALSE, names = NULL)
+TemporalDiffusionLength(
+  core.length = 1000,
+  z.res = 0.01,
+  nt = 2000,
+  t.res = 1,
+  T = 273.15 - 44.5,
+  P = 677,
+  bdot = 64,
+  rho.surface = 340,
+  dD = FALSE,
+  JohnsenCorr = FALSE,
+  names = NULL
+)
 }
 \arguments{
 \item{core.length}{the simulated core length in metre for calculating the

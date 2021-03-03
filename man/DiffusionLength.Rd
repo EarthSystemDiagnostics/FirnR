@@ -4,8 +4,15 @@
 \alias{DiffusionLength}
 \title{Calculate the diffusion length in polar firn.}
 \usage{
-DiffusionLength(depth, rho, T = 273.15 - 44.5, P = 677, bdot = 64,
-  dD = FALSE, bFill = TRUE)
+DiffusionLength(
+  depth,
+  rho,
+  T = 273.15 - 44.5,
+  P = 677,
+  bdot = 64,
+  dD = FALSE,
+  bFill = TRUE
+)
 }
 \arguments{
 \item{depth}{Numeric vector of firn depths [m] at which the diffusion

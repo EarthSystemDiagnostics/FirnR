@@ -4,8 +4,7 @@
 \alias{DensityHL}
 \title{Analytical solution of Herron-Langway firn densification model.}
 \usage{
-DensityHL(depth = (0:9000)/100, rho.surface, T, bdot,
-  JohnsenCorr = FALSE)
+DensityHL(depth = (0:9000)/100, rho.surface, T, bdot, JohnsenCorr = FALSE)
 }
 \arguments{
 \item{depth}{Numeric vector of firn depths [m] at which firn density is
