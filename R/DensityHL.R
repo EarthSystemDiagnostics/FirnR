@@ -119,27 +119,24 @@ DensityHL <- function(depth = (0 : 9000) / 100, rho.surface, T, bdot,
     # Critical depth at which density reaches kRhoC
     z.c <- log(fac.rc / fac.r0) / (kRhoIce * d0)
 
-    index.upper <- which(depth <= z.c)
-    index.lower <- which(depth > z.c)
-
     # Steady-state density profile
-    q <- rep(NA, length(depth))
-    q[index.upper] <- fac.r0 * exp(d0 * kRhoIce * depth[index.upper])
-    q[index.lower] <- fac.rc * exp(d1 * kRhoIce* (depth[index.lower] - z.c))
-    rho <- kRhoIce * (q / (1+q))
+    q.upper <- fac.r0 * exp(d0 * kRhoIce * depth[depth <= z.c])
+    q.lower <- fac.rc * exp(d1 * kRhoIce * (depth[depth > z.c] - z.c))
+    rho.upper <- kRhoIce * (q.upper / (1 + q.upper))
+    rho.lower <- kRhoIce * (q.lower / (1 + q.lower))
 
     # Time when critical depth is reached
     tmp <- (kRhoIce - rho.surface) / (kRhoIce - kRhoC)
     t.c <- log(tmp) / c0
     
     # Steady-state time - water-equivalent depth relation
-    t <- rep(NA, length(depth))
-    tmp <- (kRhoIce - rho.surface) / (kRhoIce - rho[index.upper])
-    t[index.upper] <- log(tmp) / c0
-    tmp <- (kRhoIce - kRhoC) / (kRhoIce - rho[index.lower])
-    t[index.lower] <- log(tmp) / c1 + t.c
+    tmp <- (kRhoIce - rho.surface) / (kRhoIce - rho.upper)
+    t.upper <- log(tmp) / c0
+    tmp <- (kRhoIce - kRhoC) / (kRhoIce - rho.lower)
+    t.lower <- log(tmp) / c1 + t.c
 
-    depth.we <- A * t
+    rho <- c(rho.upper, rho.lower)
+    depth.we <- A * c(t.upper, t.lower)
 
     return(list(depth.we = depth.we, rho = rho))
 
