@@ -1,14 +1,17 @@
 test_that("input arguments are valid", {
 
   rec <- rnorm(1000)
+  msg1 <- "No diffusion length passed as input."
+  msg2 <- "Missing values passed as diffusion length."
+  msg3 <- "Diffusion length neither of length 1 nor matches length of record."
 
   # test for missing or invalid diffusion lengths
-  expect_error(DiffuseRecord(rec))
-  expect_error(DiffuseRecord(rec, sigma = NA))
-  expect_error(DiffuseRecord(rec, sigma = c(NA, rep(1, 999))))
+  expect_error(DiffuseRecord(rec), msg1)
+  expect_error(DiffuseRecord(rec, sigma = NA), msg2)
+  expect_error(DiffuseRecord(rec, sigma = c(NA, rep(1, 999))), msg2)
 
   # test for conflicting length of diffusion length
-  expect_error(DiffuseRecord(rec, sigma = c(1, 2)))
+  expect_error(DiffuseRecord(rec, sigma = c(1, 2)), msg3)
 
   # test recycling of diffusion length
   expect_error(DiffuseRecord(rec, sigma = 1), NA)
@@ -39,6 +42,20 @@ test_that("diffusion works", {
   diffused <- round(diffused, 3)
 
   # use only subset to circumvent edge effects
-  expect_equal(diffused[2000:8000], expected[2000:8000])
+  edgeLength <- ceiling(5 * sqrt(2) / 0.1) # as defined in code
+  compare <- (edgeLength + 1) : (length(rec) - edgeLength)
+  expect_equal(diffused[compare], expected[compare])
+
+  # results need to be different in the edge areas
+  expect_false(all(diffused[-compare] == expected[-compare]))
+
+  # switch off padding
+  diffused <- DiffuseRecord(rec, sigma = sqrt(2), res = 0.1, debug = TRUE)
+  diffused <- round(diffused, 3)
+  compare <- which(!is.na(diffused))
+  expect_equal(diffused[compare], expected[compare])
+
+  # check padding length
+  expect_equal(length(which(is.na(diffused))), 2 * edgeLength)
 
 })
