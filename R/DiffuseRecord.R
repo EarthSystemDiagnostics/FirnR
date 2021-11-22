@@ -67,7 +67,9 @@ DiffuseRecord <- function(rec, sigma, res = 1, debug = FALSE){
 
     # pad end of record with mean of record to avoid NA's
     # at the end of diffused record
-    if (!debug) rec <- c(rec, rep(mean(rec, na.rm = TRUE), 10 * max(sigma)))
+    if (!debug) {
+      rec <- c(rec, rep(mean(rec, na.rm = TRUE), ceiling(10 * max(sigma))))
+    }
 
     # vector to store diffused data
     rec.diffused <- rep(NA, n)
@@ -80,35 +82,36 @@ DiffuseRecord <- function(rec, sigma, res = 1, debug = FALSE){
 
         if (sig == 0) {
 
-            diff.value <- rec[i]
+            rec.diffused[i] <- rec[i]
 
         } else {
 
-            # set range of convolution integral (= 2*imax + 1) to ~ 10*sig
-            imax <- ceiling(5 * sig)
-            ran <- (i - imax) : (i + imax)
+            # set range of convolution integral (= 2 * max + 1) to ~ 10 * sig
+            max <- ceiling(5 * sig)
+            I <- -max : max
+            range <- (i - max) : (i + max)
 
-            # if part of range extends above surface, set diffused value to 'NA'
-            # for 'debug = TRUE', else skip that part of range in the
+            # for part of range extending above surface, set diffused value
+            # to 'NA' for 'debug = TRUE', else skip that part of range in the
             # convolution integral
+            if (max >= i) {
 
-            if (!all(ran > 0) & debug) {
-                diff.value <- NA
-            } else {
-                ran <- ran[ran > 0]
-                # relative range for convolution kernel
-                rel.ran <- i - ran
-        
-                # convolution kernel
-                kernel <- exp(-(rel.ran)^2 / (2 * sig^2))
-                kernel <- kernel / sum(kernel)
-
-                # diffuse data at current depth bin
-                diff.value <- sum(rec[ran] * kernel)
+                if (debug) {
+                    rec.diffused[i] <- NA
+                    next
+                } else {
+                    keep <- range > 0
+                    range <- range[keep]
+                    I <- I[keep]
+                }
             }
-          }
+        
+            # convolution kernel
+            kernel <- exp(-I^2 / (2 * sig^2))
 
-        rec.diffused[i] <- diff.value
+            # diffuse data at current depth bin
+            rec.diffused[i] <- sum(kernel * rec[range]) / sum(kernel)
+        }
     }
 
     return(rec.diffused)
