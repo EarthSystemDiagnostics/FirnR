@@ -2,46 +2,60 @@
 % Please edit documentation in R/DiffuseRecord.R
 \name{DiffuseRecord}
 \alias{DiffuseRecord}
-\title{Diffuse a record.}
+\title{Diffuse a proxy record.}
 \usage{
-DiffuseRecord(rec, sigma, res = 1, debug = FALSE)
+DiffuseRecord(rec, sigma, res = 1, pad = TRUE)
 }
 \arguments{
-\item{rec}{Numeric vector containing the record that is to be diffused.}
+\item{rec}{numeric vector of the record to be diffused, tabulated at an
+equidistant resolution given by \code{res}.}
 
-\item{sigma}{Numeric vector of the diffusion lengths corresponding to the
-depths at which \code{rec} is tabulated, or of length one to diffuse
-\code{rec} with a constant diffusion length. Must be in units of the
-resolution of \code{rec} (typically [cm]).}
+\item{sigma}{numeric vector of diffusion lengths; either of the same length
+as \code{rec} to provide local diffusion lengths corresponding to every
+depth or time point at which \code{rec} is tabulated, or of length one to
+diffuse \code{rec} with a constant diffusion length. The diffusion length
+must be given in the same units as is the resolution of \code{rec}.}
 
-\item{res}{Resolution of \code{rec} in the same units as \code{sigma}.}
+\item{res}{numeric; single value of the equidistant resolution of \code{rec}
+in the same units as \code{sigma}; e.g., a record resolution of 1 cm
+(\code{res = 1}) requires that the diffusion lengths are also given in
+units of cm, a resolution of 5 years (\code{res = 5}) requires diffusion
+lengths given in units of years. This is needed for rescaling the
+diffusion length into units of bin size; see also Details.}
 
-\item{debug}{if \code{TRUE} the values at top and bottom of the diffused
-record which are potentially affected by the finite record length are set to
-\code{NA}. Defaults to \code{FALSE}. See also Details.}
+\item{pad}{logical; the default setting \code{TRUE} avoids \code{NA} values
+at the top and bottom of the diffused record, which would otherwise result
+from the finite record length, by clipping the diffusion kernel at the top
+and extending the record with its mean at the bottom; see also Details.}
 }
 \value{
-Numeric vector containing the diffused version of \code{rec}.
+numeric vector of the diffused version of \code{rec}.
 }
 \description{
-This function diffuses a time series or record with a given depth-dependent
-diffusion length by convolution with a Gaussian kernel.
+This function diffuses a proxy time series or record with a given diffusion
+length by convolution with a Gaussian kernel.
 }
 \details{
-This function expects a numeric vector with the depth-dependent diffusion
-lengths of the same length as \code{rec}, or a single value to use a
-constant diffusion length.
+The function expects a numeric vector with the depth or time-dependent
+diffusion length of the same length as \code{rec}, or a single value to use
+a constant diffusion length. The input diffusion length is internally
+rescaled according to the resolution of the record given by \code{res}, so
+that the diffusion length corresponds to the number of record bins
+effectively being smoothed. The convolution integral is then solved by a
+simple summation over the kernel width which is set to ~ 10 times the local
+diffusion length.
 
-The input diffusion length is internally scaled according to the resolution
-of the record given by \code{res}. The convolution integral is then
-solved by a simple summation over the kernel width set to ~ 10 times the
-current diffusion length.
-
-For \code{debug = FALSE}: To avoid \code{NAs} at both ends of the diffused
-version of \code{rec} resulting from the kernel extending beyond the record
-ends, the kernel is clipped at the upper end to the range below the
-surface. At the lower end, the record is extended by ~ 10 times the maximum
-of \code{sigma} and filled with the mean average value of \code{rec}.
+The parameter \code{pad} controls the behaviour at the ends of the
+record. Without "padding" (\code{pad = FALSE}), both ends of the diffused
+record will contain \code{NA} values as a result of the kernel extending
+beyond the record ends, with the number of \code{NA} values depending on the
+local width of the diffusion kernel, thus on the values of the diffusion length
+around the upper and lower end of the record. These \code{NA} values can be
+avoided by setting \code{pad = TRUE}, which is the default setting. At the
+upper end, the kernel is then clipped to the range below the surface; at the
+lower end, the record is extended with the mean average value of \code{rec}
+to an additional length of ~ 10 times the overall maximum value of
+\code{sigma}.
 }
 \examples{
 ## Diffuse white noise with a linearly increasing diffusion length
@@ -55,5 +69,5 @@ legend('topleft', c("original record", "diffused record"),
        lty = 1, col = 1 : 2, bty = "n")
 }
 \author{
-Thomas Muench, modified by Thomas Laepple
+Thomas Münch, with contributions by Thomas Laepple
 }

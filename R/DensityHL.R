@@ -92,8 +92,8 @@ DensityHL <- function(depth = (0 : 9000) / 100, rho.surface, T, bdot,
     kRhoC <- 550
 
     # Herron-Langway Arrhenius rate constants
-    k0 <- 11 * exp(-10160 / (kR * T))
-    k1 <- 575 * exp(-21400 / (kR * T))
+    k0 <- 0.011 * exp(-10160 / (kR * T))
+    k1 <- 0.575 * exp(-21400 / (kR * T))
 
     # Johnsen et al. (2000) correction for central Greenland cores
     if (JohnsenCorr) {
@@ -101,45 +101,34 @@ DensityHL <- function(depth = (0 : 9000) / 100, rho.surface, T, bdot,
         k1 <- 1.15 * k1
     }
 
-    # Rate constants for time-dependent densification
-    # (original Eq. (4) in Herron and Langway et al. (1980))
+    # Water-equivalent accumulation rate [m w.eq. / yr]
     A <- bdot / kRhoW
-    c0 <- k0 * A
-    c1 <- k1 * sqrt(A)
 
-    # Rate constants for depth-dependent steady-state densification
-    # (from converting the full time derivative to a depth derivative
-    # neglecting the partial time derivative to get steady-state solution)
-    d0 <- c0 / bdot
-    d1 <- c1 / bdot
+    # Factors used in density profile solution
+    r0 <- rho.surface / (kRhoIce - rho.surface)
+    rc <- kRhoC / (kRhoIce - kRhoC)
+    R <- rc / r0
+    f1 <- k0 * bdot
+    f2 <- k1 * kRhoW * sqrt(A)
 
-    fac.r0 <- rho.surface / (kRhoIce - rho.surface)
-    fac.rc <- kRhoC / (kRhoIce - kRhoC)
-    
     # Critical depth at which density reaches kRhoC
-    z.c <- log(fac.rc / fac.r0) / (kRhoIce * d0)
-
-    index.upper <- which(depth <= z.c)
-    index.lower <- which(depth > z.c)
-
-    # Steady-state density profile
-    q <- rep(NA, length(depth))
-    q[index.upper] <- fac.r0 * exp(d0 * kRhoIce * depth[index.upper])
-    q[index.lower] <- fac.rc * exp(d1 * kRhoIce* (depth[index.lower] - z.c))
-    rho <- kRhoIce * (q / (1+q))
+    z.c <- log(R) / (kRhoIce * k0)
 
     # Time when critical depth is reached
-    tmp <- (kRhoIce - rho.surface) / (kRhoIce - kRhoC)
-    t.c <- log(tmp) / c0
-    
-    # Steady-state time - water-equivalent depth relation
-    t <- rep(NA, length(depth))
-    tmp <- (kRhoIce - rho.surface) / (kRhoIce - rho[index.upper])
-    t[index.upper] <- log(tmp) / c0
-    tmp <- (kRhoIce - kRhoC) / (kRhoIce - rho[index.lower])
-    t[index.lower] <- log(tmp) / c1 + t.c
+    t.c <- log(R * rho.surface / kRhoC) / f1
 
-    depth.we <- A * t
+    # Steady-state density profile
+    q.upper <- r0 * exp(kRhoIce * k0 * depth[depth <= z.c])
+    q.lower <- rc * exp(kRhoIce * k1 * A^{-0.5} * (depth[depth > z.c] - z.c))
+    rho.upper <- kRhoIce * (q.upper / (1 + q.upper))
+    rho.lower <- kRhoIce * (q.lower / (1 + q.lower))
+
+    # Steady-state time - water-equivalent depth relation
+    t.upper <- log((kRhoIce - rho.surface) / (kRhoIce - rho.upper)) / f1
+    t.lower <- log((kRhoIce - kRhoC) / (kRhoIce - rho.lower)) / f2 + t.c
+
+    rho <- c(rho.upper, rho.lower)
+    depth.we <- A * c(t.upper, t.lower)
 
     return(list(depth.we = depth.we, rho = rho))
 
