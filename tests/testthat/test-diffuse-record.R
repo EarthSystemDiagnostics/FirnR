@@ -50,7 +50,7 @@ test_that("diffusion works", {
   expect_false(all(diffused[-compare] == expected[-compare]))
 
   # switch off padding
-  diffused <- DiffuseRecord(rec, sigma = sqrt(2), res = 0.1, debug = TRUE)
+  diffused <- DiffuseRecord(rec, sigma = sqrt(2), res = 0.1, pad = FALSE)
   diffused <- round(diffused, 3)
   compare <- which(!is.na(diffused))
   expect_equal(diffused[compare], expected[compare])

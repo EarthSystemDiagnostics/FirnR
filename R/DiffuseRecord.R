@@ -1,34 +1,49 @@
 
-##' Diffuse a record.
+##' Diffuse a proxy record.
 ##' 
-##' This function diffuses a time series or record with a given depth-dependent
-##' diffusion length by convolution with a Gaussian kernel.
+##' This function diffuses a proxy time series or record with a given diffusion
+##' length by convolution with a Gaussian kernel.
 ##'
-##' This function expects a numeric vector with the depth-dependent diffusion
-##' lengths of the same length as \code{rec}, or a single value to use a
-##' constant diffusion length.
+##' The function expects a numeric vector with the depth or time-dependent
+##' diffusion length of the same length as \code{rec}, or a single value to use
+##' a constant diffusion length. The input diffusion length is internally
+##' rescaled according to the resolution of the record given by \code{res}, so
+##' that the diffusion length corresponds to the number of record bins
+##' effectively being smoothed. The convolution integral is then solved by a
+##' simple summation over the kernel width which is set to ~ 10 times the local
+##' diffusion length.
 ##'
-##' The input diffusion length is internally scaled according to the resolution
-##' of the record given by \code{res}. The convolution integral is then
-##' solved by a simple summation over the kernel width set to ~ 10 times the
-##' current diffusion length.
+##' The parameter \code{pad} controls the behaviour at the ends of the
+##' record. Without "padding" (\code{pad = FALSE}), both ends of the diffused
+##' record will contain \code{NA} values as a result of the kernel extending
+##' beyond the record ends, with the number of \code{NA} values depending on the
+##' local width of the diffusion kernel, thus on the values of the diffusion length
+##' around the upper and lower end of the record. These \code{NA} values can be
+##' avoided by setting \code{pad = TRUE}, which is the default setting. At the
+##' upper end, the kernel is then clipped to the range below the surface; at the
+##' lower end, the record is extended with the mean average value of \code{rec}
+##' to an additional length of ~ 10 times the overall maximum value of
+##' \code{sigma}.
 ##'
-##' For \code{debug = FALSE}: To avoid \code{NAs} at both ends of the diffused
-##' version of \code{rec} resulting from the kernel extending beyond the record
-##' ends, the kernel is clipped at the upper end to the range below the
-##' surface. At the lower end, the record is extended by ~ 10 times the maximum
-##' of \code{sigma} and filled with the mean average value of \code{rec}.
-##' @param rec Numeric vector containing the record that is to be diffused.
-##' @param sigma Numeric vector of the diffusion lengths corresponding to the
-##' depths at which \code{rec} is tabulated, or of length one to diffuse
-##' \code{rec} with a constant diffusion length. Must be in units of the
-##' resolution of \code{rec} (typically [cm]).
-##' @param res Resolution of \code{rec} in the same units as \code{sigma}.
-##' @param debug if \code{TRUE} the values at top and bottom of the diffused
-##' record which are potentially affected by the finite record length are set to
-##' \code{NA}. Defaults to \code{FALSE}. See also Details.
-##' @return Numeric vector containing the diffused version of \code{rec}.
-##' @author Thomas Muench, modified by Thomas Laepple
+##' @param rec numeric vector of the record to be diffused, tabulated at an
+##'   equidistant resolution given by \code{res}.
+##' @param sigma numeric vector of diffusion lengths; either of the same length
+##'   as \code{rec} to provide local diffusion lengths corresponding to every
+##'   depth or time point at which \code{rec} is tabulated, or of length one to
+##'   diffuse \code{rec} with a constant diffusion length. The diffusion length
+##'   must be given in the same units as is the resolution of \code{rec}.
+##' @param res numeric; single value of the equidistant resolution of \code{rec}
+##'   in the same units as \code{sigma}; e.g., a record resolution of 1 cm
+##'   (\code{res = 1}) requires that the diffusion lengths are also given in
+##'   units of cm, a resolution of 5 years (\code{res = 5}) requires diffusion
+##'   lengths given in units of years. This is needed for rescaling the
+##'   diffusion length into units of bin size; see also Details.
+##' @param pad logical; the default setting \code{TRUE} avoids \code{NA} values
+##'   at the top and bottom of the diffused record, which would otherwise result
+##'   from the finite record length, by clipping the diffusion kernel at the top
+##'   and extending the record with its mean at the bottom; see also Details.
+##' @return numeric vector of the diffused version of \code{rec}.
+##' @author Thomas Münch, with contributions by Thomas Laepple
 ##' @examples
 ##' ## Diffuse white noise with a linearly increasing diffusion length
 ##' rec <- rnorm(n = 1000)
@@ -40,7 +55,7 @@
 ##' legend('topleft', c("original record", "diffused record"),
 ##'        lty = 1, col = 1 : 2, bty = "n")
 ##' @export
-DiffuseRecord <- function(rec, sigma, res = 1, debug = FALSE){
+DiffuseRecord <- function(rec, sigma, res = 1, pad = TRUE){
 
     if (missing(sigma)) {
       stop("No diffusion length passed as input.", call. = FALSE)
@@ -65,9 +80,8 @@ DiffuseRecord <- function(rec, sigma, res = 1, debug = FALSE){
     # scale diffusion length according to resolution of record
     sigma <- sigma / res
 
-    # pad end of record with mean of record to avoid NA's
-    # at the end of diffused record
-    if (!debug) {
+    # pad record end with its mean to avoid NA's at the end of diffused record
+    if (pad) {
       rec <- c(rec, rep(mean(rec, na.rm = TRUE), ceiling(10 * max(sigma))))
     }
 
@@ -91,18 +105,18 @@ DiffuseRecord <- function(rec, sigma, res = 1, debug = FALSE){
             I <- -max : max
             range <- (i - max) : (i + max)
 
-            # for part of range extending above surface, set diffused value
-            # to 'NA' for 'debug = TRUE', else skip that part of range in the
-            # convolution integral
+            # for pad = TRUE, skip that part of range in the convolution
+            # integral which is extending above surface, else set diffused value
+            # to 'NA' there
             if (max >= i) {
 
-                if (debug) {
-                    rec.diffused[i] <- NA
-                    next
-                } else {
+                if (pad) {
                     keep <- range > 0
                     range <- range[keep]
                     I <- I[keep]
+                } else {
+                    rec.diffused[i] <- NA
+                    next
                 }
             }
         
