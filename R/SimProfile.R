@@ -76,22 +76,28 @@
 ##' # repeat 5 years and add some noise
 ##' seasonal.par <- c(-44.5, 13, 5, 10, 50)
 ##' temperature <- rep(HarmonicModel(seasonal.par), nyr) +
-##'   rnorm(length(precip), sd = 2)
+##'                rnorm(length(precip), sd = 2)
 ##'
 ##' # arbitrary time vector
-##' time <- seq(length.out = length(precip))
+##' time <- as.Date(-1 * (length(precip) : 1), origin = "2020-01-01")
 ##'
 ##' # run simulation
+##' profile.nodiff <- SimProfile(time, precip, temperature, diffuse = FALSE)
 ##' profile <- SimProfile(time, precip, temperature)
 ##'
 ##' # compare original time series to simulated time series in the firn
-##' plot(time, temperature, type = "l",
-##'      xlab = "time", ylab = "temperature; isotopic composition")
+##' plot(time, temperature, type = "l", ylim = c(-65, -15),
+##'      xlab = "Time", ylab = "Original and simulated profiles (a.u.)")
+##' lines(profile.nodiff$time, profile.nodiff$d18O, col = 4, lwd = 2)
 ##' lines(profile$time, profile$d18O, col = 2, lwd = 2)
+##' legend("topright",
+##'        c("Original ts", "Simulated ts w/o diffusion",
+##'          "Simulated ts with diffusion"),
+##'        lty = 1, lwd = c(1, 2, 2), col = c(1, 2, 4))
 ##'
 ##' # show simulated depth profile
 ##' plot(profile$depth, profile$d18O, col = 2, type = "l", lwd = 2,
-##'      xlab = "depth (m)", ylab = "isotopic composition")
+##'      xlab = "Depth (m)", ylab = "Simulated depth profile")
 ##' abline(h = mean(profile$d18O), lty = 2)
 ##'
 ##' @author Thomas Münch

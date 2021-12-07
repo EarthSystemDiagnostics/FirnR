@@ -2,12 +2,13 @@
 % Please edit documentation in R/SimProfile.R
 \name{SimProfile}
 \alias{SimProfile}
-\title{Simulate virtual isotope profile}
+\title{Simulate virtual firn profile}
 \usage{
 SimProfile(
   time,
   precip,
   temperature,
+  data = temperature,
   pressure = 677,
   rho.surface = 340,
   accumulation.scale = 365,
@@ -27,8 +28,16 @@ format which supports calculation of midpoint and average values (via
 \item{precip}{numeric vector with a precipitation time series (in
 w.eq. units) tabulated at the time points in \code{time}.}
 
-\item{temperature}{numeric vector with a temperature time series (in K)
+\item{temperature}{numeric vector with a temperature time series (in deg C)
 tabulated at the time points in \code{time}.}
+
+\item{data}{numeric vector with a data time series from which the firn
+profile is to be simulated, tabulated at the time points in \code{time};
+the default is to use the \code{temperature} time series, but also any
+other suitable environmental proxy can be input here for profile
+simulation. In such case, the \code{temperature} input is still needed but
+only to obtain an average temperature value for the densification rate and
+diffusion length calculations.}
 
 \item{pressure}{local atmospheric surface pressure in mbar. Defaults to
 observed average pressure at EDML site.}
@@ -42,51 +51,53 @@ precipitation data is given in units of mm w.eq. per day.}
 \item{depth.scale}{factor to convert the precipitation data into units of m
 w.eq. Default is to assume the precipitation data is given in mm w.eq.}
 
-\item{alpha}{slope of the temperature-to-isotope calibration in permil per
-degree Celsius.}
+\item{alpha}{slope of a linear calibration to convert the input \code{data}
+into the desired units of the firn profile; e.g. a linear
+temperature-to-isotope calibration.}
 
-\item{beta}{intercept of the temperature-to-isotope calibration in permil.}
+\item{beta}{the same as \code{alpha} but providing the intercept of the
+linear calibration.}
 
-\item{dz.out}{output resolution in m of the simulated isotope profile to
+\item{dz.out}{output resolution in m of the simulated firn profile to
 mimick a typical firn/ice core sampling process. Defaults to 3 cm.}
 
-\item{diffuse}{logical to control whether the simulated isotope profile
+\item{diffuse}{logical to control whether the simulated firn profile
 shall be diffused according to the standard firn diffusion model.}
 }
 \value{
-A data frame of three variables with the simulated isotope profile:
+A data frame of three variables with the simulated firn profile:
   firn/ice midpoint depths in m, time relative to the first observation
-  point of the input time series, and corresponding isotope value in
-  permil. Additionally, attributes are attached to the data frame which
-  include information on the simulation run: applied isotope-temperature
-  calibration, used atmospheric pressure, surface snow density and output
+  point of the input time series, and corresponding firn profile (proxy)
+  value. Additionally, attributes are attached to the data frame which
+  include information on the simulation run: applied linear calibration
+  parameters, used atmospheric pressure, surface snow density and output
   resolution, the diffusion flag, and the date of the run.
 }
 \description{
-Forward-simulate a virtual isotope depth profile based on given temperature
+Forward-simulate a virtual firn depth profile based on given temperature
 and precipitation time series and local climatic parameters; see Details.
 }
 \details{
-This function implements the generation of an isotopic profile measured on a
-firn/ice core based on the following governing processes:
-temperature-to-isotope conversion, precipitation intermittency,
+This function implements the generation of a proxy depth profile measured on
+a firn/ice core based on the following governing processes:
+linear conversion (calibration) to proxy units, precipitation intermittency,
 densification, firn diffusion, and sampling process. In detail this works as
 follows:
 
 Layers of precipitated snow are piled up from an input time series of
 precipitation data with thickness in water equivalent units, and are
-associated with the time of the precipitation event and the isotopic
-composition of the snow, the latter being based on the temperature during
-the event and a given linear isotope-to-temperature conversion. These uneven
-layers are converted to an unequidistant true depth scale based on a
-calculated Herron-Langway densification model. Subsequently, this scale is,
-together with the corresponding time information and isotope data,
-interpolated onto an equidistant high-resolution firn/ice depth scale with a
-depth resolution given by the minimum observed layer thickness in real
-units. If desired, the isotope depth profile is then diffused with a
-calculated diffusion length. For the output, the resulting isotope depth
-profile is block averaged to a given coarser resolution mimicking the
-typical size of sampling intervals upon cutting a firn/ice core.
+associated with the time of the precipitation event and the proxy value
+in the snow, the latter being based on a climatic input time series and a
+linear proxy calibration. The uneven layers are converted to an
+unequidistant true depth scale based on a calculated Herron-Langway
+densification model. Subsequently, this depth scale is, together with the
+corresponding time information and proxy data, interpolated onto an
+equidistant high-resolution firn/ice depth scale with a depth resolution
+given by the minimum observed layer thickness in real units. If desired, the
+proxy depth profile is then diffused with a calculated diffusion length. For
+the output, the resulting depth profile is block averaged to a given coarser
+resolution mimicking the typical size of sampling intervals upon cutting a
+firn/ice core.
 }
 \examples{
 
@@ -99,24 +110,30 @@ precip <- rep(70 / 365, times = nyr * 365)
 
 # create bi-harmonic model of sesasonal cycle in temperature at EDML;
 # repeat 5 years and add some noise
-seasonal.par <- c(273 - 44.5, 13, 5, 10, 50)
+seasonal.par <- c(-44.5, 13, 5, 10, 50)
 temperature <- rep(HarmonicModel(seasonal.par), nyr) +
-  rnorm(length(precip), sd = 2)
+               rnorm(length(precip), sd = 2)
 
 # arbitrary time vector
-time <- seq(length.out = length(precip))
+time <- as.Date(-1 * (length(precip) : 1), origin = "2020-01-01")
 
 # run simulation
+profile.nodiff <- SimProfile(time, precip, temperature, diffuse = FALSE)
 profile <- SimProfile(time, precip, temperature)
 
 # compare original time series to simulated time series in the firn
-plot(time, temperature - 273, type = "l",
-     xlab = "time", ylab = "temperature; isotopic composition")
+plot(time, temperature, type = "l", ylim = c(-65, -15),
+     xlab = "Time", ylab = "Original and simulated profiles (a.u.)")
+lines(profile.nodiff$time, profile.nodiff$d18O, col = 4, lwd = 2)
 lines(profile$time, profile$d18O, col = 2, lwd = 2)
+legend("topright",
+       c("Original ts", "Simulated ts w/o diffusion",
+         "Simulated ts with diffusion"),
+       lty = 1, lwd = c(1, 2, 2), col = c(1, 2, 4))
 
 # show simulated depth profile
 plot(profile$depth, profile$d18O, col = 2, type = "l", lwd = 2,
-     xlab = "depth (m)", ylab = "isotopic composition")
+     xlab = "Depth (m)", ylab = "Simulated depth profile")
 abline(h = mean(profile$d18O), lty = 2)
 
 }
