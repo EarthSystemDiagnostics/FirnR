@@ -5,11 +5,9 @@ Author: Thomas Laepple [aut, cre],
     Thomas Münch [aut]
 Maintainer: Thomas Münch <thomas.muench@awi.de>
 Description: This R package provides tools for the simulation of polar snow and
-    firn cores including their isotopic composition. Methods implemented include
-    the depth-dependent simulation of firn temperature, density, diffusion
-    length for stable water isotopologues, and isotopologue profiles based on
-    the parameterization with the seasonal cycle in air temperature and a
-    fraction of white noise.
+    firn cores including their isotopic composition. Methods currently
+    implemented include the depth-dependent simulation of firn temperature,
+    density, and diffusion length for stable water isotopologues.
 Depends:
     R (>= 3.3.1)
 License: file LICENSE
