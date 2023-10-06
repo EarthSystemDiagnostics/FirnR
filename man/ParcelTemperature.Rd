@@ -4,9 +4,19 @@
 \alias{ParcelTemperature}
 \title{Simulate snow parcel temperature.}
 \usage{
-ParcelTemperature(startTime, depth, core = NULL, A1 = core$A1,
-  A2 = core$A2, phi1 = core$phi1, phi2 = core$phi2, T0 = core$T0,
-  rho.surface = core$rho.surface, bdot = core$bdot, kappa = NULL)
+ParcelTemperature(
+  startTime,
+  depth,
+  core = NULL,
+  A1 = core$A1,
+  A2 = core$A2,
+  phi1 = core$phi1,
+  phi2 = core$phi2,
+  T0 = core$T0,
+  rho.surface = core$rho.surface,
+  bdot = core$bdot,
+  kappa = NULL
+)
 }
 \arguments{
 \item{startTime}{Time of the year when the parcel is started at the surface

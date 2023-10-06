@@ -4,8 +4,14 @@
 \alias{DiffusionLengthPolythermal}
 \title{Calculate diffusion length accounting for seasonal firn temperatures.}
 \usage{
-DiffusionLengthPolythermal(core, depth = core$depth, rho = core$rho,
-  bParcel = FALSE, dD = FALSE, bFill = TRUE)
+DiffusionLengthPolythermal(
+  core,
+  depth = core$depth,
+  rho = core$rho,
+  bParcel = FALSE,
+  dD = FALSE,
+  bFill = TRUE
+)
 }
 \arguments{
 \item{core}{List containing the site parameters; here the minimum of

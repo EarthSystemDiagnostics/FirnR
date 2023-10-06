@@ -4,9 +4,18 @@
 \alias{FirnTemperature}
 \title{Simulate firn temperature.}
 \usage{
-FirnTemperature(t, depth, core = NULL, A1 = core$A1, A2 = core$A2,
-  phi1 = core$phi1, phi2 = core$phi2, T0 = core$T0,
-  rho.surface = core$rho.surface, kappa = NULL)
+FirnTemperature(
+  t,
+  depth,
+  core = NULL,
+  A1 = core$A1,
+  A2 = core$A2,
+  phi1 = core$phi1,
+  phi2 = core$phi2,
+  T0 = core$T0,
+  rho.surface = core$rho.surface,
+  kappa = NULL
+)
 }
 \arguments{
 \item{t}{Time in [years].}
