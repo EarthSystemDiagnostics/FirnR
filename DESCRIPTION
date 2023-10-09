@@ -1,6 +1,6 @@
 Package: FirnR
 Title: Simulate Polar Snow and Firn Cores
-Version: 0.0.0.9004
+Version: 0.0.0.9005
 Author:
   Thomas Laepple [aut, cre],
   Thomas Münch [aut]
@@ -16,6 +16,7 @@ Depends:
     R (>= 3.3.1)
 Imports:
     dplyr (>= 1.0.3),
+    PaleoSpec (>= 0.1.0),
     rlang (>= 0.4.10)
 Suggests:
     testthat

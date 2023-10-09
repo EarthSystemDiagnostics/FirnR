@@ -190,7 +190,7 @@ SimProfile <- function(time, precip, temperature, data = temperature,
   profileAvg <- PaleoSpec::AvgToBin(profileEqui$depth, profileEqui$time,
                                     breaks = breaks)[c("centers", "avg")] %>%
     data.frame() %>%
-    dplyr::rename(depth = .data$centers, time = .data$avg) %>%
+    dplyr::rename(depth = "centers", time = "avg") %>%
     dplyr::mutate(d18O = PaleoSpec::AvgToBin(profileEqui$depth, profileEqui$d18O,
                                              breaks = breaks)[["avg"]])
 
