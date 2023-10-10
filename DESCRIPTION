@@ -1,6 +1,6 @@
 Package: FirnR
 Title: Simulate Polar Snow and Firn Cores
-Version: 0.0.0.9001
+Version: 0.0.0.9900
 Author:
   Thomas Laepple [aut, cre],
   Thomas Münch [aut]
@@ -21,4 +21,4 @@ Suggests:
     testthat
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
