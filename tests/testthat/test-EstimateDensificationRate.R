@@ -1,0 +1,32 @@
+test_that("densification rate calculation works", {
+
+  msg <- "'data' must be a list or data.frame."
+  expect_error(EstimateDensificationRate(numeric(1), drange = 1), msg, fixed = TRUE)
+
+  msg <- "Expected column names for 'data' are: 'depth', 'density'."
+  expect_error(EstimateDensificationRate(data.frame(foo = 1, bar = 1),
+                                         drange = 1),
+               msg, fixed = TRUE)
+  expect_error(EstimateDensificationRate(data.frame(depth = 1, bar = 1),
+                                         drange = 1),
+               msg, fixed = TRUE)
+  expect_error(EstimateDensificationRate(list(foo = 1, density = 1),
+                                         drange = 1),
+               msg, fixed = TRUE)
+  expect_no_error(EstimateDensificationRate(
+    list(depth = 1 : 3, density = 1 : 3,
+         foo = rnorm(3), bar = runif(3)), drange = 1))
+
+  msg <- "'drange' must be > 0."
+  expect_error(EstimateDensificationRate(
+    data.frame(depth = 1 : 3, density = 1 : 3), drange = 0),
+    msg, fixed = TRUE)
+  expect_error(EstimateDensificationRate(
+    data.frame(depth = 1 : 3, density = 1 : 3), drange = -14.5),
+    msg, fixed = TRUE)
+
+  actual <- EstimateDensificationRate(b41.b42.density$stack, drange = 2) %>%
+    round(8)
+  expect_equal(actual, 2.267678 * 1e-2)
+  
+})
