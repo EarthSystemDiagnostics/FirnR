@@ -32,8 +32,9 @@
 #'
 CompressRecord <- function(record, stretch) {
 
-  if (any(colnames(record) != c("depth", "y"))) {
-    stop("Expected column names for 'record' are: 'depth', 'y'.")
+  if (any(is.na(match(c("depth", "y"), colnames(record))))) {
+    stop("Expected column names for 'record' are: 'depth', 'y'.",
+         call. = FALSE)
   }
   if (nrow(record) == 1) stop("Proxy record is of length 1.")
   if (stretch >= (max(record$depth) - record$depth[1])) {
