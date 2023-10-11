@@ -7,7 +7,7 @@
 EstimateDensificationRate(data, drange)
 }
 \arguments{
-\item{data}{a data frame or list providing a firn density profile via the two
+\item{data}{a data frame providing a firn density profile via the two
 elements 'depth' and 'density'.}
 
 \item{drange}{bottom depth (must be in the same units as \code{data$depth})

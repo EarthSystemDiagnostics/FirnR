@@ -1,7 +1,10 @@
-test_that("densification rate calculation works", {
+test_that("error handling works", {
 
-  msg <- "'data' must be a list or data.frame."
-  expect_error(EstimateDensificationRate(numeric(1), drange = 1), msg, fixed = TRUE)
+  msg <- "'data' must be a data.frame."
+  expect_error(EstimateDensificationRate(numeric(1), drange = 1),
+               msg, fixed = TRUE)
+  expect_error(EstimateDensificationRate(list(depth = 1, density = 1),
+                                         drange = 1), msg, fixed = TRUE)
 
   msg <- "Expected column names for 'data' are: 'depth', 'density'."
   expect_error(EstimateDensificationRate(data.frame(foo = 1, bar = 1),
@@ -10,12 +13,12 @@ test_that("densification rate calculation works", {
   expect_error(EstimateDensificationRate(data.frame(depth = 1, bar = 1),
                                          drange = 1),
                msg, fixed = TRUE)
-  expect_error(EstimateDensificationRate(list(foo = 1, density = 1),
+  expect_error(EstimateDensificationRate(data.frame(foo = 1, density = 1),
                                          drange = 1),
                msg, fixed = TRUE)
   expect_no_error(EstimateDensificationRate(
-    list(depth = 1 : 3, density = 1 : 3,
-         foo = rnorm(3), bar = runif(3)), drange = 1))
+    data.frame(depth = 1 : 3, density = 1 : 3,
+               foo = rnorm(3), bar = runif(3)), drange = 1))
 
   msg <- "'drange' must be > 0."
   expect_error(EstimateDensificationRate(
@@ -24,6 +27,15 @@ test_that("densification rate calculation works", {
   expect_error(EstimateDensificationRate(
     data.frame(depth = 1 : 3, density = 1 : 3), drange = -14.5),
     msg, fixed = TRUE)
+
+  msg <- "Bottom depth of data < 'drange'."
+  expect_warning(EstimateDensificationRate(
+    data.frame(depth = 1 : 3, density = 1 : 3), drange = 5),
+    msg, fixed = TRUE)
+
+})
+
+test_that("densification rate calculation works", {
 
   actual <- EstimateDensificationRate(b41.b42.density$stack, drange = 2) %>%
     round(8)

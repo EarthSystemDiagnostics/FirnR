@@ -5,8 +5,8 @@
 #' starting from the surface, as estimated from a linear regression of the firn
 #' density profile against depth.
 #'
-#' @param data a data frame or list providing a firn density profile via the two
-#' elements 'depth' and 'density'.
+#' @param data a data frame providing a firn density profile via the two
+#'   elements 'depth' and 'density'.
 #' @param drange bottom depth (must be in the same units as \code{data$depth})
 #'   for the analysis: the densification rate is estimated over the depth
 #'   interval from the surface to this bottom depth.
@@ -29,16 +29,15 @@
 #'
 EstimateDensificationRate <- function(data, drange) {
 
-  if (!is.list(data) & !is.data.frame(data)) {
-    stop("'data' must be a list or data.frame.", call. = FALSE)
-  }
-
-  if (is.list(data)) nm <- names(data) else nm <- colnames(data)
-  if (any(is.na(match(c("depth", "density"), nm)))) {
+  if (!is.data.frame(data)) stop("'data' must be a data.frame.", call. = FALSE)
+  if (any(is.na(match(c("depth", "density"), colnames(data))))) {
     stop("Expected column names for 'data' are: 'depth', 'density'.",
          call. = FALSE)
   }
   if (drange <= 0) stop("'drange' must be > 0.", call. = FALSE)
+  if (drange > max(data$depth)) {
+    warning("Bottom depth of data < 'drange'.", call. = FALSE)
+  }
 
   # linear regression
   i <- which(data$depth <= drange)
