@@ -14,6 +14,7 @@
 #' @param compression numeric value of the amount of compression of the original
 #'   depth scale measured in the same physical units as \code{depth} in
 #'   \code{record}; cannot be larger than the length of the original record.
+#' @importFrom rlang .data
 #' @return a data frame with components \code{depth} and \code{y} holding the
 #'   original depth scale and the interpolated (compressed) proxy values.
 #' @author Thomas Münch
@@ -56,10 +57,7 @@ CompressRecord <- function(record, compression) {
   new.depth <- c(record$depth[1], record$depth[1] + cumsum(new.bin.s))
 
   # approximate record on original depth scale
-  data.frame(
-    depth = record$depth,
-    y = approx(new.depth, record$y, record$depth)$y
-  )
+  dplyr::mutate(record, y = approx(new.depth, .data$y, .data$depth)$y)
 
 }
 

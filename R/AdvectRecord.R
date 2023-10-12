@@ -16,6 +16,7 @@
 #'   the "bottom" of the record so that the shifted bins are lost. For
 #'   \code{clip = FALSE}, the record is extended by the number of bins shifts so
 #'   that it can still hold all original proxy values; see the examples.
+#' @importFrom rlang .data
 #' @return a data frame with components \code{depth} and \code{y} holding the
 #'   shifted (advected) proxy record.
 #' @author Thomas Münch
@@ -56,7 +57,7 @@ AdvectRecord <- function(record, advection, clip = TRUE) {
 
   if (clip) {
 
-    dplyr::mutate(record, y = prxytools::Lag(record$y, shift = k))
+    dplyr::mutate(record, y = prxytools::Lag(.data$y, shift = k))
 
   } else {
 
