@@ -34,6 +34,8 @@ EstimateDensificationRate <- function(data, drange) {
     stop("Expected column names for 'data' are: 'depth', 'density'.",
          call. = FALSE)
   }
+  if (length(drange) != 1) stop("'drange' needs to be of length 1.")
+  if (is.na(drange)) stop("Missing value passed for 'drange'.")
   if (drange <= 0) stop("'drange' must be > 0.", call. = FALSE)
   if (drange > max(data$depth)) {
     warning("Bottom depth of data < 'drange'.", call. = FALSE)

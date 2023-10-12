@@ -35,6 +35,13 @@
 #'
 EstimateCompression <- function(z1 = 0, z2, a, rate) {
 
+  if (!all(sapply(list(z1, z2, a, rate), length) == 1)) {
+    stop("All input parameters must have length 1.", call. = FALSE)
+  }
+    if (any(is.na(list(z1, z2, a, rate)))) {
+    stop("Missing values in input.", call. = FALSE)
+  }
+
   if (z2 <= z1) stop("'z2' must be > 'z1'.", call. = FALSE)
   if (a < 0) stop("'a' must be >= 0.", call. = FALSE)
   if (rate <= 0) stop("'rate' must be > 0.", call. = FALSE)

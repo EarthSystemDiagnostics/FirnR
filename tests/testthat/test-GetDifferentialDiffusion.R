@@ -27,6 +27,38 @@ test_that("error handling works", {
                              0, 1, 1, 2),
     msg, fixed = TRUE)
 
+  data <- data.frame(depth = 1 : 10, sigma = 1 : 10)
+
+  msg <- "All input parameters must have length 1."
+  expect_error(
+    GetDifferentialDiffusion(data, z00 = c(0, 1), z01 = 1, z10 = 4, z11 = 5),
+    msg)
+  expect_error(
+    GetDifferentialDiffusion(data, z00 = 0, z01 = c(1, 2), z10 = 4, z11 = 5),
+    msg)
+  expect_error(
+    GetDifferentialDiffusion(data, z00 = 0, z01 = 1, z10 = c(4, 5), z11 = 5),
+    msg)
+  expect_error(
+    GetDifferentialDiffusion(data, z00 = 0, z01 = 1, z10 = 4, z11 = c(5, 6, 7)),
+    msg)
+  expect_error(
+    GetDifferentialDiffusion(data, z00 = 0, z01 = 1 : 3,
+                             z10 = 4 : 9, z11 = 5 : 6),
+    msg)
+
+  msg <- "Missing values in input."
+  expect_error(
+    GetDifferentialDiffusion(data, z00 = NA, z01 = 1, z10 = 4, z11 = 5), msg)
+  expect_error(
+    GetDifferentialDiffusion(data, z00 = 0, z01 = NA, z10 = 4, z11 = 5), msg)
+  expect_error(
+    GetDifferentialDiffusion(data, z00 = 0, z01 = 1, z10 = NA, z11 = 5), msg)
+  expect_error(
+    GetDifferentialDiffusion(data, z00 = 0, z01 = 1, z10 = 4, z11 = NA), msg)
+  expect_error(
+    GetDifferentialDiffusion(data, z00 = NA, z01 = NA, z10 = NA, z11 = NA), msg)
+
   msg <- paste("depth intervals [z00, z01], [z10, z11] must lie",
                "within depth range of data.")
   expect_error(

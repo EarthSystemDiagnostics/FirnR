@@ -20,6 +20,18 @@ test_that("error handling works", {
     data.frame(depth = 1 : 3, density = 1 : 3,
                foo = rnorm(3), bar = runif(3)), drange = 1))
 
+  msg <- "'drange' needs to be of length 1."
+  expect_error(
+    EstimateDensificationRate(data.frame(depth = 1 : 3, density = 1 : 3),
+                              drange = c(1, 3)),
+    msg, fixed = TRUE)
+
+  msg <- "Missing value passed for 'drange'."
+  expect_error(
+    EstimateDensificationRate(data.frame(depth = 1 : 3, density = 1 : 3),
+                              drange = NA),
+    msg, fixed = TRUE)
+
   msg <- "'drange' must be > 0."
   expect_error(EstimateDensificationRate(
     data.frame(depth = 1 : 3, density = 1 : 3), drange = 0),

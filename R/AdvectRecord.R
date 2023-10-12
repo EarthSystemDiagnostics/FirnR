@@ -34,6 +34,9 @@
 #'
 AdvectRecord <- function(record, advection, clip = TRUE) {
 
+  if (!is.data.frame(record)) {
+    stop("'record' must be a data.frame.", call. = FALSE)
+  }
   if (any(is.na(match(c("depth", "y"), colnames(record))))) {
     stop("Expected column names for 'record' are: 'depth', 'y'.",
          call. = FALSE)

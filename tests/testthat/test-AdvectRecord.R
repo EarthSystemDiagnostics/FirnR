@@ -1,5 +1,10 @@
 test_that("error handling works", {
 
+  msg <- "'record' must be a data.frame."
+  expect_error(AdvectRecord(numeric(1), advection = 1), msg, fixed = TRUE)
+  expect_error(AdvectRecord(list(depth = 1, y = 1), advection = 1),
+               msg, fixed = TRUE)
+
   msg <- "Expected column names for 'record' are: 'depth', 'y'."
   expect_error(AdvectRecord(data.frame(foo = 1, bar = 1), advection = 1),
                msg, fixed = TRUE)

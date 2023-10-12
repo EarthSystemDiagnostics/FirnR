@@ -32,11 +32,17 @@
 #'
 CompressRecord <- function(record, stretch) {
 
+  if (!is.data.frame(record)) {
+    stop("'record' must be a data.frame.", call. = FALSE)
+  }
   if (any(is.na(match(c("depth", "y"), colnames(record))))) {
     stop("Expected column names for 'record' are: 'depth', 'y'.",
          call. = FALSE)
   }
-  if (nrow(record) == 1) stop("Proxy record is of length 1.")
+  if (nrow(record) <= 1) stop("Length of proxy record needs to be > 1.")
+  if (length(stretch) != 1) stop("'stretch' needs to be of length 1.")
+  if (is.na(stretch)) stop("Missing value passed for 'stretch'.")
+
   if (stretch >= (max(record$depth) - record$depth[1])) {
     stop("Compression value >= range (max - min) of original depth scale.")
   }

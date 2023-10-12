@@ -54,6 +54,12 @@ GetDifferentialDiffusion <- function(data, z00, z01, z10, z11) {
     stop("Expected column names for 'data' are: 'depth', 'sigma'.",
          call. = FALSE)
   }
+  if (!all(sapply(list(z00, z01, z10, z11), length) == 1)) {
+    stop("All input parameters must have length 1.", call. = FALSE)
+  }
+  if (any(is.na(list(z00, z01, z10, z11)))) {
+    stop("Missing values in input.", call. = FALSE)
+  }
   if (!all(c(z00, z01, z10, z11) >= min(data$depth)) |
       !all(c(z00, z01, z10, z11) <= max(data$depth))) {
     stop("depth intervals [z00, z01], [z10, z11] must lie ",
