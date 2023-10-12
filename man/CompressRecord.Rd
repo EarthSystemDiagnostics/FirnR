@@ -12,7 +12,7 @@ the original depth scale and proxy values.}
 
 \item{stretch}{numeric value of the amount of compression of the original
 depth scale measured in the same physical units as \code{depth} in
-\code{record}.}
+\code{record}; cannot be larger than the length of the original record.}
 }
 \value{
 a data frame with components \code{depth} and \code{y} holding the
@@ -21,12 +21,12 @@ a data frame with components \code{depth} and \code{y} holding the
 \description{
 This function simulates the effect of firn densification by linearly
 interpolating given data onto a compressed (shorter) depth scale. This
-compressed depth scale is found by subtracting the amount of compression
-(\code{stretch}) from the maximum depth of the original depth scale and
-dividing it into equal bins the same number as in the original depth
-vector. The proxy values on the compressed depth scale are found by linear
-interpolation of the original values from the compressed depth scale onto the
-original depth scale.
+compressed depth scale is obtained from subtracting the amount of compression
+(\code{stretch}) from the length of the original record and
+dividing this shorter length into bins with size proportional to the original
+record's resolution. The proxy values on the compressed depth scale are found
+by linear interpolation of the original values from the compressed depth
+scale onto the original depth scale.
 }
 \examples{
 
