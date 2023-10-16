@@ -85,4 +85,18 @@ test_that("advection shift works", {
 
   expect_equal(actual, expected)
 
+  # test correct return data class
+
+  actual <- dplyr::tibble(depth = seq(1.5, 22.5, 3), y = 1 : 8) %>%
+    AdvectRecord(advection = 12.47)
+  expected <- dplyr::tibble(depth = seq(1.5, 22.5, 3), y = c(rep(NA, 4), 1 : 4))
+
+  expect_equal(actual, expected)
+
+  actual <- dplyr::tibble(depth = seq(1.5, 22.5, 3), y = 1 : 8) %>%
+    AdvectRecord(advection = 12.47, clip = FALSE)
+  expected <- dplyr::tibble(depth = seq(1.5, 34.5, 3), y = c(rep(NA, 4), 1 : 8))
+
+  expect_equal(actual, expected)
+
 })

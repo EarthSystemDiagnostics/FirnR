@@ -64,7 +64,8 @@ AdvectRecord <- function(record, advection, clip = TRUE) {
     data.frame(
       depth = c(record$depth, max(record$depth) + depth.res * (1 : k)),
       y = prxytools::Lag(c(record$y, rep(NA, k)), shift = k)
-    )
+    ) %>%
+      {if (tibble::is_tibble(record)) {tibble::as_tibble(.)} else { . }}
 
   }
 }

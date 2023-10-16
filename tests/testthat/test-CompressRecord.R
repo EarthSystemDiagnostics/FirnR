@@ -72,4 +72,12 @@ test_that("compression simulation works", {
 
   expect_equal(expected, actual)
 
+  # test correct return data class
+
+  original <- dplyr::as_tibble(original)
+  expected <- dplyr::as_tibble(expected)
+  actual <- CompressRecord(original, compression = 4.5)
+
+  expect_equal(expected, actual)
+
 })
