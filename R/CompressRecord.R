@@ -7,7 +7,11 @@
 #' bins with size proportional to the original record's resolution. The proxy
 #' values on the compressed depth scale are found by linear interpolation of the
 #' original values from the compressed depth scale onto the original depth
-#' scale.
+#' scale. Note that leading and trailing missing values are automatically
+#' removed from the input vector and so the original record length is based on
+#' the trimmed data. After applying the compression, the trimmed NA values are
+#' added in again to ensure the output data frame has the same number of rows as
+#' the input.
 #'
 #' @param record a data frame with components \code{depth} and \code{y} holding
 #'   the original depth scale and proxy values.
@@ -44,7 +48,10 @@ CompressRecord <- function(record, compression) {
   if (length(compression) != 1) stop("'compression' needs to be of length 1.")
   if (is.na(compression)) stop("Missing value passed for 'compression'.")
 
-  if (compression >= (len <- diff(range(record$depth)))) {
+  # remove leading and trailing NA's
+  x <- zoo::na.trim(record)
+
+  if (compression >= (len <- diff(range(x$depth)))) {
     stop("Compression value >= range (max - min) of original depth scale.")
   }
   if (compression < 0) {
@@ -52,12 +59,15 @@ CompressRecord <- function(record, compression) {
   }
 
   # new bin sizes
-  new.bin.s <- diff(record$depth) * (1 - (compression / len))
+  new.bin.s <- diff(x$depth) * (1 - (compression / len))
   # depth scale after densification
-  new.depth <- c(record$depth[1], record$depth[1] + cumsum(new.bin.s))
+  new.depth <- c(x$depth[1], x$depth[1] + cumsum(new.bin.s))
 
-  # approximate record on original depth scale
-  dplyr::mutate(record, y = approx(new.depth, .data$y, .data$depth)$y)
+  # approximate record on original depth scale and
+  # merge with trimmed part to retain original data frame length
+  dplyr::tibble(depth = x$depth, yc = approx(new.depth, x$y, x$depth)$y) %>%
+    dplyr::left_join(record, ., by = dplyr::join_by("depth")) %>%
+    dplyr::select(-"y") %>%
+    dplyr::rename(y = yc)
 
 }
-

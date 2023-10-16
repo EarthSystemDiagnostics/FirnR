@@ -42,8 +42,32 @@ test_that("error handling works", {
 
 test_that("compression simulation works", {
 
-  original <- data.frame(depth = 1 : 10, y = 1 : 10)
-  expected <- data.frame(depth = 1 : 10, y = c(1, 3, 5, 7, 9, rep(NA, 5)))
+  d <- 1 : 10
+  yin <- 1 : 10
+  ycp <- c(1, 3, 5, 7, 9, rep(NA, 5))
+
+  original <- data.frame(depth = d, y = yin)
+  expected <- data.frame(depth = d, y = ycp)
+  actual <- CompressRecord(original, compression = 4.5)
+
+  expect_equal(expected, actual)
+
+  original <- data.frame(depth = c(0, 0.5, 0.75, d), y = c(rep(NA, 3), yin))
+  expected <- data.frame(depth = c(0, 0.5, 0.75, d), y = c(rep(NA, 3), ycp))
+  actual <- CompressRecord(original, compression = 4.5)
+
+  expect_equal(expected, actual)
+
+  original <- data.frame(depth = c(d, 11, 12), y = c(yin, rep(NA, 2)))
+  expected <- data.frame(depth = c(d, 11, 12), y = c(ycp, rep(NA, 2)))
+  actual <- CompressRecord(original, compression = 4.5)
+
+  expect_equal(expected, actual)
+
+  original <- data.frame(depth = c(0, 0.5, 0.75, d, 11, 12),
+                         y = c(rep(NA, 3), yin, rep(NA, 2)))
+  expected <- data.frame(depth = c(0, 0.5, 0.75, d, 11, 12),
+                         y = c(rep(NA, 3), ycp, rep(NA, 2)))
   actual <- CompressRecord(original, compression = 4.5)
 
   expect_equal(expected, actual)

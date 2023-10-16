@@ -26,7 +26,11 @@ from the length of the original record and dividing this shorter length into
 bins with size proportional to the original record's resolution. The proxy
 values on the compressed depth scale are found by linear interpolation of the
 original values from the compressed depth scale onto the original depth
-scale.
+scale. Note that leading and trailing missing values are automatically
+removed from the input vector and so the original record length is based on
+the trimmed data. After applying the compression, the trimmed NA values are
+added in again to ensure the output data frame has the same number of rows as
+the input.
 }
 \examples{
 
