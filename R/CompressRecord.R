@@ -67,7 +67,6 @@ CompressRecord <- function(record, compression) {
   # merge with trimmed part to retain original data frame length
   dplyr::tibble(depth = x$depth, yc = approx(new.depth, x$y, x$depth)$y) %>%
     dplyr::left_join(record, ., by = dplyr::join_by("depth")) %>%
-    dplyr::select(-"y") %>%
-    dplyr::rename(y = yc)
+    dplyr::select("depth", y = "yc")
 
 }
