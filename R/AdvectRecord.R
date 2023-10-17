@@ -45,15 +45,13 @@ AdvectRecord <- function(record, advection, clip = TRUE) {
   if (nrow(record) <= 1) stop("Length of proxy record needs to be > 1.")
   if (length(advection) != 1) stop("'advection' needs to be of length 1.")
   if (is.na(advection)) stop("Missing value passed for 'advection'.")
-  if (advection < 0) stop("'advection' value needs to be > 0.")
+  if (advection < 0) stop("'advection' value needs to be >= 0.")
   if (length(depth.res <- diff(record$depth)) > 1) {
     if (sd(depth.res) != 0) stop("Require constant depth resolution.")
   }
 
   depth.res <- depth.res[1]
   k <- round(advection / depth.res)
-
-  if (k < 1) stop("'advection' value < depth resolution of record.")
 
   if (clip) {
 

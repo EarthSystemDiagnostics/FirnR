@@ -29,7 +29,7 @@ test_that("error handling works", {
     AdvectRecord(data.frame(depth = 1 : 2, y = 1 : 2), advection = NA),
     msg, fixed = TRUE)
 
-  msg <- "'advection' value needs to be > 0."
+  msg <- "'advection' value needs to be >= 0."
   expect_error(
     AdvectRecord(data.frame(depth = 1 : 2, y = 1 : 2), advection = -3.7),
     msg, fixed = TRUE)
@@ -39,17 +39,17 @@ test_that("error handling works", {
     AdvectRecord(data.frame(depth = c(1, 4, 5, 9), y = 1 : 4), advection = 1),
     msg, fixed = TRUE)
 
-  msg <- "'advection' value < depth resolution of record."
-  expect_error(
-    AdvectRecord(data.frame(depth = 1 : 4, y = 1 : 4), advection = 0.5),
-    msg, fixed = TRUE)
-  expect_no_error( # due to internal rounding
-    AdvectRecord(data.frame(depth = seq(1.5, 10.5, 3), y = 1 : 4),
-                 advection = 2))
-
 })
 
 test_that("advection shift works", {
+
+  # output = input for zero shift (actual, or virtual from internal rounding)
+
+  record <- data.frame(depth = 1 : 4, y = 1 : 4)
+  expect_equal(AdvectRecord(record, advection = 0), record)
+
+  record <- data.frame(depth = seq(1.5, 10.5, 3), y = 1 : 4)
+  expect_equal(AdvectRecord(record, advection = 1), record)
 
   # with clipping
 
