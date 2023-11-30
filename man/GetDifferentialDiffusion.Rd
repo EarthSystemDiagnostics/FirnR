@@ -28,7 +28,7 @@ the differential diffusion length value as calculated from the mean
 }
 \description{
 Calculate the differential firn diffusion length, as defined in Münch et
-al. (2007), over a specified depth interval given a diffusion length
+al. (2017), over a specified depth interval given a diffusion length
 profile.
 }
 \examples{

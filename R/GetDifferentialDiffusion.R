@@ -1,7 +1,7 @@
 #' Relative change in firn diffusion length with depth
 #'
 #' Calculate the differential firn diffusion length, as defined in Münch et
-#' al. (2007), over a specified depth interval given a diffusion length
+#' al. (2017), over a specified depth interval given a diffusion length
 #' profile.
 #'
 #' @param data a data frame providing a firn diffusion length profile via the
