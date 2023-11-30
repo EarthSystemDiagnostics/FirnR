@@ -1,0 +1,196 @@
+---
+title: "Density and diffusion length data"
+author: "Thomas Münch"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Density and diffusion length data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(FirnR)
+library(PaleoSpec)
+```
+
+## Abstract
+
+In this short vignette, we introduce the firn density data that is provided with
+`FirnR` and showcase how to use package functions to obtain modelled density and
+diffusion length data.
+
+## Density data provided by FirnR
+
+`FirnR` comes with density data of the firn cores B41 and B41 (Laepple et
+al. 2016), which were drilled to a total depth of 112 m in close vicinity of
+Kohnen Station in Dronning Maud Land, East Antarctica, during the field season
+2012/2013 as part of the ANT-Land-2012 campaign of the COFI project conducted by
+the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research. The
+density data were obtained by means of high-resolution X-ray Computer Tomography
+(CT; Freitag et al., 2013). Here, the data are provided over the upper 25 m of
+the cores.
+
+The data set is provided as a list with the following elements:
+
+```{r}
+names(b41.b42.density)
+```
+
+Each element is a tibble with the data columns depth in m and density in kg/m^3:
+
+```{r}
+print(b41.b42.density$b41, n = 3)
+print(b41.b42.density$b42, n = 3)
+print(b41.b42.density$stack, n = 3)
+```
+
+Here, the last element, `stack`, is the average density data from both cores on
+the B41 depth scale. Additionally, `stack` also contains the column
+`fitDensity`, which is a second-order polynomial fit of the average density in
+the square root of the depth.
+
+To plot the data, we smooth it first with a 25 mm running mean filter.
+
+```{r}
+w <- round(25 / 0.15)
+filter <- rep(1 / w, w)
+
+b41.filtered <- b41.b42.density$b41
+b41.filtered$density <- PaleoSpec::ApplyFilter(b41.filtered$density, filter,
+                                               method = 2)
+
+b42.filtered <- b41.b42.density$b42
+b42.filtered$density <- PaleoSpec::ApplyFilter(b42.filtered$density, filter,
+                                               method = 2)
+
+stack.filtered <- b41.b42.density$stack
+stack.filtered$density <- PaleoSpec::ApplyFilter(stack.filtered$density, filter,
+                                                 method = 2)
+stack.filtered$fitDensity <- PaleoSpec::ApplyFilter(stack.filtered$fitDensity,
+                                                    filter, method = 2)
+
+```
+
+```{r, fig.width = 7, fig.height = 5.25}
+
+plot(b41.filtered, type = "l", lwd = 1.5,
+     xlab = "Depth (m)", ylab = "Density (kg/m3)")
+lines(b42.filtered, col = "red", lwd = 1.5)
+
+legend("bottomright", c("B41", "B42"), lty = 1, lwd = 1.5,
+       col = c("black", "red"), bty = "n")
+```
+
+Plot the average data and compare it with the fit:
+
+```{r, fig.width = 7, fig.height = 5.25}
+
+plot(stack.filtered$depth, stack.filtered$density, type = "l", lwd = 1.5,
+     xlab = "Depth (m)", ylab = "Density (kg/m3)")
+lines(stack.filtered$depth, stack.filtered$fitDensity, col = "dodgerblue",
+      lwd = 2.5)
+
+legend("bottomright", c("stack", "fit"), lty = 1, lwd = 1.5,
+       col = c("black", "dodgerblue"), bty = "n")
+```
+
+## Comparison with Herron-Langway densification
+
+`FirnR` provides an implementation of the Herron-Langway densification model in
+the function `DensityHL`. As input for the function, we need a depth vector on
+which the density is modelled, and temperature [K], surface density [kg/m^3] and
+accumulation rate [kg/m^2/yr] as site environmental conditions. For the latter,
+we use estimated environmental conditions for the Kohnen Station drilling site.
+
+```{r}
+d <- seq(0, 25, 0.1)
+density.hl <- data.frame(
+  depth = d,
+  density = DensityHL(d, rho.surface = 330, T = 273.15 - 40, bdot = 70)$rho
+)
+```
+
+```{r, fig.width = 7, fig.height = 5.25}
+
+plot(stack.filtered$depth, stack.filtered$density, type = "l", lwd = 1,
+     xlab = "Depth (m)", ylab = "Density (kg/m3)", col = "lightgray")
+
+lines(stack.filtered$depth, stack.filtered$fitDensity, col = "dodgerblue",
+      lwd = 2.5)
+lines(density.hl, col = "firebrick4", lwd = 2.5)
+
+legend("bottomright", c("B41/B42 stack", "B41/B42 fit", "Herron-Langway"),
+       lty = 1, lwd = c(1, 1.5, 1.5),
+       col = c("lightgray", "dodgerblue", "firebrick4"), bty = "n")
+```
+
+## Calculation of firn diffusion lengths
+
+With a density profile at hand, we can use `FirnR`'s function `DiffusionLength`
+to model the diffusion length in firn, both for oxygen and hydrogen isotopes.
+
+```{r}
+sigma.d18O <- DiffusionLength(density.hl$depth, density.hl$density,
+                              T = 273.15 - 40, P = 677, bdot = 70)
+sigma.dD   <- DiffusionLength(density.hl$depth, density.hl$density,
+                              T = 273.15 - 40, P = 677, bdot = 70,
+                              dD = TRUE)
+```
+
+```{r, fig.width = 7, fig.height = 5.25}
+
+plot(density.hl$depth, sigma.d18O, type = "n",
+     xlab = "Depth (m)", ylab = "Diffusion length (cm)")
+
+lines(density.hl$depth, sigma.d18O, col = "black", lwd = 1.5)
+lines(density.hl$depth, sigma.dD, col = "dodgerblue4", lwd = 1.5)
+
+legend("bottomright", c("d18O", "dD"), lty = 1, lwd = 1.5,
+       col = c("black", "dodgerblue4"), bty = "n")
+```
+
+Since isotopic data from firn and ice cores are often dated, typically to annual
+resolution, it is convenient to calculate the diffusion lengths directly in
+units of time. This can be achieved with the function
+`TemporalDiffusionLength`.
+
+Note that the current approach here is to calculate the diffusion length in
+units of length based on density from the Herron-Langway model, and to convert
+this into diffusion length in time using the density and the given accumulation
+rate; so it is not possible to directly calculate the temporal diffusion length
+based on a given density profile.
+
+The following is an example to obtain the diffusion length in years for a record
+spanning the last 100 years. This choice is realised by setting the number of
+time steps, `nt`, and the temporal resolution, `t.res`, accordingly.
+
+```{r, fig.width = 7, fig.height = 5.25}
+sigma.time <- TemporalDiffusionLength(nt = 100, t.res = 1,
+                                      T = 273.15 - 40, P = 677, bdot = 70,
+                                      rho.surface = 330)
+```
+
+```{r, fig.width = 7, fig.height = 5.25}
+plot(sigma.time, type = "l", lwd = 1.5,
+     xlab = "Time (yr)", ylab = "Diffusion length (yr)")
+
+```
+
+## References
+
+Freitag, J., Kipfstuhl, S., and Laepple, T.: Core-scale radioscopic imaging:
+a new method reveals density-calcium link in Antarctic firn, J. Glaciol., 59,
+  1009–1014, https://doi.org/10.3189/2013JoG13J028, 2013
+
+Laepple, T., Hörhold, M., Münch, T., Freitag, J., Wegner, A., and Kipfstuhl,
+S.: Layering of surface snow and firn at Kohnen Station, Antarctica: Noise or
+seasonal signal?, J. Geophys. Res. Earth Surf., 121, 1849–1860,
+https://doi.org/10.1002/2016JF003919, 2016
