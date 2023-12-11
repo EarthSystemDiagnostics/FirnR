@@ -35,16 +35,20 @@ Kohnen Station in Dronning Maud Land, East Antarctica, during the field season
 2012/2013 as part of the ANT-Land-2012 campaign of the COFI project conducted by
 the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research. The
 density data were obtained by means of high-resolution X-ray Computer Tomography
-(CT; Freitag et al., 2013). Here, the data are provided over the upper 25 m of
-the cores.
+(CT; Freitag et al., 2013). Here, the data for the upper 25 m of the cores are
+included.
 
-The data set is provided as a list with the following elements:
+The data set is provided in the variable `b41.b42.density` as a list of three
+elements:
 
 ```{r}
 names(b41.b42.density)
 ```
 
-Each element is a tibble with the data columns depth in m and density in kg/m^3:
+The elements `b41` and `b42` contain the density profiles of the firn cores B41
+and B42, respectively, and the last element, `stack`, is the average density
+data from both cores on the B41 depth scale, all provided as tibbles of two data
+columns, `depth` in m and `density` in kg/m^3^:
 
 ```{r}
 print(b41.b42.density$b41, n = 3)
@@ -52,15 +56,15 @@ print(b41.b42.density$b42, n = 3)
 print(b41.b42.density$stack, n = 3)
 ```
 
-Here, the last element, `stack`, is the average density data from both cores on
-the B41 depth scale. Additionally, `stack` also contains the column
-`fitDensity`, which is a second-order polynomial fit of the average density in
-the square root of the depth.
+Additionally, `stack` also contains a third column, `fitDensity`, which is a
+second-order polynomial fit of the average density in the square root of the
+depth.
 
 To plot the data, we smooth it first with a 25 mm running mean filter.
 
 ```{r}
-w <- round(25 / 0.15)
+res <- 0.15
+w   <- round(25 / res)
 filter <- rep(1 / w, w)
 
 b41.filtered <- b41.b42.density$b41
@@ -98,7 +102,7 @@ plot(stack.filtered$depth, stack.filtered$density, type = "l", lwd = 1.5,
 lines(stack.filtered$depth, stack.filtered$fitDensity, col = "dodgerblue",
       lwd = 2.5)
 
-legend("bottomright", c("stack", "fit"), lty = 1, lwd = 1.5,
+legend("bottomright", c("Stack", "Fit"), lty = 1, lwd = 1.5,
        col = c("black", "dodgerblue"), bty = "n")
 ```
 
@@ -106,9 +110,10 @@ legend("bottomright", c("stack", "fit"), lty = 1, lwd = 1.5,
 
 `FirnR` provides an implementation of the Herron-Langway densification model in
 the function `DensityHL`. As input for the function, we need a depth vector on
-which the density is modelled, and temperature [K], surface density [kg/m^3] and
-accumulation rate [kg/m^2/yr] as site environmental conditions. For the latter,
-we use estimated environmental conditions for the Kohnen Station drilling site.
+which the density is modelled, and the site environmental conditions of
+temperature [K], surface density [kg/m^3^] and accumulation rate
+[kg/m^2^/yr]. For the latter, we use estimated environmental conditions for the
+Kohnen Station drilling site.
 
 ```{r}
 d <- seq(0, 25, 0.1)
