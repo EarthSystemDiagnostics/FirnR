@@ -4,19 +4,19 @@
 \alias{EstimateDensificationRate}
 \title{Linear estimate of firn densification rate}
 \usage{
-EstimateDensificationRate(data, drange)
+EstimateDensificationRate(data, bottom.depth)
 }
 \arguments{
 \item{data}{a data frame providing a firn density profile via the two
 elements 'depth' and 'density'.}
 
-\item{drange}{bottom depth (must be in the same units as \code{data$depth})
-for the analysis: the densification rate is estimated over the depth
-interval from the surface to this bottom depth.}
+\item{bottom.depth}{bottom depth (must be in the same units as
+\code{data$depth}) for the analysis: the densification rate is estimated
+over the depth interval from the surface to this bottom depth.}
 }
 \value{
 relative linear densification rate (in units of inverse depth) from
-  the surface to the depth in \code{drange}.
+  the surface to the depth in \code{bottom.depth}.
 }
 \description{
 Given a record of firn densities, this function calculates the relative
@@ -27,8 +27,8 @@ density profile against depth.
 \examples{
 
 # estimates mentioned in Münch et al. (2017) in units of \% per m:
-EstimateDensificationRate(b41.b42.density$stack, drange = 2) * 1e2
-EstimateDensificationRate(b41.b42.density$stack, drange = 5) * 1e2
+EstimateDensificationRate(b41.b42.density$stack, bottom.depth = 2) * 1e2
+EstimateDensificationRate(b41.b42.density$stack, bottom.depth = 5) * 1e2
 
 }
 \references{
