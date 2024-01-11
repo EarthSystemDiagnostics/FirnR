@@ -4,22 +4,22 @@
 \alias{EstimateCompression}
 \title{Estimate record's length change}
 \usage{
-EstimateCompression(z1 = 0, z2, a, rate)
+EstimateCompression(top.depth = 0, length, advection, rate)
 }
 \arguments{
-\item{z1}{top depth of initial record.}
+\item{top.depth}{top depth of initial record.}
 
-\item{z2}{bottom depth of initial record.}
+\item{length}{length of initial record.}
 
-\item{a}{advection of the initial record; i.e. the amount of downward
-movement of the record measured in the same depth units as \code{z1} and
-\code{z2}.}
+\item{advection}{advection of the initial record; i.e. the amount of downward
+movement of the record measured in the same depth units as \code{top.depth}
+and \code{length}.}
 
 \item{rate}{densification rate relative to surface (units of inverse depth).}
 }
 \value{
 value of how much shorter the advected record is relative to the
-  initial record length \code{z2 - z1}.
+  initial record length.
 }
 \description{
 This function provides the analytical solution to the length change
@@ -37,7 +37,8 @@ with a relative densification rate of \code{beta / rho_0}.
 \examples{
 
 # estimate mentioned in Münch et al. (2017):
-EstimateCompression(z1 = 0, z2 = 1, a = 0.5, rate = 0.02) * 1e2 # in cm
+EstimateCompression(top.depth = 0, length = 1,
+                    advection = 0.5, rate = 0.02) * 1e2 # display in cm
 
 }
 \references{

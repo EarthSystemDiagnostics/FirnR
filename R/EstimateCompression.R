@@ -11,19 +11,20 @@
 #' assumption of a linear density profile: \code{rho(z) = rho_0 + beta * z}
 #' with a relative densification rate of \code{beta / rho_0}.
 #'
-#' @param z1 top depth of initial record.
-#' @param z2 bottom depth of initial record.
-#' @param a advection of the initial record; i.e. the amount of downward
-#'   movement of the record measured in the same depth units as \code{z1} and
-#'   \code{z2}.
+#' @param top.depth top depth of initial record.
+#' @param length length of initial record.
+#' @param advection advection of the initial record; i.e. the amount of downward
+#'   movement of the record measured in the same depth units as \code{top.depth}
+#'   and \code{length}.
 #' @param rate densification rate relative to surface (units of inverse depth).
 #' @return value of how much shorter the advected record is relative to the
-#'   initial record length \code{z2 - z1}.
+#'   initial record length.
 #' @author Thomas Münch
 #' @examples
 #'
 #' # estimate mentioned in Münch et al. (2017):
-#' EstimateCompression(z1 = 0, z2 = 1, a = 0.5, rate = 0.02) * 1e2 # in cm
+#' EstimateCompression(top.depth = 0, length = 1,
+#'                     advection = 0.5, rate = 0.02) * 1e2 # display in cm
 #'
 #' @references
 #'
@@ -33,17 +34,21 @@
 #'
 #' @export
 #'
-EstimateCompression <- function(z1 = 0, z2, a, rate) {
+EstimateCompression <- function(top.depth = 0, length, advection, rate) {
 
-  if (!all(sapply(list(z1, z2, a, rate), length) == 1)) {
+  if (!all(sapply(list(top.depth, length, advection, rate), length) == 1)) {
     stop("All input parameters must have length 1.", call. = FALSE)
   }
-    if (any(is.na(list(z1, z2, a, rate)))) {
+  if (any(is.na(list(top.depth, length, advection, rate)))) {
     stop("Missing values in input.", call. = FALSE)
   }
 
-  if (z2 <= z1) stop("'z2' must be > 'z1'.", call. = FALSE)
-  if (a < 0) stop("'a' must be >= 0.", call. = FALSE)
+  z1 <- top.depth
+  z2 <- top.depth + length
+  a  <- advection
+
+  if (z2 <= z1) stop("'length' must be > 0.", call. = FALSE)
+  if (a < 0) stop("'advection' must be >= 0.", call. = FALSE)
   if (rate <= 0) stop("'rate' must be > 0.", call. = FALSE)
 
   # auxiliary variable (inverse densification rate)
