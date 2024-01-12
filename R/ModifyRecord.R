@@ -80,16 +80,14 @@ ModifyRecord <- function(record, sigma = NULL, compression = NULL,
   # helper function for diffusion until DiffuseRecord can handle data frames
   .hlp.diffuse <- function(record, sigma) {
 
-    if (length(depth.res <- diff(record$depth)) > 1) {
-      if (sd(depth.res) != 0) {
-        stop("Require constant depth resolution for diffusion.", call. = FALSE)
-      }
-    }
+    if (!prxytools::is.equidistant(record$depth))
+      stop("Require constant depth resolution for diffusion.", call. = FALSE)
+    depth.res <- diff(record$depth)[1]
 
     # remove leading and trailing NA's, diffuse, and merge with trimmed part
     record %>%
       zoo::na.trim() %>%
-      dplyr::mutate(yd = DiffuseRecord(.data$y, sigma, depth.res[1]),
+      dplyr::mutate(yd = DiffuseRecord(.data$y, sigma, depth.res),
                     .keep = "unused") %>%
       dplyr::left_join(record, ., by = dplyr::join_by("depth")) %>%
       dplyr::select("depth", y = "yd")

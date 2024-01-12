@@ -72,11 +72,9 @@ LoopRecordModifications <- function(record, reference, advection, sigma,
   if (nrow(record) != nrow(reference)) {
     stop("'record' and 'reference' must be of the same length.")
   }
-  dz <- diff(record$depth)
-  if (length(dz) > 1) {
-    if (sd(dz) != 0) stop("Require constant depth resolution.", call. = FALSE)
-  }
-  if (!all(dz == diff(reference$depth))) {
+  if (!prxytools::is.equidistant(record$depth))
+    stop("Require constant depth resolution.", call. = FALSE)
+  if (!is.logical(all.equal(diff(record$depth), diff(reference$depth)))) {
     stop("Depth resolutions of 'record' and 'reference' do not match.",
          call. = FALSE)
   }
