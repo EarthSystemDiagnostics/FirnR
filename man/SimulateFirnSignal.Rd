@@ -4,10 +4,19 @@
 \alias{SimulateFirnSignal}
 \title{Simulate isotope depth series against snow-depth}
 \usage{
-SimulateFirnSignal(core, simLength, fractionSeasonal = 1, res = 1/1000,
-  res.we = res/3, bRandomPhase = FALSE, noise.snow = NULL,
-  rescaling.factor = 0.5, f.cutoff.noise = NULL,
-  f.integrate.variance = 50, method = "constant")
+SimulateFirnSignal(
+  core,
+  simLength,
+  fractionSeasonal = 1,
+  res = 1/1000,
+  res.we = res/3,
+  bRandomPhase = FALSE,
+  noise.snow = NULL,
+  rescaling.factor = 0.5,
+  f.cutoff.noise = NULL,
+  f.integrate.variance = 50,
+  method = "constant"
+)
 }
 \arguments{
 \item{core}{list with core parameters, used are (depth, rho, rho.surface, bdot)}

@@ -1,8 +1,9 @@
 Package: FirnR
 Title: Simulate Polar Snow and Firn Cores
-Version: 0.0.0.9000
-Author: Thomas Laepple [aut, cre],
-    Thomas Münch [aut]
+Version: 0.0.0.9916
+Author:
+  Thomas Laepple [aut, cre],
+  Thomas Münch [aut]
 Maintainer: Thomas Münch <thomas.muench@awi.de>
 Description: This R package provides tools for the simulation of polar snow and
     firn cores including their isotopic composition. Methods implemented include
@@ -10,11 +11,28 @@ Description: This R package provides tools for the simulation of polar snow and
     length for stable water isotopologues, and isotopologue profiles based on
     the parameterization with the seasonal cycle in air temperature and a
     fraction of white noise.
+License: file LICENSE
 Depends:
     R (>= 3.3.1)
-License: file LICENSE
+Imports:
+    dplyr (>= 1.0.3),
+    grfxtools (>= 0.5.1),
+    prxytools (>= 0.5.0),
+    rlang (>= 0.4.10),
+    stattools (>= 0.2.0),
+    tibble (>= 3.2.1),
+    zoo
+Suggests:
+    knitr,
+    PaleoSpec,
+    rmarkdown,
+    testthat
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
-Suggests:
-    testthat
+RoxygenNote: 7.2.3
+Remotes:
+    EarthSystemDiagnostics/grfxtools,
+    EarthSystemDiagnostics/prxytools,
+    EarthSystemDiagnostics/PaleoSpec,
+    EarthSystemDiagnostics/stattools
+VignetteBuilder: knitr
