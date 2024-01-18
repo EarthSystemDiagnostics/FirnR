@@ -52,49 +52,24 @@
 ##'        lwd = 2, bty = "n")
 ##' @export
 Diffusivity <- function(rho, T, P, dD = FALSE) {
-    
-    # Set physical constants
-    kR <- 8.314478               # Gas constant [J/(K * mol)]
-    kM <- 18.02e-3               # molar weight of H2O molecule [kg/mol]
-    kP0 <- 1013.25               # standard atmospheric pressure [mbar]
-    kRhoIce <- 920.              # density of ice [kg/m3]
 
-    # Saturation vapour pressure over ice [Pa]
-    p <- exp(9.5504 + 3.53 * log(T) - 5723.265 / T - 0.0073 * T)
-    # Tortuosity constant
-    b <- 1.3
+  # physical constants
+  kR <- 8.314478       # Gas constant [J/(K * mol)]
+  kM <- 18.02e-3       # molar weight of H2O molecule [kg/mol]
+  kRhoIce <- 920.      # density of ice [kg/m3]
 
-    # Set fractionation factor
-    if (dD) {
-        alpha <- exp(16288 / (T^2) - 9.45e-2)
-    } else {
-        alpha <- exp(11.839 / T - 28.224e-3)
-    }
-    
-    # Calculate water vapour diffusivity in air [m^2/s]
-    Da <- 2.11e-5 * (T / 273.15)^(1.94) * (kP0 / P)
-    if (dD) {
-        isotopeFactor <- 1.0251
-    } else {
-        isotopeFactor <- 1.0285
-    }
-    Dai <- Da / isotopeFactor
+  # requested isotopologue species
+  species <- c("oxygen", "deuterium")[c(!dD, dD)]
 
-    # Calculate tortuosity
-    invtau <- rep(NA, length(rho))
-    for (i in 1 : length(rho))
-        {
-            if (rho[i] <= kRhoIce / sqrt(b)) {
-                invtau[i] <- 1 - b * (rho[i] / kRhoIce)^2
-            } else {
-                invtau[i] <- 0
-            }
-        }
+  # diffusivity-controlling variables
+  p      <- pSat(T)                   # saturation vapour pressure
+  alpha  <- alphaIso(T, dD = dD)      # fractionation factor
+  Dai    <- DAir(T, P, species)       # water isotopologue diffusivity in air
+  invtau <- tauFirn(rho)              # inverse tortuosity
 
-    # Calculate isotope diffusivity in firn [m^2/s]
-    D <- (kM * p * invtau * Dai * (1 / rho - 1 / kRhoIce)) / (kR * T * alpha)
+  # calculate isotope diffusivity in firn [m^2/s]
+  D <- (kM * p * invtau * Dai * (1 / rho - 1 / kRhoIce)) / (kR * T * alpha)
 
-    # Return firn diffusivity in [cm^2/s]
-    return(D * 1e4)
-    
+  return(D)
+
 }

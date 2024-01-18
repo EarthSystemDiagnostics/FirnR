@@ -123,12 +123,13 @@ DiffusionLength <- function(depth, rho, T = 273.15 - 44.5, P = 677, bdot = 64,
     }
     
     # Integrate diffusivity along the density gradient
-    # to obtain diffusion length [cm]
+    # to obtain diffusion length in [m]
     sigma_sqrd_dummy <- 2 * (rho^2) * dtdrho * D
     sigma_sqrd <- cumsum(sigma_sqrd_dummy * drho)
     sigma <- sqrt(1 / (rho^2) * sigma_sqrd)
 
-    return(sigma)
+    # return in [cm]
+    return(1e2 * sigma)
 
 }
 
