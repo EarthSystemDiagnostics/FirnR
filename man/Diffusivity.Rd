@@ -2,13 +2,13 @@
 % Please edit documentation in R/Diffusivity.R
 \name{Diffusivity}
 \alias{Diffusivity}
-\title{Calculate the diffusivity in polar firn.}
+\title{Firn diffusivity}
 \usage{
 Diffusivity(rho, T, P, dD = FALSE)
 }
 \arguments{
-\item{rho}{Numeric vector of firn densities [kg/m^3] for which diffusivity
-is calculated.}
+\item{rho}{numeric vector of firn density in [kg/m^3] at which diffusivity is
+calculated.}
 
 \item{T}{firn temperature in [K].}
 
@@ -18,54 +18,69 @@ is calculated.}
 otherwise for oxygen-18. Defaults to \code{FALSE}.}
 }
 \value{
-A numeric vector of calculated diffusivities in [cm^2/s] for the
-    firn densities given by \code{rho}.
+numeric vector of firn diffusivitiy in [m^2/s].
 }
 \description{
-This function calculates the diffusivity in polar firn for the stable water
-isotopes oxygen-18 and deuterium, depending on site-specific parameters.
+Calculate the diffusivity in polar firn for the stable water isotopologues
+H2-18O (oxygen-16 atom replaced by oxygen-18) and HDO (one hydrogen atom
+replaced by deuterium), depending on site-specific parameters.
 }
 \details{
-The calculations are primarily based on the following expressions in Johnsen
-et al. (2000): The general expression for the diffusivity in firn of
-oxygen-18 and deuterium is given by Eq. (17). The tortuosity of the firn is
-accounted for by applying Eq. (18) with a tortuosity constant b = 1.3.  For
+The calculation of the firn diffusivity is primarily based on the expressions
+in Johnsen et al. (2000): The general expression for the diffusivity in firn
+of oxygen-18 and deuterium is given by Eq. (17). The tortuosity of the firn
+is accounted for by applying Eq. (18) with a tortuosity constant b = 1.3. For
 the diffusivity of water vapour in air we use Eq. (19). The temperature
 dependence of the fractionation factors as well as the diffusivities in air
-for oxygen-18 and deuterium are given in the text on p. 127. Note that here,
-Johnsen et al. accidentally mix the factors controlling the isotope
-diffusivities in air (compare the original reference Merlivat and Jouzel,
-1979). This has been accounted for. For the water vapour saturation vapour
-pressure over ice we use, instead of the expression given on p. 126, the
-parameterization given in van der Wel et al. (2015) (Eq. 5).
+for oxygen-18 and deuterium are given in the text on p. 127. However, note
+that Johnsen et al. here accidentally mix the factors controlling the isotope
+diffusivities in air; the correct factors are given in Merlivat and Jouzel,
+1979. For the water vapour saturation vapour pressure over ice we use instead
+of Johnsen et al.'s expression the newer parameterization given in van der
+Wel et al. (2015) (Eq. 5).
 }
 \examples{
+
+# temperature dependence of diffusivity
 T <- (-60 : 0)
-plot(T, Diffusivity(rho = 340, T = 273.15 + T, P = 650, dD = FALSE) * 10^6,
+plot(T, Diffusivity(rho = 340, T = 273.15 + T, P = 650, dD = FALSE) * 10^10,
      type = "l", lwd = 2, las = 1,
-     main = "temperature dependence of diffusivity",
-     xlab="temperature (Celcius)", ylab = "diffusivity (10^-6 cm^2/s)")
-lines(T, Diffusivity(rho = 340, T = 273.15 + T, P = 650, dD = TRUE) * 10^6,
+     main = "Temperature dependence of diffusivity",
+     xlab = "Temperature (Celcius)", ylab = "Diffusivity (10^-6 cm^2/s)")
+lines(T, Diffusivity(rho = 340, T = 273.15 + T, P = 650, dD = TRUE) * 10^10,
       col = "red", lwd = 2)
 legend("topleft", c("d18O", "dD"), col = c("black", "red"),
        lwd = 2, bty = "n")
+
+# density dependence of diffusivity
+rho <- seq(300, 900, 10)
+plot(rho,
+     Diffusivity(rho = rho, T = 273.15 - 45, P = 650, dD = FALSE) * 10^10,
+     type = "l", lwd = 2, las = 1,
+     main = "Density dependence of diffusivity",
+     xlab = "Density (kg/m^3)", ylab = "Diffusivity (10^-6 cm^2/s)")
+
 }
 \references{
 Johnsen, S. J., Clausen, H. B., Cuffey, K. M., Hoffmann, G., Schwander, J.,
-and Creyts, T.: Diffusion of stable isotopes in polar firn and ice: the
-isotope effect in firn diffusion, in: Physics of ice core records, edited
-by: Hondoh, T., vol. 159, Hokkaido Univ. Press, Sapporo, Japan, 121–140,
-2000.
+  and Creyts, T.: Diffusion of stable isotopes in polar firn and ice: the
+  isotope effect in firn diffusion, in: Physics of ice core records, edited
+  by: Hondoh, T., vol. 159, Hokkaido Univ. Press, Sapporo, Japan, 121–140,
+  2000.
 
 Merlivat, L. and J. Jouzel: Global climatic interpretation of the
-deuterium-oxygen 18 relationship for precipitation. J. Geophys. Res.:
-Oceans, 84, C8, 5029-5033, doi: 10.1029/JC084iC08p05029, 1979.
+  deuterium-oxygen 18 relationship for precipitation. J. Geophys. Res.:
+  Oceans, 84, C8, 5029-5033, https://doi.org/10.1029/JC084iC08p05029, 1979.
 
 van der Wel, L. G., H. A. Been, R. S. W. van de Wal, C. J. P. P. Smeets and
-H. A. J. Meijer: Constraints on the d2H diffusion rate in firn from
-field measurements at Summit, Greenland. The Cryosphere, 9, 1089–1103, doi:
-10.5194/tc-9-1089-2015, 2015.
+  H. A. J. Meijer: Constraints on the d2H diffusion rate in firn from field
+  measurements at Summit, Greenland. The Cryosphere, 9, 1089–1103,
+  https://doi.org/10.5194/tc-9-1089-2015, 2015.
+}
+\seealso{
+\code{\link{pSat}}, \code{\link{alphaIso}}, \code{\link{DAir}},
+  \code{\link{tauFirn}}
 }
 \author{
-Thomas Muench, modified by Thomas Laepple
+Thomas Münch, Thomas Laepple
 }
