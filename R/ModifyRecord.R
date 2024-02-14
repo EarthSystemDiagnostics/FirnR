@@ -80,6 +80,14 @@ ModifyRecord <- function(record, sigma = NULL, compression = NULL,
   # helper function for diffusion until DiffuseRecord can handle data frames
   .hlp.diffuse <- function(record, sigma) {
 
+    if (!is.data.frame(record)) {
+      stop("'record' must be a data.frame.", call. = FALSE)
+    }
+    if (any(is.na(match(c("depth", "y"), colnames(record))))) {
+      stop("Expected column names for 'record' are: 'depth', 'y'.",
+           call. = FALSE)
+    }
+    if (nrow(record) <= 1) stop("Length of proxy record needs to be > 1.")
     if (!prxytools::is.equidistant(record$depth))
       stop("Require constant depth resolution for diffusion.", call. = FALSE)
     depth.res <- diff(record$depth)[1]
