@@ -60,8 +60,10 @@ CompressRecord <- function(record, compression) {
 
   # new bin sizes
   new.bin.s <- diff(x$depth) * (1 - (compression / len))
-  # depth scale after densification
-  new.depth <- c(x$depth[1], x$depth[1] + cumsum(new.bin.s))
+  # depth scale after densification, with numerical precision considered
+  digits.precision <- 12
+  new.depth <- c(x$depth[1], x$depth[1] + cumsum(new.bin.s)) %>%
+    round(digits.precision)
 
   # approximate record on original depth scale and
   # merge with trimmed part to retain original data frame length
