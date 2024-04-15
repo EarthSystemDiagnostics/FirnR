@@ -28,15 +28,15 @@ test_that("error handling works", {
 
   msg <- "Missing 'startDepth'."
   expect_error(ObtainDepthScale(depth = depth, startDepth = NULL), msg)
-  expect_error(ObtainDepthScale(top = top, bottom = bottom,
+  expect_error(ObtainDepthScale(thickness = thickness,
                                  startDepth = NULL), msg)
 
   msg <- "'startDepth' either < 0 or NA."
   expect_error(ObtainDepthScale(depth = depth, startDepth = -123), msg)
-  expect_error(ObtainDepthScale(top = top, bottom = bottom,
+  expect_error(ObtainDepthScale(thickness = thickness,
                                  startDepth = -123), msg)
   expect_error(ObtainDepthScale(depth = depth, startDepth = NA), msg)
-  expect_error(ObtainDepthScale(top = top, bottom = bottom,
+  expect_error(ObtainDepthScale(thickness = thickness,
                                  startDepth = NA), msg)
 
   msg <- "'top' and 'bottom' must have the same length."
@@ -85,6 +85,11 @@ test_that("depth conversions work", {
 
   actual <- ObtainDepthScale(depth = depthExpected,
                               startDepth = startDepth)
+  expect_equal(actual, profileExpected)
+
+  # if top and bottom are provided first_layer_depth setting is irrelevant
+  actual <- ObtainDepthScale(top = topExpected, bottom = bottomExpected,
+                             startDepth = NA)
   expect_equal(actual, profileExpected)
 
 })
