@@ -15,6 +15,7 @@ test_that("error handling works", {
   expect_warning(ObtainDepthScale(thickness, bottom = bottom), msg)
 
   msg <- "Using only 'depth' argument, ignoring other arguments passed."
+  thickness <- depth <- top <- bottom <- c(1, 2)
   expect_warning(ObtainDepthScale(depth = depth, top = top,
                                    bottom = bottom), msg)
   expect_warning(ObtainDepthScale(depth = depth, top = top), msg)
@@ -91,5 +92,23 @@ test_that("depth conversions work", {
   actual <- ObtainDepthScale(top = topExpected, bottom = bottomExpected,
                              startDepth = NA)
   expect_equal(actual, profileExpected)
+
+  # test implementation when very long depth vector is provided
+
+  n <- 100000
+  startDepth = 0.5
+  depthExpected <- 1 : n
+  topExpected <- startDepth : (n - startDepth)
+  bottomExpected <- topExpected + 1
+  thicknessExpected <- rep(1, n)
+
+  actual <- ObtainDepthScale(depth = depthExpected, startDepth = startDepth)
+  # now very fast even for large n (n > 1e4) with implementation of vectorized
+  # calculation as compared to previous for-loop approach
+
+  expect_equal(actual$depth, depthExpected)
+  expect_equal(actual$top, topExpected)
+  expect_equal(actual$bottom, bottomExpected)
+  expect_equal(actual$thickness, thicknessExpected)
 
 })

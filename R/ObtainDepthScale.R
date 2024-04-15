@@ -105,20 +105,23 @@ ObtainDepthScale <- function(thickness, depth, top, bottom, startDepth = 0) {
 
   if (mode == "midpoints") {
 
-    n <- length(depth)
-    thickness <- numeric(length(n))
-
     if (startDepth >= depth[1]) {
       stop("Given 'startDepth' >= first midpoint depth, ",
            "which would yield zero or negative first layer thickness.",
            call. = FALSE)
     }
 
-    thickness[1] <- 2 * (depth[1] - startDepth)
+    n <- length(depth)
 
-    for (i in 2 : n) {
-      thickness[i] <- 2 * (depth[i] - sum(thickness) - startDepth)
-    }
+    thickness_1 <- 2 * (depth[1] - startDepth)
+
+    # vectorized solution; is much faster than for-loop approach for large n
+    c_alt <- gen_alt_seq(n - 1L)
+    s_c   <- cumsum_alt(depth[-n])
+
+    thickness_2_n <- 2 * (depth[-1] - 2 * s_c * c_alt + startDepth * c_alt)
+
+    thickness <- c(thickness_1, thickness_2_n)
 
     mode <- "thickness"
   }
