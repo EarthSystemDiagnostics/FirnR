@@ -52,6 +52,8 @@ AdvectRecord <- function(record, advection, clip = TRUE) {
   depth.res <- diff(record$depth)[1]
   k <- round(advection / depth.res)
 
+  if (k == 0) return(record)
+
   if (clip) {
 
     dplyr::mutate(record, y = prxytools::Lag(.data$y, shift = k))

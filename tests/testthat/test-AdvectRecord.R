@@ -47,6 +47,7 @@ test_that("advection shift works", {
 
   record <- data.frame(depth = 1 : 4, y = 1 : 4)
   expect_equal(AdvectRecord(record, advection = 0), record)
+  expect_equal(AdvectRecord(record, advection = 0, clip = FALSE), record)
 
   record <- data.frame(depth = seq(1.5, 10.5, 3), y = 1 : 4)
   expect_equal(AdvectRecord(record, advection = 1), record)
