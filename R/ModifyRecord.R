@@ -22,9 +22,9 @@
 #'   in \code{record}; cannot be larger than the length of the original
 #'   record. If \code{NULL}, no compression by densification is modelled.
 #' @param advection numeric value for the advection, i.e. the depth value by
-#'   which the record is moved deeper into the firn, measured in the same
-#'   physical units as component \code{depth} in \code{record}. If \code{NULL},
-#'   no downward advection is modelled.
+#'   which the record is moved downwards (or also upwards) through the firn,
+#'   measured in the same physical units as component \code{depth} in
+#'   \code{record}. If \code{NULL}, no downward advection is modelled.
 #' @param output.res optional numeric value for the depth resolution the
 #'   modified record shall be interpolated to upon output; see Details. The
 #'   default outputs the modified record on the depth resolution of the input.
