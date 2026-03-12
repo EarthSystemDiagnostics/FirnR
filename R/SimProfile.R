@@ -93,7 +93,7 @@
 ##' legend("topright",
 ##'        c("Original ts", "Simulated ts w/o diffusion",
 ##'          "Simulated ts with diffusion"),
-##'        lty = 1, lwd = c(1, 2, 2), col = c(1, 2, 4))
+##'        lty = 1, lwd = c(1, 2, 2), col = c(1, 4, 2))
 ##'
 ##' # show simulated depth profile
 ##' plot(profile$depth, profile$d18O, col = 2, type = "l", lwd = 2,
