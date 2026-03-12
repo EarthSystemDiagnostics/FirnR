@@ -128,12 +128,12 @@ SimProfile <- function(time, precip, temperature, data = temperature,
 
   # remove events without precipitation accounting for numerical threshold;
   # -> record only at least micrometre precip. events
-  record <- (depth.scale * precip) > 1.e-7
+  events2record <- (depth.scale * precip) > 1.e-7
 
-  time        <- time[record]
-  precip      <- precip[record]
-  temperature <- temperature[record]
-  data        <- data[record]
+  time        <- time[events2record]
+  precip      <- precip[events2record]
+  temperature <- temperature[events2record]
+  data        <- data[events2record]
 
   # build profile of top, bottom and midpoint depths of precipitated layers
   depthProfileWE <- ObtainDepthScale(thickness = depth.scale * precip)
