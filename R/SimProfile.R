@@ -210,28 +210,3 @@ SimProfile <- function(time, precip, temperature, data = temperature,
   return(profileAvg)
 
 }
-
-
-# for testing
-## sin.par <- c(273 - 44.5, 13, 5, 10, 50)
-
-## precip <- rep(70 / 365, times = 1 * 365)
-## temperature <- rep(HarmonicModel(sin.par), 1)# + rnorm(length(precip), sd = 2)
-## pressure <- 670
-## time <- seq(length.out = length(precip))
-## accumulation.scale <- 365
-## depth.scale <- 10^-3
-
-## system.time(
-## profile <- SimProfile(time, precip, temperature, pressure,
-##                   accumulation.scale = accumulation.scale,
-##                   diffuse = TRUE)
-## )
-
-## quartz()
-
-## plot(time, temperature, type = "l")
-## lines(profile$time, profile$d18O, col = 2, lwd = 2)
-
-## plot(profile$depth, profile$d18O - mean(profile$d18O), col = 2, type = "l", lwd = 2, xlim = c(0,10))
-## abline(h = mean(profile$d18O), lty = 2)
