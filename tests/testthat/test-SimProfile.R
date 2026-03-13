@@ -40,12 +40,35 @@ test_that("SimProfile reproduces target data", {
   attr(actual$nodiff, "date") <- NULL
   attr(actual$diff, "date") <- NULL
 
-  # load target
+  # test output structure
+
+  expect_true(is.data.frame(actual$nodiff))
+  expect_true(is.data.frame(actual$diff))
+
+  nms <- c("depth", "time", "d18O")
+  expect_equal(names(actual$nodiff), nms)
+  expect_equal(names(actual$diff), nms)
+
+  # compare with target simulated record
+
   file <- test_path("test_data", "SimProfile_testthat_target.rda")
   load(file)
 
-  # compare
-  expect_equal(actual$nodiff, target$nodiff)
-  expect_equal(actual$diff, target$diff)
+  expect_equal(actual$nodiff$depth, target$nodiff$depth)
+  expect_equal(actual$nodiff$time, target$nodiff$time)
+  expect_equal(actual$nodiff$d18O, target$nodiff$d18O)
+
+  expect_equal(actual$diff$depth, target$diff$depth)
+  expect_equal(actual$diff$time, target$diff$time)
+  expect_equal(actual$diff$d18O, target$diff$d18O)
+
+  # compare attributes, allowing column names to change
+  names(actual$nodiff) <- NULL
+  names(target$nodiff) <- NULL
+  names(actual$diff) <- NULL
+  names(target$diff) <- NULL
+
+  expect_equal(attributes(actual$nodiff), attributes(target$nodiff))
+  expect_equal(attributes(actual$diff), attributes(target$diff))
 
 })
