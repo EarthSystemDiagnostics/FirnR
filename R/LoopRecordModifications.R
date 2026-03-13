@@ -21,9 +21,9 @@
 #'   each realisation of the modified record is calculated; must have the same
 #'   length and the same depth resolution as \code{record}. 
 #' @param advection numeric vector with a set of advection values (i.e. depth
-#'   values by which the record is moved deeper into the firn), measured in the
-#'   same physical units as component \code{depth} in \code{record}; must be
-#'   >= 0.
+#'   values by which the record is moved downwards (or upwards) through the
+#'   firn), measured in the same physical units as component \code{depth} in
+#'   \code{record}.
 #' @param sigma numeric vector with a set of (differential) diffusion length
 #'   values (see also \code{\link{GetDifferentialDiffusion}}), measured in the
 #'   same physical units as component \code{depth} in \code{record}; must be

@@ -32,9 +32,9 @@ w.eq. units) tabulated at the time points in \code{time}.}
 tabulated at the time points in \code{time}.}
 
 \item{data}{numeric vector with a data time series from which the firn
-profile is to be simulated, tabulated at the time points in \code{time};
-the default is to use the \code{temperature} time series, but also any
-other suitable environmental proxy can be input here for profile
+proxy profile is to be simulated, tabulated at the time points in
+\code{time}; the default is to use the \code{temperature} time series, but
+also any other suitable environmental proxy can be input here for profile
 simulation. In such case, the \code{temperature} input is still needed but
 only to obtain an average temperature value for the densification rate and
 diffusion length calculations.}
@@ -74,8 +74,9 @@ A data frame of three variables with the simulated firn profile:
   resolution, the diffusion flag, and the date of the run.
 }
 \description{
-Forward-simulate a virtual firn depth profile based on given temperature
-and precipitation time series and local climatic parameters; see Details.
+Forward-simulate a virtual firn proxy depth profile based on given
+temperature and precipitation time series and local climatic parameters; see
+Details.
 }
 \details{
 This function implements the generation of a proxy depth profile measured on
@@ -129,7 +130,7 @@ lines(profile$time, profile$d18O, col = 2, lwd = 2)
 legend("topright",
        c("Original ts", "Simulated ts w/o diffusion",
          "Simulated ts with diffusion"),
-       lty = 1, lwd = c(1, 2, 2), col = c(1, 2, 4))
+       lty = 1, lwd = c(1, 2, 2), col = c(1, 4, 2))
 
 # show simulated depth profile
 plot(profile$depth, profile$d18O, col = 2, type = "l", lwd = 2,

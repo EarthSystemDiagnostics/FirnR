@@ -1,7 +1,8 @@
 ##' Simulate virtual firn profile
 ##'
-##' Forward-simulate a virtual firn depth profile based on given temperature
-##' and precipitation time series and local climatic parameters; see Details.
+##' Forward-simulate a virtual firn proxy depth profile based on given
+##' temperature and precipitation time series and local climatic parameters; see
+##' Details.
 ##'
 ##' This function implements the generation of a proxy depth profile measured on
 ##' a firn/ice core based on the following governing processes:
@@ -33,9 +34,9 @@
 ##' @param temperature numeric vector with a temperature time series (in deg C)
 ##'   tabulated at the time points in \code{time}.
 ##' @param data numeric vector with a data time series from which the firn
-##'   profile is to be simulated, tabulated at the time points in \code{time};
-##'   the default is to use the \code{temperature} time series, but also any
-##'   other suitable environmental proxy can be input here for profile
+##'   proxy profile is to be simulated, tabulated at the time points in
+##'   \code{time}; the default is to use the \code{temperature} time series, but
+##'   also any other suitable environmental proxy can be input here for profile
 ##'   simulation. In such case, the \code{temperature} input is still needed but
 ##'   only to obtain an average temperature value for the densification rate and
 ##'   diffusion length calculations.
@@ -93,7 +94,7 @@
 ##' legend("topright",
 ##'        c("Original ts", "Simulated ts w/o diffusion",
 ##'          "Simulated ts with diffusion"),
-##'        lty = 1, lwd = c(1, 2, 2), col = c(1, 2, 4))
+##'        lty = 1, lwd = c(1, 2, 2), col = c(1, 4, 2))
 ##'
 ##' # show simulated depth profile
 ##' plot(profile$depth, profile$d18O, col = 2, type = "l", lwd = 2,
@@ -128,48 +129,45 @@ SimProfile <- function(time, precip, temperature, data = temperature,
 
   # remove events without precipitation accounting for numerical threshold;
   # -> record only at least micrometre precip. events
-  record <- (depth.scale * precip) > 1.e-7
+  events2record <- (depth.scale * precip) > 1.e-7
 
-  time        <- time[record]
-  precip      <- precip[record]
-  temperature <- temperature[record]
-  data        <- data[record]
+  time        <- time[events2record]
+  precip      <- precip[events2record]
+  temperature <- temperature[events2record]
+  data        <- data[events2record]
 
-  # build profile of top, bottom and midpoint depths of precipitated layers
+  # build profile of top, bottom and midpoint depths of the precipitated layers
   depthProfileWE <- ObtainDepthScale(thickness = depth.scale * precip)
 
-  # simulate high-resolution firn density profile with input depth vector of
-  # maximum possible length from assuming constant surface density;
-  # interpolate it to w.eq. midpoint depths
+  # simulate a high-resolution equidistant firn density profile;
+  # based on a given, sufficiently long input depth vector obtained from the
+  # depth of the precipitated layer profile transformed to real depth units
+  # using the local surface density
   rhoWater <- 1000
   convFac  <- round(rhoWater / rho.surface, 1)
-  depthProfileWE <- depthProfileWE %>%
-    dplyr::mutate(
-      density = seq(0, convFac * max(.data$depth), min(.data$thickness)) %>%
-        DensityHL(rho.surface = rho.surface, T = T, bdot = bdot) %>%
-        data.frame() %>%
-        stats::approx(xout = .data$depth) %>%
-        purrr::pluck("y"))
+  densityProfile <-
+    seq(0, convFac * max(depthProfileWE$depth), min(depthProfileWE$thickness)) %>%
+    DensityHL(rho.surface = rho.surface, T = T, bdot = bdot) %>%
+    data.frame()
 
-  # create depth profile in real units and add isotope data of precip events
-  profile <- depthProfileWE %>%
-    dplyr::transmute(thickness = .data$thickness * rhoWater / .data$density) %>%
-    dplyr::pull(thickness) %>%
+  # interpolate the density profile to the midpoint depths of the precipitated
+  # layer profile and add it
+  depthProfileWE <- depthProfileWE %>%
+    dplyr::mutate(density = approx.y(densityProfile, xout = .data$depth))
+
+  # create depth profile in real units and add proxy data of precip events
+  profile <- (depthProfileWE$thickness * rhoWater / depthProfileWE$density) %>%
     ObtainDepthScale() %>%
     dplyr::mutate(time = time) %>%
-    dplyr::mutate(d18O = Temperature2Isotopes(data, alpha, beta))
+    dplyr::mutate(d18O = CalibrateLinear(data, alpha, beta))
   
-  # interpolate data to high resolution equal to maximum 0.1 mm;
-  # add density and diffusion length data
+  # interpolate data to a high equidistant resolution of maximum 0.1 mm;
+  # add density and diffusion length data on that depth scale
   res <- max(1.e-4, min(profile$thickness))
   profileEqui <- data.frame(depth = seq(min(profile$depth),
                                         max(profile$depth), res)) %>%
-    dplyr::mutate(
-      time = stats::approx(profile$depth, profile$time, .data$depth) %>%
-        purrr::pluck("y")) %>%
-    dplyr::mutate(
-      d18O = stats::approx(profile$depth, profile$d18O, .data$depth) %>%
-        purrr::pluck("y")) %>%
+    dplyr::mutate(time = approx.y(profile$depth, profile$time, .data$depth)) %>%
+    dplyr::mutate(d18O = approx.y(profile$depth, profile$d18O, .data$depth)) %>%
     dplyr::mutate(
       density = DensityHL(.data$depth, rho.surface = rho.surface,
                           T = T, bdot = bdot)$rho) %>%
@@ -210,28 +208,3 @@ SimProfile <- function(time, precip, temperature, data = temperature,
   return(profileAvg)
 
 }
-
-
-# for testing
-## sin.par <- c(273 - 44.5, 13, 5, 10, 50)
-
-## precip <- rep(70 / 365, times = 1 * 365)
-## temperature <- rep(HarmonicModel(sin.par), 1)# + rnorm(length(precip), sd = 2)
-## pressure <- 670
-## time <- seq(length.out = length(precip))
-## accumulation.scale <- 365
-## depth.scale <- 10^-3
-
-## system.time(
-## profile <- SimProfile(time, precip, temperature, pressure,
-##                   accumulation.scale = accumulation.scale,
-##                   diffuse = TRUE)
-## )
-
-## quartz()
-
-## plot(time, temperature, type = "l")
-## lines(profile$time, profile$d18O, col = 2, lwd = 2)
-
-## plot(profile$depth, profile$d18O - mean(profile$d18O), col = 2, type = "l", lwd = 2, xlim = c(0,10))
-## abline(h = mean(profile$d18O), lty = 2)

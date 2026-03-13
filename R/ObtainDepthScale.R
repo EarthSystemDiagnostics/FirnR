@@ -7,13 +7,13 @@
 ##' depths.
 ##'
 ##' If a vector of layer thicknesses is provided, or a vector of midpoint
-##' depths, for completing the depth information one needs the additional
+##' depths, one needs for completing the depth information the additional
 ##' information of how deep the top of the first layer is actually below the
 ##' surface. For a given layer thickness this is straighforward, as top and
 ##' bottom depths follow from the cumulative sum of the thicknesses and are then
 ##' merely shifted \code{startDepth} units downwards relative to the surface. If
 ##' midpoint depths are provided, it is slightly ambiguous. The implementation
-##' here assumes that in such a case one also knows the depth of the top of the
+##' here assumes for such a case that one also knows the depth of the top of the
 ##' first layer relative to the surface. This information is used to calculate
 ##' the thickness of the first layer around the first midpoint depth, with the
 ##' consecutive layer thicknesses then being calculated iteratively.
@@ -92,7 +92,7 @@ ObtainDepthScale <- function(thickness, depth, top, bottom, startDepth = 0) {
 
   mode <- c("thickness", "midpoints", "top/bottom")[args[1]]
 
-  if (mode %in% c("midpoints", "top/bottom")) {
+  if (mode %in% c("thickness", "midpoints")) {
 
     if (!length(startDepth)) {
       stop("Missing 'startDepth'.", call. = FALSE)
@@ -105,20 +105,23 @@ ObtainDepthScale <- function(thickness, depth, top, bottom, startDepth = 0) {
 
   if (mode == "midpoints") {
 
-    n <- length(depth)
-    thickness <- numeric(length(n))
-
     if (startDepth >= depth[1]) {
       stop("Given 'startDepth' >= first midpoint depth, ",
            "which would yield zero or negative first layer thickness.",
            call. = FALSE)
     }
 
-    thickness[1] <- 2 * (depth[1] - startDepth)
+    n <- length(depth)
 
-    for (i in 2 : n) {
-      thickness[i] <- 2 * (depth[i] - sum(thickness) - startDepth)
-    }
+    thickness_1 <- 2 * (depth[1] - startDepth)
+
+    # vectorized solution; is much faster than for-loop approach for large n
+    c_alt <- gen_alt_seq(n - 1L)
+    s_c   <- cumsum_alt(depth[-n])
+
+    thickness_2_n <- 2 * (depth[-1] - 2 * s_c * c_alt + startDepth * c_alt)
+
+    thickness <- c(thickness_1, thickness_2_n)
 
     mode <- "thickness"
   }
