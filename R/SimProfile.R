@@ -1,7 +1,8 @@
 ##' Simulate virtual firn profile
 ##'
-##' Forward-simulate a virtual firn depth profile based on given temperature
-##' and precipitation time series and local climatic parameters; see Details.
+##' Forward-simulate a virtual firn proxy depth profile based on given
+##' temperature and precipitation time series and local climatic parameters; see
+##' Details.
 ##'
 ##' This function implements the generation of a proxy depth profile measured on
 ##' a firn/ice core based on the following governing processes:
@@ -33,9 +34,9 @@
 ##' @param temperature numeric vector with a temperature time series (in deg C)
 ##'   tabulated at the time points in \code{time}.
 ##' @param data numeric vector with a data time series from which the firn
-##'   profile is to be simulated, tabulated at the time points in \code{time};
-##'   the default is to use the \code{temperature} time series, but also any
-##'   other suitable environmental proxy can be input here for profile
+##'   proxy profile is to be simulated, tabulated at the time points in
+##'   \code{time}; the default is to use the \code{temperature} time series, but
+##'   also any other suitable environmental proxy can be input here for profile
 ##'   simulation. In such case, the \code{temperature} input is still needed but
 ##'   only to obtain an average temperature value for the densification rate and
 ##'   diffusion length calculations.
@@ -156,7 +157,7 @@ SimProfile <- function(time, precip, temperature, data = temperature,
     dplyr::pull(thickness) %>%
     ObtainDepthScale() %>%
     dplyr::mutate(time = time) %>%
-    dplyr::mutate(d18O = Temperature2Isotopes(data, alpha, beta))
+    dplyr::mutate(d18O = CalibrateLinear(data, alpha, beta))
   
   # interpolate data to a high equidistant resolution of maximum 0.1 mm;
   # add density and diffusion length data

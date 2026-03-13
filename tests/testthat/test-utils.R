@@ -82,9 +82,9 @@ test_that("calculation of KappaFirn is correct", {
 
 })
 
-test_that("temperature-isotope conversion function is correct", {
+test_that("linear calibratrion function is correct", {
 
-  expect_equal(Temperature2Isotopes(-44.5, 0.8, -8.1), 0.8 * (-44.5) - 8.1)
+  expect_equal(CalibrateLinear(-44.5, 0.8, -8.1), 0.8 * (-44.5) - 8.1)
 
 })
 
