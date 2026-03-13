@@ -53,3 +53,26 @@ cumsum_alt <- function(x) {
   cumsum(x * c_alt)
 
 }
+
+#' Simpler approx version
+#'
+#' Wrapper around stats::approx which only returns the interpolated vector.
+#'
+#' @param ... parameters passed on to \code{\link[stats]{approx}}.
+#' @return a numeric vector with the interpolated values.
+#'
+#' @examples
+#' x <- 0 : 10
+#' y <- rnorm(11)
+#' xout <- seq(0.5, 9.5, 1)
+#' approx(x, y, xout)
+#' approx.y(x, y, xout)
+#' @seealso \code{\link[stats]{approx}}
+#'
+#' @author Thomas Münch
+#'
+approx.y <- function(...) {
+
+  stats::approx(...)$y
+
+}

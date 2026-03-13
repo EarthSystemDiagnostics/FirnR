@@ -148,8 +148,7 @@ SimProfile <- function(time, precip, temperature, data = temperature,
       density = seq(0, convFac * max(.data$depth), min(.data$thickness)) %>%
         DensityHL(rho.surface = rho.surface, T = T, bdot = bdot) %>%
         data.frame() %>%
-        stats::approx(xout = .data$depth) %>%
-        purrr::pluck("y"))
+        approx.y(xout = .data$depth))
 
   # create depth profile in real units and add isotope data of precip events
   profile <- depthProfileWE %>%
@@ -159,17 +158,13 @@ SimProfile <- function(time, precip, temperature, data = temperature,
     dplyr::mutate(time = time) %>%
     dplyr::mutate(d18O = Temperature2Isotopes(data, alpha, beta))
   
-  # interpolate data to high resolution equal to maximum 0.1 mm;
+  # interpolate data to a high equidistant resolution of maximum 0.1 mm;
   # add density and diffusion length data
   res <- max(1.e-4, min(profile$thickness))
   profileEqui <- data.frame(depth = seq(min(profile$depth),
                                         max(profile$depth), res)) %>%
-    dplyr::mutate(
-      time = stats::approx(profile$depth, profile$time, .data$depth) %>%
-        purrr::pluck("y")) %>%
-    dplyr::mutate(
-      d18O = stats::approx(profile$depth, profile$d18O, .data$depth) %>%
-        purrr::pluck("y")) %>%
+    dplyr::mutate(time = approx.y(profile$depth, profile$time, .data$depth)) %>%
+    dplyr::mutate(d18O = approx.y(profile$depth, profile$d18O, .data$depth)) %>%
     dplyr::mutate(
       density = DensityHL(.data$depth, rho.surface = rho.surface,
                           T = T, bdot = bdot)$rho) %>%

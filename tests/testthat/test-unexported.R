@@ -24,3 +24,15 @@ test_that("alternating cumulative sum works", {
   expect_equal(sum(cumsum_alt(rep(1, 10))), 5)
 
 })
+
+
+test_that("simple approx version works", {
+
+  x <- 0 : 10
+  y <- rnorm(11)
+  xout <- seq(0.5, 9.5, 1)
+
+  expect_equal(approx(x, y, xout)$y, approx.y(x, y, xout))
+  expect_equal(approx(x, y, n = 15)$y, approx.y(x, y, n = 15))
+
+})
