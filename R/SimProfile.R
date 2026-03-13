@@ -136,20 +136,24 @@ SimProfile <- function(time, precip, temperature, data = temperature,
   temperature <- temperature[events2record]
   data        <- data[events2record]
 
-  # build profile of top, bottom and midpoint depths of precipitated layers
+  # build profile of top, bottom and midpoint depths of the precipitated layers
   depthProfileWE <- ObtainDepthScale(thickness = depth.scale * precip)
 
-  # simulate high-resolution firn density profile with input depth vector of
-  # maximum possible length from assuming constant surface density;
-  # interpolate it to w.eq. midpoint depths
+  # simulate a high-resolution equidistant firn density profile;
+  # based on a given, sufficiently long input depth vector obtained from the
+  # depth of the precipitated layer profile transformed to real depth units
+  # using the local surface density
   rhoWater <- 1000
   convFac  <- round(rhoWater / rho.surface, 1)
+  densityProfile <-
+    seq(0, convFac * max(depthProfileWE$depth), min(depthProfileWE$thickness)) %>%
+    DensityHL(rho.surface = rho.surface, T = T, bdot = bdot) %>%
+    data.frame()
+
+  # interpolate the density profile to the midpoint depths of the precipitated
+  # layer profile and add it
   depthProfileWE <- depthProfileWE %>%
-    dplyr::mutate(
-      density = seq(0, convFac * max(.data$depth), min(.data$thickness)) %>%
-        DensityHL(rho.surface = rho.surface, T = T, bdot = bdot) %>%
-        data.frame() %>%
-        approx.y(xout = .data$depth))
+    dplyr::mutate(density = approx.y(densityProfile, xout = .data$depth))
 
   # create depth profile in real units and add isotope data of precip events
   profile <- depthProfileWE %>%
@@ -160,7 +164,7 @@ SimProfile <- function(time, precip, temperature, data = temperature,
     dplyr::mutate(d18O = CalibrateLinear(data, alpha, beta))
   
   # interpolate data to a high equidistant resolution of maximum 0.1 mm;
-  # add density and diffusion length data
+  # add density and diffusion length data on that depth scale
   res <- max(1.e-4, min(profile$thickness))
   profileEqui <- data.frame(depth = seq(min(profile$depth),
                                         max(profile$depth), res)) %>%
