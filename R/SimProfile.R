@@ -155,10 +155,8 @@ SimProfile <- function(time, precip, temperature, data = temperature,
   depthProfileWE <- depthProfileWE %>%
     dplyr::mutate(density = approx.y(densityProfile, xout = .data$depth))
 
-  # create depth profile in real units and add isotope data of precip events
-  profile <- depthProfileWE %>%
-    dplyr::transmute(thickness = .data$thickness * rhoWater / .data$density) %>%
-    dplyr::pull(thickness) %>%
+  # create depth profile in real units and add proxy data of precip events
+  profile <- (depthProfileWE$thickness * rhoWater / depthProfileWE$density) %>%
     ObtainDepthScale() %>%
     dplyr::mutate(time = time) %>%
     dplyr::mutate(d18O = CalibrateLinear(data, alpha, beta))
