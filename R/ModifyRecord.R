@@ -88,7 +88,7 @@ ModifyRecord <- function(record, sigma = NULL, compression = NULL,
            call. = FALSE)
     }
     if (nrow(record) <= 1) stop("Length of proxy record needs to be > 1.")
-    if (!prxytools::is.equidistant(record$depth))
+    if (!is.equidistant(record$depth))
       stop("Require constant depth resolution for diffusion.", call. = FALSE)
     depth.res <- diff(record$depth)[1]
 

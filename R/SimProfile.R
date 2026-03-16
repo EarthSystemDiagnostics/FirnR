@@ -185,12 +185,12 @@ SimProfile <- function(time, precip, temperature, data = temperature,
   # block-average data to desired output resolution
   breaks <- seq(0, max(profileEqui$depth), dz.out)
 
-  profileAvg <- PaleoSpec::AvgToBin(profileEqui$depth, profileEqui$time,
-                                    breaks = breaks)[c("centers", "avg")] %>%
+  profileAvg <- paleospec.AvgToBin(profileEqui$depth, profileEqui$time,
+                                   breaks = breaks)[c("centers", "avg")] %>%
     data.frame() %>%
     dplyr::rename(depth = "centers", time = "avg") %>%
-    dplyr::mutate(d18O = PaleoSpec::AvgToBin(profileEqui$depth, profileEqui$d18O,
-                                             breaks = breaks)[["avg"]])
+    dplyr::mutate(d18O = paleospec.AvgToBin(profileEqui$depth, profileEqui$d18O,
+                                            breaks = breaks)[["avg"]])
 
   # convert date vector back to proper format
   profileAvg <- profileAvg %>%

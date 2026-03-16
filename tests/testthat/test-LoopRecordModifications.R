@@ -73,8 +73,10 @@ test_that("calculations work", {
   y7 <- ModifyRecord(record, sigma = 1, compression = 3, advection = 0)
   y8 <- ModifyRecord(record, sigma = 1, compression = 3, advection = 5)
 
+  rmsd <- function(v1, v2) {sqrt(mean((v1 - v2)^2, na.rm = TRUE))}
+
   expected <- sapply(list(y1, y2, y3, y4, y5, y6, y7, y8), function(x) {
-    stattools::rmsd(x$y, reference$y, na.rm = TRUE)}) %>%
+    rmsd(x$y, reference$y)}) %>%
     array(dim = c(2, 2, 2))
 
   expect_equal(actual$RMSD, expected)

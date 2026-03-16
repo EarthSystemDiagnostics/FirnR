@@ -52,8 +52,7 @@ AdvectRecord <- function(record, advection, clip = TRUE) {
   if (nrow(record) <= 1) stop("Length of proxy record needs to be > 1.")
   if (length(advection) != 1) stop("'advection' needs to be of length 1.")
   if (is.na(advection)) stop("Missing value passed for 'advection'.")
-  if (!prxytools::is.equidistant(record$depth))
-    stop("Require constant depth resolution.")
+  if (!is.equidistant(record$depth)) stop("Require constant depth resolution.")
 
   depth.res <- diff(record$depth)[1]
   k <- round(advection / depth.res)
@@ -64,13 +63,13 @@ AdvectRecord <- function(record, advection, clip = TRUE) {
 
     data.frame(
       depth = c(record$depth, max(record$depth) + depth.res * (1 : k)),
-      y = prxytools::Lag(c(record$y, rep(NA, k)), shift = k)
+      y = Hmisc::Lag(c(record$y, rep(NA, k)), shift = k)
     ) %>%
       {if (tibble::is_tibble(record)) {tibble::as_tibble(.)} else { . }}
 
   } else {
 
-    dplyr::mutate(record, y = prxytools::Lag(.data$y, shift = k))
+    dplyr::mutate(record, y = Hmisc::Lag(.data$y, shift = k))
 
   }
 

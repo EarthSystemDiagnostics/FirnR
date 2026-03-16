@@ -72,7 +72,7 @@ LoopRecordModifications <- function(record, reference, advection, sigma,
   if (nrow(record) != nrow(reference)) {
     stop("'record' and 'reference' must be of the same length.")
   }
-  if (!prxytools::is.equidistant(record$depth))
+  if (!is.equidistant(record$depth))
     stop("Require constant depth resolution.", call. = FALSE)
   if (!is.logical(all.equal(diff(record$depth), diff(reference$depth)))) {
     stop("Depth resolutions of 'record' and 'reference' do not match.",
@@ -80,6 +80,8 @@ LoopRecordModifications <- function(record, reference, advection, sigma,
   }
 
   RMSD <- array(dim = c(length(advection), length(sigma), length(compression)))
+
+  rmsd <- function(v1, v2) {sqrt(mean((v1 - v2)^2, na.rm = TRUE))}
 
   if (verbose) {
 
@@ -98,7 +100,7 @@ LoopRecordModifications <- function(record, reference, advection, sigma,
       RMSD[, i, j] <- sapply(advection, function(a) {
 
         record.cda <- AdvectRecord(record.cd, advection = a)
-        stattools::rmsd(record.cda$y, reference$y, na.rm = TRUE)
+        rmsd(record.cda$y, reference$y)
 
       })
       

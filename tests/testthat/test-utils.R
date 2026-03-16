@@ -193,3 +193,17 @@ test_that("harmonic series calculation works", {
   expect_equal(actual, expected)
 
 })
+
+test_that("ColorPal output works", {
+
+  expect_error(ColorPal("foo"), "Unknown ColorBrewer palette.", fixed = TRUE)
+
+  expect_type(ColorPal(), "character")
+
+  expect_length(ColorPal(n.in = 5), 5)
+  expect_length(ColorPal(n.in = 5, n.out = 10), 10)
+
+  expect_equal(ColorPal(rev = TRUE), rev(ColorPal()))
+  expect_equal(ColorPal(fun = TRUE)(5), ColorPal(n.out = 5))
+
+})
