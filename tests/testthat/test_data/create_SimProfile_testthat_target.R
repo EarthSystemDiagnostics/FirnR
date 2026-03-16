@@ -19,9 +19,9 @@ set.seed(20260312)
 nyr <- 5
 precip <- rep(70 / 365, times = nyr * 365)
 
-seasonal.par <- c(-44.5, 13, 5, 10, 50)
+seasonal.par <- c(A0 = -44.5, A1 = 13, A2 = 5, phi1 = 10, phi2 = 50)
 temperature <-
-  rep(HarmonicModel(seasonal.par), nyr) + rnorm(length(precip), sd = 2)
+  rep(CreateHarmonicSeries(seasonal.par), nyr) + rnorm(length(precip), sd = 2)
 
 time <- as.Date(-1 * (length(precip) : 1), origin = "2020-01-01")
 

@@ -164,3 +164,32 @@ test_that("tortuosity calculation is correct", {
   expect_equal(actual, expected)
 
 })
+
+test_that("harmonic series calculation works", {
+
+  expect_error(
+    CreateHarmonicSeries("foo"), "`x` must be numeric.", fixed = TRUE)
+  expect_error(
+    CreateHarmonicSeries(1:3), "`x` must have length 5.", fixed = TRUE)
+  expect_error(
+    CreateHarmonicSeries(1:5), "`x` must be a named vector.", fixed = TRUE)
+
+  x <- c(0, A1 = 0, A2 = 0, phi1 = 0, phi2 = 0)
+  expect_error(CreateHarmonicSeries(x), "Missing input `A0`.", fixed = TRUE)
+  x <- c(A0 = 0, 0, A2 = 0, phi1 = 0, phi2 = 0)
+  expect_error(CreateHarmonicSeries(x), "Missing input `A1`.", fixed = TRUE)
+  x <- c(A0 = 0, A1 = 0, 0, phi1 = 0, phi2 = 0)
+  expect_error(CreateHarmonicSeries(x), "Missing input `A2`.", fixed = TRUE)
+  x <- c(A0 = 0, A1 = 0, A2 = 0, 0, phi2 = 0)
+  expect_error(CreateHarmonicSeries(x), "Missing input `phi1`.", fixed = TRUE)
+  x <- c(A0 = 0, A1 = 0, A2 = 0, phi1 = 0, 0)
+  expect_error(CreateHarmonicSeries(x), "Missing input `phi2`.", fixed = TRUE)
+
+  x <- c(A0 = 5, A1 = 0, A2 = 0, phi1 = 0, phi2 = 0)
+
+  expected <- rep(5., 365)
+  actual   <- CreateHarmonicSeries(x)
+
+  expect_equal(actual, expected)
+
+})

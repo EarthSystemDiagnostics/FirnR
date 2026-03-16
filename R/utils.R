@@ -380,3 +380,74 @@ tauFirn <- function(rho, b = 1.3, inverse = TRUE) {
   if (inverse) return(invtau) else return(1 / invtau)
 
 }
+
+#' Bimodal harmonic model
+#'
+#' This function calculates a harmonic series with two modes for one annual
+#' cycle at daily resolution given mean, amplitudes and phases. The harmonic
+#' series is implemented with cosine functions; thus, zero phase shift
+#' corresponds to the cycle maximum (January 1st).
+#'
+#' @param x Named numeric vector with five elements:
+#' \describe{
+#' \item{"A0":}{Mean value over one annual cycle [a.u.];}
+#' \item{"A1":}{Amplitude (half peak-peak) of first mode (same unit as mean);}
+#' \item{"A2":}{Amplitude of second mode (same unit as mean);}
+#' \item{"phi1":}{Phase shift of first mode in [degree];}
+#' \item{"phi2":}{Phase shift of second mode in [degree].}
+#' }
+#' @return Numeric vector of length 365 corresponding to one annual cycle of the
+#'   harmonic series.
+#'
+#' @examples
+#'
+#' # Different harmonic series
+#'
+#' days <- 1 : 365
+#' x1 <- c(A0 = -45, A1 = 10, A2 = 0, phi1 = 0, phi2 = 0)
+#' x2 <- c(A0 = -45, A1 = 10, A2 = 5, phi1 = 10, phi2 = 50)
+#'
+#' plot(days, CreateHarmonicSeries(x1), type = "l",
+#'      las = 1, ylim = c(-60, -30),
+#'      xlab = "day of year", ylab = "annual cycle (a.u.)",
+#'      main = "Different harmonic models")
+#' lines(days, CreateHarmonicSeries(x2), col = 4)
+#'
+#' legend("topleft",
+#'        c("simple sinusoid", "bi-modal with differing amplitude and phase"),
+#'        col = c(1, 4), lty = 1, bty = "n")
+#'
+#' @author Thomas Laepple
+#' @export
+#'
+CreateHarmonicSeries <- function(x) {
+
+  if (!is.numeric(x)) stop("`x` must be numeric.")
+  if (length(x) != 5) stop("`x` must have length 5.")
+  if (!length(names(x))) stop("`x` must be a named vector.")
+
+  if (!"A0" %in% names(x)) stop("Missing input `A0`.")
+  if (!"A1" %in% names(x)) stop("Missing input `A1`.")
+  if (!"A2" %in% names(x)) stop("Missing input `A2`.")
+  if (!"phi1" %in% names(x)) stop("Missing input `phi1`.")
+  if (!"phi2" %in% names(x)) stop("Missing input `phi2`.")
+
+  A0 <- x["A0"]
+  A1 <- x["A1"]
+  A2 <- x["A2"]
+
+  # convert input phases from degree to radian
+  deg2rad <- pi / 180.
+  phi1 <- deg2rad * x["phi1"]
+  phi2 <- deg2rad * x["phi2"]
+
+  days <- 1 : 365
+  n <- length(days)
+  omega <- 2 * pi / n
+
+  h1 <- cos(omega * days + phi1)
+  h2 <- cos(2 * omega * days + phi2)
+
+  return(A0 + A1 * h1 + A2 * h2)
+
+}
