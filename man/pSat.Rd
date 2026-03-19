@@ -16,11 +16,6 @@ numeric vecor of the saturation vapour pressure in [Pa].
 Calculate the saturation vapour pressure over ice, based on the
 parameterization given in van der Wel et al. (2015) (Eq. 5).
 }
-\examples{
-
-pSat(273.15 - c(0, 45))
-
-}
 \references{
 van der Wel, L. G., H. A. Been, R. S. W. van de Wal, C. J. P. P. Smeets and
   H. A. J. Meijer: Constraints on the d2H diffusion rate in firn from field

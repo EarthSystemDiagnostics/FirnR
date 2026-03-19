@@ -34,11 +34,11 @@ days <- 1 : 365
 x1 <- c(A0 = -45, A1 = 10, A2 = 0, phi1 = 0, phi2 = 0)
 x2 <- c(A0 = -45, A1 = 10, A2 = 5, phi1 = 10, phi2 = 50)
 
-plot(days, CreateHarmonicSeries(x1), type = "l",
+plot(days, FirnR:::CreateHarmonicSeries(x1), type = "l",
      las = 1, ylim = c(-60, -30),
      xlab = "day of year", ylab = "annual cycle (a.u.)",
      main = "Different harmonic models")
-lines(days, CreateHarmonicSeries(x2), col = 4)
+lines(days, FirnR:::CreateHarmonicSeries(x2), col = 4)
 
 legend("topleft",
        c("simple sinusoid", "bi-modal with differing amplitude and phase"),

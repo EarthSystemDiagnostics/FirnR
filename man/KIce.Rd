@@ -17,11 +17,6 @@ numeric vector of thermal conductivity of ice at temperature \code{T}
 Calculate the thermal conductivity of ice depending on ambient temperature,
 based on the formula given in Goujon et al. (2003).
 }
-\examples{
-
-KIce(c(273.15, 273.15 - 45))
-
-}
 \references{
 Goujon, C., Barnola, J.-M., and Ritz, C.: Modeling the densification of
   polar firn including heat diffusion: Application to close-off

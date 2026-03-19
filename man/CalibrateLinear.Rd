@@ -23,11 +23,11 @@ Apply a linear transformation (calibration) on input (proxy) data.
 
 # spatial d18O to temperature calibration for Antarctica
 # (Masson-Delmotte et al., J. Clim., 21(13), 2008)
-CalibrateLinear(-44.5, 0.8, -8.1)
+FirnR:::CalibrateLinear(-44.5, 0.8, -8.1)
 
 # spatial d2H to temperature calibration for Antarctica
 # (Masson-Delmotte et al., J. Clim., 21(13), 2008)
-CalibrateLinear(-44.5, 6.3, -62.7)
+FirnR:::CalibrateLinear(-44.5, 6.3, -62.7)
 
 }
 \author{

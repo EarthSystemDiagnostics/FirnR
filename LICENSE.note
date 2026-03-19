@@ -6,3 +6,4 @@ is a list of these components:
   in package paleospec: MIT
 * paleospec.ApplyFilter: Code adapted from function ApplyFilter
   in package paleospec: MIT
+* ColorPal: Code taken from function ColorPal in package grfxtools: GPL (>= 3)

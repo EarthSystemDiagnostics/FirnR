@@ -9,7 +9,8 @@ KFirn(T, rho)
 \arguments{
 \item{T}{numeric vector of ambient ice temperature in [K].}
 
-\item{rho}{numeric vector of firn density in [kg/m^3].}
+\item{rho}{numeric vector of firn density in [kg/m^3]. If both \code{T} and
+\code{rho} have length > 1, the lengths must be the same.}
 }
 \value{
 numeric vector of the thermal conductivity of firn in [W/(m*K)].
@@ -18,21 +19,6 @@ numeric vector of the thermal conductivity of firn in [W/(m*K)].
 Calculate the thermal conductivity of firn based on the thermal conductivity
 of ice and the firn density, as given by the formula in Goujon et
 al. (2003).
-}
-\examples{
-
-# variable lengths of 'T' and 'rho' are supported:
-
-KFirn(273.15, 350)
-KFirn(273.15, c(350, 500))
-KFirn(c(273.15, 273.15 - 45), 500)
-
-# but lengths > 1 need to be equal
-\dontrun{
- KFirn(c(273.15, 273.15 - 45), c(350, 500, 800))
-}
-KFirn(c(273.15, 273.15 - 45), c(350, 500))
-
 }
 \references{
 Goujon, C., Barnola, J.-M., and Ritz, C.: Modeling the densification of

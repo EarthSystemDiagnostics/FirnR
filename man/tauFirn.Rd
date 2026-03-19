@@ -29,11 +29,6 @@ tortuosity accounts for the shape of the open channels in the firn,
 controlling the effective diffusivity of vapour molecules within the
 pore space.
 }
-\examples{
-
-tauFirn(seq(400, 920, 10))
-
-}
 \references{
 Johnsen, S. J., Clausen, H. B., Cuffey, K. M., Hoffmann, G., Schwander, J.,
   and Creyts, T.: Diffusion of stable isotopes in polar firn and ice: the

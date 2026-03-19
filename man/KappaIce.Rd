@@ -17,11 +17,6 @@ numeric vector of thermal diffusivity at temperature \code{T} in
 Calculate the thermal diffusivity of ice from its thermal conductivity,
 density and heat capacity at constant pressure.
 }
-\examples{
-
-KappaIce(c(273.15, 273.15 - 45))
-
-}
 \references{
 https://en.wikipedia.org/wiki/Thermal_diffusivity
 }

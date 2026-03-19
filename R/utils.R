@@ -1,3 +1,11 @@
+#
+# unexported utility functions functions
+#
+
+# ------------------------------------------------------------------------------
+# firn thermal properties
+# ------------------------------------------------------------------------------
+
 #' Specific heat capacity of ice
 #'
 #' Calculate the specific heat capacity of ice at constant pressure depending on
@@ -15,11 +23,6 @@
 #'   https://doi.org/10.1029/2002JD003319, 2003.
 #'
 #' @author Thomas Laepple
-#' @examples
-#'
-#' CIce(c(273.15, 273.15 - 45))
-#'
-#' @export
 #'
 CIce <- function(T) {
 
@@ -44,11 +47,6 @@ CIce <- function(T) {
 #'   https://doi.org/10.1029/2002JD003319, 2003.
 #'
 #' @author Thomas Laepple
-#' @examples
-#'
-#' KIce(c(273.15, 273.15 - 45))
-#'
-#' @export
 #'
 KIce <- function(T) {
 
@@ -63,7 +61,8 @@ KIce <- function(T) {
 #' al. (2003).
 #'
 #' @param T numeric vector of ambient ice temperature in [K].
-#' @param rho numeric vector of firn density in [kg/m^3].
+#' @param rho numeric vector of firn density in [kg/m^3]. If both \code{T} and
+#'   \code{rho} have length > 1, the lengths must be the same.
 #' @return numeric vector of the thermal conductivity of firn in [W/(m*K)].
 #'
 #' @references
@@ -75,21 +74,6 @@ KIce <- function(T) {
 #'
 #' @author Thomas Laepple
 #' @seealso \code{\link{KIce}}
-#' @examples
-#'
-#' # variable lengths of 'T' and 'rho' are supported:
-#'
-#' KFirn(273.15, 350)
-#' KFirn(273.15, c(350, 500))
-#' KFirn(c(273.15, 273.15 - 45), 500)
-#'
-#' # but lengths > 1 need to be equal
-#' \dontrun{
-#'  KFirn(c(273.15, 273.15 - 45), c(350, 500, 800))
-#' }
-#' KFirn(c(273.15, 273.15 - 45), c(350, 500))
-#'
-#' @export
 #'
 KFirn <- function(T, rho) {
 
@@ -119,11 +103,6 @@ KFirn <- function(T, rho) {
 #'
 #' @author Thomas Laepple
 #' @seealso \code{\link{KIce}}, \code{\link{CIce}}
-#' @examples
-#'
-#' KappaIce(c(273.15, 273.15 - 45))
-#' 
-#' @export
 #'
 KappaIce <- function(T) {
 
@@ -140,7 +119,8 @@ KappaIce <- function(T) {
 #' pressure.
 #'
 #' @param T numeric vector of firn temperature [K].
-#' @param rho numeric vector of firn density [kg/m^3].
+#' @param rho numeric vector of firn density [kg/m^3]. If both \code{T} and
+#'   \code{rho} have length > 1, the lengths must be the same.
 #' @return numeric vector of thermal diffusivity of firn in [m^2/s].
 #'
 #' @references https://en.wikipedia.org/wiki/Thermal_diffusivity
@@ -149,22 +129,10 @@ KappaIce <- function(T) {
 #' @seealso \code{\link{KappaIce}}, \code{\link{KFirn}}, \code{\link{CIce}}
 #' @examples
 #'
-#' # variable lengths of 'T' and 'rho' are supported:
-#'
-#' KappaFirn(273.15, 350)
-#' KappaFirn(273.15, c(350, 500))
-#' KappaFirn(c(273.15, 273.15 - 45), 500)
-#'
-#' # but lengths > 1 need to be equal
-#' \dontrun{
-#'  KappaFirn(c(273.15, 273.15 - 45), c(350, 500, 800))
-#' }
-#' KappaFirn(c(273.15, 273.15 - 45), c(350, 500))
-#'
 #' # firn becomes ice at a density of 920 kg/m^3, therefore
-#' all.equal(KappaFirn(273.15 - 45, 920.), KappaIce(273.15 - 45)) # is TRUE
-#' 
-#' @export
+#' all.equal(FirnR:::KappaFirn(273.15 - 45, 920.),
+#'           FirnR:::KappaIce(273.15 - 45))
+#' # is TRUE
 #'
 KappaFirn<-function(T, rho) {
 
@@ -176,33 +144,9 @@ KappaFirn<-function(T, rho) {
   
 }
 
-#' Linear data transformation
-#'
-#' Apply a linear transformation (calibration) on input (proxy) data.
-#'
-#' @param x numeric vector of data to be linearly transformed.
-#' @param alpha slope of the transformation.
-#' @param beta intercept of the transformation.
-#' @return numeric vector of the transformed data.
-#'
-#' @examples
-#'
-#' # spatial d18O to temperature calibration for Antarctica
-#' # (Masson-Delmotte et al., J. Clim., 21(13), 2008)
-#' CalibrateLinear(-44.5, 0.8, -8.1)
-#'
-#' # spatial d2H to temperature calibration for Antarctica
-#' # (Masson-Delmotte et al., J. Clim., 21(13), 2008)
-#' CalibrateLinear(-44.5, 6.3, -62.7)
-#'
-#' @author Thomas Münch
-#' @export
-#'
-CalibrateLinear <- function(x, alpha, beta) {
-
-  alpha * x + beta
-
-}
+# ------------------------------------------------------------------------------
+# firn diffusion parameters
+# ------------------------------------------------------------------------------
 
 #' Saturation vapour pressure over ice
 #'
@@ -218,12 +162,7 @@ CalibrateLinear <- function(x, alpha, beta) {
 #'   measurements at Summit, Greenland. The Cryosphere, 9, 1089–1103,
 #'   https://doi.org/10.5194/tc-9-1089-2015, 2015.
 #'
-#' @examples
-#'
-#' pSat(273.15 - c(0, 45))
-#'
 #' @author Thomas Münch
-#' @export
 #'
 pSat <- function(T) {
 
@@ -251,13 +190,7 @@ pSat <- function(T) {
 #'   by: Hondoh, T., vol. 159, Hokkaido Univ. Press, Sapporo, Japan, 121–140,
 #'   2000.
 #'
-#' @examples
-#'
-#' alphaIso(273.15 - 45)
-#' alphaIso(273.15 - 45, dD = TRUE)
-#'
 #' @author Thomas Münch
-#' @export
 #'
 alphaIso <- function(T, dD = FALSE) {
 
@@ -279,7 +212,8 @@ alphaIso <- function(T, dD = FALSE) {
 #' factors as in Merlivat and Jouzel (1979).
 #'
 #' @param T numeric vector of ambient air temperature in [K].
-#' @param P numeric vector of local surface pressure in [mbar].
+#' @param P numeric vector of local surface pressure in [mbar]. If both \code{T} and
+#'   \code{P} have length > 1, the lengths must be the same.
 #' @param species the isotopologue species; one of "abundant" (standard H2O
 #'   molecule), "oxygen" (H2-18O molecule), or "deuterium" (HDO molecule).
 #' @return numeric vector of water vapour diffusivity in air in [m^2/s] for the
@@ -296,26 +230,7 @@ alphaIso <- function(T, dD = FALSE) {
 #'   deuterium-oxygen 18 relationship for precipitation. J. Geophys. Res.:
 #'   Oceans, 84, C8, 5029-5033, https://doi.org/10.1029/JC084iC08p05029, 1979.
 #'
-#' @examples
-#'
-#' # diffusivity depends on the isotopic species
-#' DAir(273.15 - 45, 650)
-#' DAir(273.15 - 45, 650, species = "oxygen")
-#' DAir(273.15 - 45, 650, species = "deuterium")
-#'
-#' # variable lengths of 'T' and 'P' are supported:
-#'
-#' DAir(273.15 - 45, c(650, 800))
-#' DAir(c(273.15, 273.15 - 45), 650)
-#'
-#' # but lengths > 1 need to be equal
-#' \dontrun{
-#'  DAir(c(273.15, 273.15 - 45), c(650, 800, 1000))
-#' }
-#' DAir(c(273.15, 273.15 - 45), c(650, 800))
-#'
 #' @author Thomas Münch
-#' @export
 #'
 DAir <- function(T, P, species = "abundant") {
 
@@ -363,12 +278,7 @@ DAir <- function(T, P, species = "abundant") {
 #'   the Air at Pore Close-Off. Ann. Glac., 10, 141–145,
 #'   https://doi.org/10.3189/S0260305500004328, 1988.
 #'
-#' @examples
-#'
-#' tauFirn(seq(400, 920, 10))
-#'
 #' @author Thomas Münch
-#' @export
 #'
 tauFirn <- function(rho, b = 1.3, inverse = TRUE) {
 
@@ -378,6 +288,148 @@ tauFirn <- function(rho, b = 1.3, inverse = TRUE) {
   invtau[invtau <= 0] <- 0
 
   if (inverse) return(invtau) else return(1 / invtau)
+
+}
+
+# ------------------------------------------------------------------------------
+# mathematical and technical utility fuctions
+# ------------------------------------------------------------------------------
+
+#' Alternating sequence
+#'
+#' Generate a sequence of 1's alternating between positive and negative values.
+#'
+#' @param n integer length of the generated sequence.
+#' @return the generated sequence of alternating 1's.
+#'
+#' @examples
+#' FirnR:::gen_alt_seq(3L)
+#' FirnR:::gen_alt_seq(4L)
+#'
+#' @author Thomas Münch
+#'
+gen_alt_seq <- function(n) {
+
+  if (!is.integer(n)) stop("'n' must be integer.")
+  if (n < 1) stop("'n' must be > 0.")
+
+  i <- 0 : (n - 1)
+
+  (-1)^i
+
+}
+
+#' Alternating cumulative sum
+#'
+#' Calculate the alternating cumulative sum of a numeric vector; i.e. for a
+#' vector \code{x = c(x1, x2, x3, x4, ...)} this function calculates the
+#' cumulative sum of \code{x = c(x1, -x2, x3, -x4, ...)}.
+#'
+#' @param x a numeric vector.
+#' @return the alternating cumulative sum of \code{x}.
+#'
+#' @examples
+#' cumsum(1 : 6)
+#' FirnR:::cumsum_alt(1 : 6)
+#' @seealso \code{\link[base]{cumsum}}
+#'
+#' @author Thomas Münch
+#'
+cumsum_alt <- function(x) {
+
+  if (!is.numeric(x)) stop("'x' must be numeric.")
+
+  n <- length(x)
+
+  c_alt <- gen_alt_seq(n)
+
+  cumsum(x * c_alt)
+
+}
+
+#' Simpler approx version
+#'
+#' Wrapper around stats::approx which only returns the interpolated vector.
+#'
+#' @param ... parameters passed on to \code{\link[stats]{approx}}.
+#' @return a numeric vector with the interpolated values.
+#'
+#' @examples
+#' x <- 0 : 10
+#' y <- rnorm(11)
+#' xout <- seq(0.5, 9.5, 1)
+#' approx(x, y, xout)
+#' FirnR:::approx.y(x, y, xout)
+#' @seealso \code{\link[stats]{approx}}
+#'
+#' @author Thomas Münch
+#'
+approx.y <- function(...) {
+
+  stats::approx(...)$y
+
+}
+
+#' Check for equidistant resolution
+#'
+#' This function checks whether a numeric vector (e.g. a depth vector or from a
+#' time series) has equidistant increments, i.e. a constant resolution. This
+#' check includes a numerical tolerance that accounts for the machine
+#' respresentation of floating-point numbers, which circumvents the problems
+#' popular methods of checking equidistance have which use, e.g., \code{sd()} or
+#' \code{unique()} on the difference vector of \code{x}.
+#'
+#' @param x a numeric vector.
+#' @return a logical value: \code{TRUE} if \code{x} has constant resolution,
+#'   \code{FALSE} otherwise.
+#'
+#' @examples
+#'
+#' FirnR:::is.equidistant(1 : 10)
+#' FirnR:::is.equidistant(c(2.5, 5, 7.5, 10, 12.5))
+#' FirnR:::is.equidistant(x <- seq(0, 12, 0.1)) # compare this to sd(diff(x)) == 0!
+#'
+#' FirnR:::is.equidistant(c(1 : 10, 18))
+#'
+#' @author Andrew Dolman, Thomas Münch
+#'
+is.equidistant <- function(x) {
+
+  if (!is.numeric(x)) stop("'x' needs to be numeric.")
+
+  if ((xl <- length(x)) == 1) return(TRUE)
+
+  xd <- diff(x)
+  r <- all.equal(xd, rep(xd[1], xl - 1))
+
+  if (is.logical(r)) return(TRUE) else return(FALSE)
+
+}
+
+#' Linear data transformation
+#'
+#' Apply a linear transformation (calibration) on input (proxy) data.
+#'
+#' @param x numeric vector of data to be linearly transformed.
+#' @param alpha slope of the transformation.
+#' @param beta intercept of the transformation.
+#' @return numeric vector of the transformed data.
+#'
+#' @examples
+#'
+#' # spatial d18O to temperature calibration for Antarctica
+#' # (Masson-Delmotte et al., J. Clim., 21(13), 2008)
+#' FirnR:::CalibrateLinear(-44.5, 0.8, -8.1)
+#'
+#' # spatial d2H to temperature calibration for Antarctica
+#' # (Masson-Delmotte et al., J. Clim., 21(13), 2008)
+#' FirnR:::CalibrateLinear(-44.5, 6.3, -62.7)
+#'
+#' @author Thomas Münch
+#'
+CalibrateLinear <- function(x, alpha, beta) {
+
+  alpha * x + beta
 
 }
 
@@ -407,18 +459,17 @@ tauFirn <- function(rho, b = 1.3, inverse = TRUE) {
 #' x1 <- c(A0 = -45, A1 = 10, A2 = 0, phi1 = 0, phi2 = 0)
 #' x2 <- c(A0 = -45, A1 = 10, A2 = 5, phi1 = 10, phi2 = 50)
 #'
-#' plot(days, CreateHarmonicSeries(x1), type = "l",
+#' plot(days, FirnR:::CreateHarmonicSeries(x1), type = "l",
 #'      las = 1, ylim = c(-60, -30),
 #'      xlab = "day of year", ylab = "annual cycle (a.u.)",
 #'      main = "Different harmonic models")
-#' lines(days, CreateHarmonicSeries(x2), col = 4)
+#' lines(days, FirnR:::CreateHarmonicSeries(x2), col = 4)
 #'
 #' legend("topleft",
 #'        c("simple sinusoid", "bi-modal with differing amplitude and phase"),
 #'        col = c(1, 4), lty = 1, bty = "n")
 #'
 #' @author Thomas Laepple
-#' @export
 #'
 CreateHarmonicSeries <- function(x) {
 

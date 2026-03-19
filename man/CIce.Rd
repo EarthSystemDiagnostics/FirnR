@@ -17,11 +17,6 @@ numeric vector of the specific heat capacity at temperature \code{T}
 Calculate the specific heat capacity of ice at constant pressure depending on
 ambient temperature, based on the formula given in Goujon et al. (2003).
 }
-\examples{
-
-CIce(c(273.15, 273.15 - 45))
-
-}
 \references{
 Goujon, C., Barnola, J.-M., and Ritz, C.: Modeling the densification of
   polar firn including heat diffusion: Application to close-off

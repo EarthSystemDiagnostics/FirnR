@@ -9,7 +9,8 @@ KappaFirn(T, rho)
 \arguments{
 \item{T}{numeric vector of firn temperature [K].}
 
-\item{rho}{numeric vector of firn density [kg/m^3].}
+\item{rho}{numeric vector of firn density [kg/m^3]. If both \code{T} and
+\code{rho} have length > 1, the lengths must be the same.}
 }
 \value{
 numeric vector of thermal diffusivity of firn in [m^2/s].
@@ -21,20 +22,10 @@ pressure.
 }
 \examples{
 
-# variable lengths of 'T' and 'rho' are supported:
-
-KappaFirn(273.15, 350)
-KappaFirn(273.15, c(350, 500))
-KappaFirn(c(273.15, 273.15 - 45), 500)
-
-# but lengths > 1 need to be equal
-\dontrun{
- KappaFirn(c(273.15, 273.15 - 45), c(350, 500, 800))
-}
-KappaFirn(c(273.15, 273.15 - 45), c(350, 500))
-
 # firn becomes ice at a density of 920 kg/m^3, therefore
-all.equal(KappaFirn(273.15 - 45, 920.), KappaIce(273.15 - 45)) # is TRUE
+all.equal(FirnR:::KappaFirn(273.15 - 45, 920.),
+          FirnR:::KappaIce(273.15 - 45))
+# is TRUE
 
 }
 \references{

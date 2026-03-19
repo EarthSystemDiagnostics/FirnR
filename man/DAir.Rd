@@ -9,7 +9,8 @@ DAir(T, P, species = "abundant")
 \arguments{
 \item{T}{numeric vector of ambient air temperature in [K].}
 
-\item{P}{numeric vector of local surface pressure in [mbar].}
+\item{P}{numeric vector of local surface pressure in [mbar]. If both \code{T} and
+\code{P} have length > 1, the lengths must be the same.}
 
 \item{species}{the isotopologue species; one of "abundant" (standard H2O
 molecule), "oxygen" (H2-18O molecule), or "deuterium" (HDO molecule).}
@@ -23,25 +24,6 @@ Calculate the water vapour diffusivity in air depending on ambient
 temperature and pressure for the majour isotopologue species, based on the
 formulae given in Johnsen et al. (2000) with the numerical isotopologue
 factors as in Merlivat and Jouzel (1979).
-}
-\examples{
-
-# diffusivity depends on the isotopic species
-DAir(273.15 - 45, 650)
-DAir(273.15 - 45, 650, species = "oxygen")
-DAir(273.15 - 45, 650, species = "deuterium")
-
-# variable lengths of 'T' and 'P' are supported:
-
-DAir(273.15 - 45, c(650, 800))
-DAir(c(273.15, 273.15 - 45), 650)
-
-# but lengths > 1 need to be equal
-\dontrun{
- DAir(c(273.15, 273.15 - 45), c(650, 800, 1000))
-}
-DAir(c(273.15, 273.15 - 45), c(650, 800))
-
 }
 \references{
 Johnsen, S. J., Clausen, H. B., Cuffey, K. M., Hoffmann, G., Schwander, J.,

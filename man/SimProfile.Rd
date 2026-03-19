@@ -112,7 +112,7 @@ precip <- rep(70 / 365, times = nyr * 365)
 # create bi-harmonic model of sesasonal cycle in temperature at EDML;
 # repeat 5 years and add some noise
 seasonal.par <- c(A0 = -44.5, A1 = 13, A2 = 5, phi1 = 10, phi2 = 50)
-temperature <- rep(CreateHarmonicSeries(seasonal.par), nyr) +
+temperature <- rep(FirnR:::CreateHarmonicSeries(seasonal.par), nyr) +
                rnorm(length(precip), sd = 2)
 
 # arbitrary time vector

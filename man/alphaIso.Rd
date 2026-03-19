@@ -22,12 +22,6 @@ i.e. the difference in ratio of rare to abundant isotopes, in water vapour
 over ice under equilibrium conditions, based on the expressions given in
 Johnsen et al. (2000).
 }
-\examples{
-
-alphaIso(273.15 - 45)
-alphaIso(273.15 - 45, dD = TRUE)
-
-}
 \references{
 Johnsen, S. J., Clausen, H. B., Cuffey, K. M., Hoffmann, G., Schwander, J.,
   and Creyts, T.: Diffusion of stable isotopes in polar firn and ice: the
