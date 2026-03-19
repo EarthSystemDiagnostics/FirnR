@@ -2,6 +2,8 @@
 #
 # functions ported from package `PaleoSpec`,
 # <https://github.com/EarthSystemDiagnostics/PaleoSpec>
+# MIT
+# Copyright (C) 2019 Thomas Laepple
 #
 # -----------------------------------------------------
 

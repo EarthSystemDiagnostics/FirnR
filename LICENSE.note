@@ -1,0 +1,8 @@
+The FirnR package as a whole is distributed under GPL (>= 3). The FirnR
+package includes other open source software components. The following
+is a list of these components:
+
+* paleospec.AvgToBin: Code adapted from function AvgToBin
+  in package paleospec: MIT
+* paleospec.ApplyFilter: Code adapted from function ApplyFilter
+  in package paleospec: MIT
