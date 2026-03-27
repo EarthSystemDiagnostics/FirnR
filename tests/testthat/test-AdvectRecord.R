@@ -29,11 +29,6 @@ test_that("error handling works", {
     AdvectRecord(data.frame(depth = 1 : 2, y = 1 : 2), advection = NA),
     msg, fixed = TRUE)
 
-  msg <- "'advection' value needs to be >= 0."
-  expect_error(
-    AdvectRecord(data.frame(depth = 1 : 2, y = 1 : 2), advection = -3.7),
-    msg, fixed = TRUE)
-
   msg <- "Require constant depth resolution."
   expect_error(
     AdvectRecord(data.frame(depth = c(1, 4, 5, 9), y = 1 : 4), advection = 1),
@@ -47,6 +42,7 @@ test_that("advection shift works", {
 
   record <- data.frame(depth = 1 : 4, y = 1 : 4)
   expect_equal(AdvectRecord(record, advection = 0), record)
+  expect_equal(AdvectRecord(record, advection = 0, clip = FALSE), record)
 
   record <- data.frame(depth = seq(1.5, 10.5, 3), y = 1 : 4)
   expect_equal(AdvectRecord(record, advection = 1), record)
@@ -98,5 +94,16 @@ test_that("advection shift works", {
   expected <- dplyr::tibble(depth = seq(1.5, 34.5, 3), y = c(rep(NA, 4), 1 : 8))
 
   expect_equal(actual, expected)
+
+  # test negative 'advection'; should be independent of `clip` setting
+
+  actual1 <- data.frame(depth = 1 : 10, y = 1 : 10) %>%
+    AdvectRecord(advection = -3)
+  actual2 <- data.frame(depth = 1 : 10, y = 1 : 10) %>%
+    AdvectRecord(advection = -3, clip = FALSE)
+  expected <- data.frame(depth = 1 : 10, y = c(4 : 10, rep(NA, 3)))
+
+  expect_equal(actual1, expected)
+  expect_equal(actual2, expected)
 
 })

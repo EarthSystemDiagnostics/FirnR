@@ -45,13 +45,13 @@ depths.
 }
 \details{
 If a vector of layer thicknesses is provided, or a vector of midpoint
-depths, for completing the depth information one needs the additional
+depths, one needs for completing the depth information the additional
 information of how deep the top of the first layer is actually below the
 surface. For a given layer thickness this is straighforward, as top and
 bottom depths follow from the cumulative sum of the thicknesses and are then
 merely shifted \code{startDepth} units downwards relative to the surface. If
 midpoint depths are provided, it is slightly ambiguous. The implementation
-here assumes that in such a case one also knows the depth of the top of the
+here assumes for such a case that one also knows the depth of the top of the
 first layer relative to the surface. This information is used to calculate
 the thickness of the first layer around the first midpoint depth, with the
 consecutive layer thicknesses then being calculated iteratively.

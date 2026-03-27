@@ -132,7 +132,7 @@ PlotModificationRMSD <- function(data, palette = NULL, xlim = NULL, ylim = NULL,
   if (is.null(zlim)) zlim <- range(data$advection, finite = TRUE)
 
   if (!length(palette)) {
-    palette <- grfxtools::ColorPal("RdYlBu", 10, rev = TRUE, fun = TRUE)
+    palette <- ColorPal("RdYlBu", 10, rev = TRUE, fun = TRUE)
   }
 
   minimum <- as.list(data$optimum[c("sigma", "compression")]) %>%

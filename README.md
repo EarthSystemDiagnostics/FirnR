@@ -2,16 +2,12 @@
 
 ## Overview
 
-**FirnR** is an R package that provides tools for working with and modelling of
-properties of polar firn, and for simulating polar firn and ice cores with a
-focus on the isotopic composition.
+**FirnR** is an R package that provides tools for working with and simulating of
+polar firn and ice cores, with a focus on the isotopic composition.
 
 Methods implemented include:
 
-- calculation of firn parameters, i.e. heat capacity, thermal conductivity, heat
-  and isotopic diffusivity;
-- simulation of seasonal firn temperatures;
-- depth-dependent modelling of firn density (Herron--Langway);
+- depth-dependent modelling of firn density (Herron-Langway model);
 - depth-dependent modelling of the diffusion length in firn for stable
   water isotopologues, both in depth and temporal units;
 - working with firn/ice-core depth scales:
@@ -22,7 +18,7 @@ Methods implemented include:
 - modelling of the smoothing effect of isotope profiles by firn diffusion;
 - simulation of temporal changes of firn isotope profiles from advection,
   depth scale compression and diffusion;
-- forward simulation of isotope profiles (beta).
+- forward simulation of isotope profiles based on meteorological data.
 
 ## Installation
 **FirnR** can be installed directly from GitHub:

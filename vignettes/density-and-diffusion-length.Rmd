@@ -18,7 +18,6 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(FirnR)
-library(PaleoSpec)
 ```
 
 ## Abstract
@@ -68,18 +67,18 @@ w   <- round(25 / res)
 filter <- rep(1 / w, w)
 
 b41.filtered <- b41.b42.density$b41
-b41.filtered$density <- PaleoSpec::ApplyFilter(b41.filtered$density, filter,
-                                               method = 2)
+b41.filtered$density <- FirnR:::paleospec.ApplyFilter(b41.filtered$density,
+                                                      filter, method = 2)
 
 b42.filtered <- b41.b42.density$b42
-b42.filtered$density <- PaleoSpec::ApplyFilter(b42.filtered$density, filter,
-                                               method = 2)
+b42.filtered$density <- FirnR:::paleospec.ApplyFilter(b42.filtered$density,
+                                                      filter, method = 2)
 
 stack.filtered <- b41.b42.density$stack
-stack.filtered$density <- PaleoSpec::ApplyFilter(stack.filtered$density, filter,
-                                                 method = 2)
-stack.filtered$fitDensity <- PaleoSpec::ApplyFilter(stack.filtered$fitDensity,
-                                                    filter, method = 2)
+stack.filtered$density <- FirnR:::paleospec.ApplyFilter(stack.filtered$density,
+                                                        filter, method = 2)
+stack.filtered$fitDensity <- FirnR:::paleospec.ApplyFilter(stack.filtered$fitDensity,
+                                                           filter, method = 2)
 
 ```
 

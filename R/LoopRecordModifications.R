@@ -21,9 +21,9 @@
 #'   each realisation of the modified record is calculated; must have the same
 #'   length and the same depth resolution as \code{record}. 
 #' @param advection numeric vector with a set of advection values (i.e. depth
-#'   values by which the record is moved deeper into the firn), measured in the
-#'   same physical units as component \code{depth} in \code{record}; must be
-#'   >= 0.
+#'   values by which the record is moved downwards (or upwards) through the
+#'   firn), measured in the same physical units as component \code{depth} in
+#'   \code{record}.
 #' @param sigma numeric vector with a set of (differential) diffusion length
 #'   values (see also \code{\link{GetDifferentialDiffusion}}), measured in the
 #'   same physical units as component \code{depth} in \code{record}; must be
@@ -72,7 +72,7 @@ LoopRecordModifications <- function(record, reference, advection, sigma,
   if (nrow(record) != nrow(reference)) {
     stop("'record' and 'reference' must be of the same length.")
   }
-  if (!prxytools::is.equidistant(record$depth))
+  if (!is.equidistant(record$depth))
     stop("Require constant depth resolution.", call. = FALSE)
   if (!is.logical(all.equal(diff(record$depth), diff(reference$depth)))) {
     stop("Depth resolutions of 'record' and 'reference' do not match.",
@@ -80,6 +80,8 @@ LoopRecordModifications <- function(record, reference, advection, sigma,
   }
 
   RMSD <- array(dim = c(length(advection), length(sigma), length(compression)))
+
+  rmsd <- function(v1, v2) {sqrt(mean((v1 - v2)^2, na.rm = TRUE))}
 
   if (verbose) {
 
@@ -98,7 +100,7 @@ LoopRecordModifications <- function(record, reference, advection, sigma,
       RMSD[, i, j] <- sapply(advection, function(a) {
 
         record.cda <- AdvectRecord(record.cd, advection = a)
-        stattools::rmsd(record.cda$y, reference$y, na.rm = TRUE)
+        rmsd(record.cda$y, reference$y)
 
       })
       
