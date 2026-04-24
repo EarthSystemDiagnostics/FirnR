@@ -20,7 +20,9 @@ test_that("correct density profile is obtained", {
 
   actual <- FirnR::DensityHL(depth1, rho.surface = rho.surface, T = T,
                              bdot = bdot)
-  expect_equal(actual, list(depth.we = dwe1, rho = rho1))
+
+  expect_true(is.data.frame(actual))
+  expect_equal(actual, data.frame(depth.we = dwe1, rho = rho1))
 
   zc <- rho.w / (rho.i * k0) * (log(rho.c / (rho.i - rho.c)) -
                                log(rho.surface / (rho.i - rho.surface)))
@@ -33,7 +35,7 @@ test_that("correct density profile is obtained", {
 
   actual <- FirnR::DensityHL(depth2, rho.surface = rho.surface, T = T,
                              bdot = bdot)
-  expect_equal(actual, list(depth.we = dwe2, rho = rho2))
+  expect_equal(actual, data.frame(depth.we = dwe2, rho = rho2))
 
   # with Johnsen correction
 
@@ -47,7 +49,7 @@ test_that("correct density profile is obtained", {
 
   actual <- FirnR::DensityHL(depth1, rho.surface = rho.surface, T = T,
                              bdot = bdot, JohnsenCorr = TRUE)
-  expect_equal(actual, list(depth.we = dwe1, rho = rho1))
+  expect_equal(actual, data.frame(depth.we = dwe1, rho = rho1))
 
   zc <- rho.w / (rho.i * k0) * (log(rho.c / (rho.i - rho.c)) -
                                log(rho.surface / (rho.i - rho.surface)))
@@ -60,6 +62,6 @@ test_that("correct density profile is obtained", {
 
   actual <- FirnR::DensityHL(depth2, rho.surface = rho.surface, T = T,
                              bdot = bdot, JohnsenCorr = TRUE)
-  expect_equal(actual, list(depth.we = dwe2, rho = rho2))
+  expect_equal(actual, data.frame(depth.we = dwe2, rho = rho2))
 
 })

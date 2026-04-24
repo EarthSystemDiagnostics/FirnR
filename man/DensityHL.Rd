@@ -2,12 +2,12 @@
 % Please edit documentation in R/DensityHL.R
 \name{DensityHL}
 \alias{DensityHL}
-\title{Analytical solution of Herron-Langway firn densification model.}
+\title{Herron-Langway densification model}
 \usage{
 DensityHL(depth = (0:9000)/100, rho.surface, T, bdot, JohnsenCorr = FALSE)
 }
 \arguments{
-\item{depth}{Numeric vector of firn depths [m] at which firn density is
+\item{depth}{numeric vector of firn depths [m] at which firn density is
 calculated.}
 
 \item{rho.surface}{surface density in [kg/m^3].}
@@ -28,23 +28,16 @@ A list with two elements:
     density in [kg/m^3].}
 }
 \description{
-This function calculates firn density depending on depth based on the
-analytical solution of the steady-state Herron-Langway densification model.
-}
-\details{
-The empirical, steady-state Herron-Langway [HL] model of firn densification
-together with its analytical solution is described in Herron and Langway
-(1980). Its implementation here is based on the MATLAB code by Aslak
-Grinsted (2014) which follows the nomenclature by Arthern et al. (2010). For
-details of expressing the analytical solution, see also van der Wel (2012).
-
-The HL model is matched to density observations from Greenlandic and
-Antarctic firn cores. The correction factors of Johnsen et al. (2000) (set
-for \code{JohnsenCorr = TRUE}) have been introduced to further improve the
-match with central Greenland firn core data.
+Calculate firn density depending on depth based on the analytical solution of
+the steady-state Herron-Langway (HL) densification model. The HL model was
+originally developed to match density observations from Greenlandic and
+Antarctic firn cores. The later Arrhenius rate constant correction factors by
+Johnsen et al. (2000) were inserted to further improve the match with central
+Greenland firn core data.
 }
 \examples{
-## Firn density for NGRIP site
+
+# Firn density for NGRIP site
 depth <- 0 : 150  
 t.mean <- 273.15 - 31.5
 bdot <- 200
@@ -54,7 +47,7 @@ result1 <- DensityHL(depth = depth, rho.surface = rho.s,
 result2 <- DensityHL(depth = depth, rho.surface = rho.s,
                      T = t.mean, bdot = bdot, JohnsenCorr = TRUE)
 
-## Plot against true depth
+# Plot against true depth
 plot(result1$rho, depth, type = "l", las = 1, lwd = 2,
      xlab = "firn density (kg/m^3)", ylab = "depth (m)",
      main = "NGRIP simulated density",
@@ -64,7 +57,7 @@ legend("bottomleft", c("HL steady state",
                     "HL steady state with Johnsen (2000) correction"),
        col = 1, lwd = c(2, 1.5), lty = c(1, 2), bty = "n")
 
-## Plot against water-equivalent depth
+# Plot against water-equivalent depth
 plot(result1$rho, result1$depth.we, type = "l", las = 1, lwd = 2,
      xlab = "firn density (kg/m^3)", ylab = "water-equivalent depth (m)",
      main = "NGRIP simulated density",
@@ -73,8 +66,15 @@ lines(result2$rho, result2$depth.we, lwd = 1.5, lty = 2)
 legend("bottomleft", c("HL steady state",
                     "HL steady state with Johnsen (2000) correction"),
        col = 1, lwd = c(2, 1.5), lty = c(1, 2), bty = "n")
+
 }
 \references{
+The empirical, steady-state HL model of firn densification together with its
+analytical solution is described in Herron and Langway (1980). Its
+implementation here is based on the MATLAB code by Aslak Grinsted (2014)
+which follows the nomenclature by Arthern et al. (2010). For details of
+expressing the analytical solution see also van der Wel (2012).
+
 Herron, M. M. and Langway Jr., C. C.: Firn densification: an empirical
 model, J. Glaciol., 25(93), 373-385, 1980.
 
