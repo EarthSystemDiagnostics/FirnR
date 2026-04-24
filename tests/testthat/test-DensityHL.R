@@ -22,6 +22,8 @@ test_that("correct density profile is obtained", {
                              bdot = bdot)
 
   expect_true(is.data.frame(actual))
+  expect_named(actual, c("depth.we", "rho"))
+
   expect_equal(actual, data.frame(depth.we = dwe1, rho = rho1))
 
   zc <- rho.w / (rho.i * k0) * (log(rho.c / (rho.i - rho.c)) -

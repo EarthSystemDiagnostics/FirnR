@@ -14,7 +14,7 @@
 #' @param bdot local mass accumulation rate in [kg/m^2/year].
 #' @param JohnsenCorr logical; whether or not to apply the Johnsen correction
 #'   to the Arrhenius rate constants for central Greenland sites.
-#' @return A list with two elements:
+#' @return A data frame with two columns:
 #'     \itemize{
 #'     \item \code{depth.we}: Numeric vector of water-equivalent depth in [m]
 #'     corresponding to the true firn depths given by \code{depth}.
@@ -134,6 +134,7 @@ DensityHL <- function(depth = (0 : 9000) / 100, rho.surface, T, bdot,
   rho <- c(rho.upper, rho.lower)
   depth.we <- A * c(t.upper, t.lower)
 
-  return(list(depth.we = depth.we, rho = rho))
+  # return profile
+  data.frame(depth.we = depth.we, rho = rho)
 
 }
