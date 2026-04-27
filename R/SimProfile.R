@@ -147,8 +147,7 @@ SimProfile <- function(time, precip, temperature, data = temperature,
   convFac  <- round(rhoWater / rho.surface, 1)
   densityProfile <-
     seq(0, convFac * max(depthProfileWE$depth), min(depthProfileWE$thickness)) %>%
-    DensityHL(rho.surface = rho.surface, T = T, bdot = bdot) %>%
-    data.frame()
+    DensityHL(rho.surface = rho.surface, T = T, bdot = bdot)
 
   # interpolate the density profile to the midpoint depths of the precipitated
   # layer profile and add it
