@@ -104,7 +104,7 @@ PlotModificationRMSD <- function(data, palette = NULL, xlim = NULL, ylim = NULL,
     stop("Missing required elements for 'optimum'.", call. = FALSE)
   }
 
-  is.dim <- sapply(list(data$advection, data$diffusion, data$compression), length)
+  is.dim <- lengths(list(data$advection, data$diffusion, data$compression))
   if (!identical(dim(data$RMSD), is.dim)) {
     stop("Dimensions of 'RMSD' array do not match ",
          "number of modification parameters.", call. = FALSE)

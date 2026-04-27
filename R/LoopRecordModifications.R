@@ -79,21 +79,24 @@ LoopRecordModifications <- function(record, reference, advection, diffusion,
          call. = FALSE)
   }
 
-  RMSD <- array(dim = c(length(advection), length(diffusion), length(compression)))
+  na <- length(advection)
+  nd <- length(diffusion)
+  nc <- length(compression)
+  RMSD <- array(dim = c(na, nd, nc))
 
   rmsd <- function(v1, v2) {sqrt(mean((v1 - v2)^2, na.rm = TRUE))}
 
   if (verbose) {
 
-    progress <- (1 : length(diffusion)) / length(diffusion) * 100
+    progress <- (1 : nd) / nd * 100
     cat("\n")
   }
 
-  for (i in 1 : length(diffusion)) {
+  for (i in 1 : nd) {
 
     record.d <- ModifyRecord(record, diffusion = diffusion[i])
 
-    for (j in 1 : length(compression)) {
+    for (j in 1 : nc) {
 
       record.cd <- CompressRecord(record.d, compression = compression[j])
 
