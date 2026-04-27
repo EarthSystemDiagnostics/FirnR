@@ -2,13 +2,13 @@
 % Please edit documentation in R/LoopRecordModifications.R
 \name{LoopRecordModifications}
 \alias{LoopRecordModifications}
-\title{Find realistic set from range of temporal record modifications}
+\title{Find a realistic set from a range of temporal record modifications}
 \usage{
 LoopRecordModifications(
   record,
   reference,
   advection,
-  sigma,
+  diffusion,
   compression,
   verbose = TRUE
 )
@@ -17,7 +17,7 @@ LoopRecordModifications(
 \item{record}{a data frame of a proxy record with components \code{depth} and
 \code{y} holding the depth scale and the proxy values. The depth scale must
 be equidistant. This record is modified according to every combination of
-\code{advection}, \code{sigma} and \code{compression}.}
+\code{advection}, \code{diffusion} and \code{compression}.}
 
 \item{reference}{a data frame with a reference record (components
 \code{depth} and \code{y}) against which the root mean square deviation of
@@ -29,7 +29,7 @@ values by which the record is moved downwards (or upwards) through the
 firn), measured in the same physical units as component \code{depth} in
 \code{record}.}
 
-\item{sigma}{numeric vector with a set of (differential) diffusion length
+\item{diffusion}{numeric vector with a set of (differential) diffusion length
 values (see also \code{\link{GetDifferentialDiffusion}}), measured in the
 same physical units as component \code{depth} in \code{record}; must be
 >= 0.}
@@ -46,13 +46,13 @@ running.}
 A list of five components:
 \describe{
   \item{advection:}{copy of input \code{advection};}
-  \item{sigma:}{copy of input \code{sigma};}
+  \item{diffusion:}{copy of input \code{diffusion};}
   \item{compression:}{copy of input \code{compression};}
   \item{optimum:}{a named vector with the overall minimum RMSD from the
     reference record and the corresponding set of optimal advection,
     diffusion and compression values.}
   \item{RMSD:}{an array of dimension \code{length(advection)} x
-    \code{length(sigma)} x \code{length(compression)} which contains the
+    \code{length(diffusion)} x \code{length(compression)} which contains the
     RMSD value between the reference and the modified input record for every
     combination of advection, diffusion and compression.}
 }
@@ -66,10 +66,10 @@ deviation (RMSD) from a reference record.
 \details{
 Note that for computational efficiency, the implemented order of
 modifications is (1) diffusion, (2) compression from densification, and (3)
-downward advection. This is slightly unphysical since the diffusional
-smoothing so acts over the uncompressed depth scale. However, this only
-slightly affects the results in the domain of high diffusion lengths and high
-compression values.
+downward advection. This is somewhat unphysical, since the diffusional
+smoothing acts thus on the uncompressed depth scale. However, this only
+affects the results slightly within the domain of high diffusion lengths and
+high compression values.
 }
 \seealso{
 \code{\link{ModifyRecord}}; \code{\link{DiffuseRecord}};

@@ -35,11 +35,11 @@ test_that("modifications work", {
   actual2 <- ModifyRecord(record, compression = compression)
   expected2 <- CompressRecord(record, compression = compression)
 
-  sigma = 1.5
-  actual3 <- ModifyRecord(record, sigma = sigma)
+  diffusion = 1.5
+  actual3 <- ModifyRecord(record, diffusion = diffusion)
   expected3 <- data.frame(
     depth = record$depth,
-    y = DiffuseRecord(record$y, sigma = sigma)
+    y = DiffuseRecord(record$y, sigma = diffusion)
   )
 
   expect_equal(actual1, expected1)
@@ -64,10 +64,10 @@ test_that("modifications work", {
   actual2 <- ModifyRecord(record, compression = compression)
   expected2 <- CompressRecord(record, compression = compression)
 
-  sigma = 2.3
-  actual3 <- ModifyRecord(record, sigma = sigma)
+  diffusion = 2.3
+  actual3 <- ModifyRecord(record, diffusion = diffusion)
   noNA <- which(!is.na(record$y))
-  yd <- DiffuseRecord(record$y[noNA], sigma = sigma)
+  yd <- DiffuseRecord(record$y[noNA], sigma = diffusion)
   expected3 <- data.frame(
     depth = record$depth,
     y = c(rep(NA, n1), yd, rep(NA, nr - n1 - 10))
@@ -84,14 +84,14 @@ test_that("modifications work", {
 
   advection = 4.5
   compression = 2.1
-  sigma = 1.5
+  diffusion = 1.5
 
   # advection and diffusion
-  actual1 <- ModifyRecord(record, advection = advection, sigma = sigma)
+  actual1 <- ModifyRecord(record, advection = advection, diffusion = diffusion)
 
   tmp <- data.frame(
     depth = record$depth,
-    y = DiffuseRecord(record$y, sigma = sigma)
+    y = DiffuseRecord(record$y, sigma = diffusion)
   )
   expected1 <- AdvectRecord(tmp, advection = advection)
 
@@ -103,22 +103,22 @@ test_that("modifications work", {
   expected2 <- AdvectRecord(tmp, advection = advection)
 
   # compression and diffusion
-  actual3 <- ModifyRecord(record, sigma = sigma,
+  actual3 <- ModifyRecord(record, diffusion = diffusion,
                           compression = compression)
 
   tmp <- data.frame(
     depth = record$depth,
-    y = DiffuseRecord(record$y, sigma = sigma)
+    y = DiffuseRecord(record$y, sigma = diffusion)
   )
   expected3 <- CompressRecord(tmp, compression = compression)
 
   # all three
-  actual4 <- ModifyRecord(record, advection = advection, sigma = sigma,
+  actual4 <- ModifyRecord(record, advection = advection, diffusion = diffusion,
                           compression = compression)
 
   tmp1 <- data.frame(
     depth = record$depth,
-    y = DiffuseRecord(record$y, sigma = sigma)
+    y = DiffuseRecord(record$y, sigma = diffusion)
   )
   tmp2 <- CompressRecord(tmp1, compression = compression)
   expected4 <- AdvectRecord(tmp2, advection = advection)
@@ -132,12 +132,12 @@ test_that("modifications work", {
   # test different output resolution
 
   output.res <- 3
-  actual5 <- ModifyRecord(record, advection = advection, sigma = sigma,
+  actual5 <- ModifyRecord(record, advection = advection, diffusion = diffusion,
                           compression = compression, output.res = output.res)
 
   tmp1 <- data.frame(
     depth = record$depth,
-    y = DiffuseRecord(record$y, sigma = sigma)
+    y = DiffuseRecord(record$y, sigma = diffusion)
   )
   tmp2 <- CompressRecord(tmp1, compression = compression)
   tmp3 <- AdvectRecord(tmp2, advection = advection)
@@ -150,7 +150,7 @@ test_that("modifications work", {
   expect_equal(actual5, expected5)
 
   actual6 <- ModifyRecord(dplyr::as_tibble(record), advection = advection,
-                          sigma = sigma, compression = compression,
+                          diffusion = diffusion, compression = compression,
                           output.res = output.res)
   expected6 <- dplyr::as_tibble(expected5)
 

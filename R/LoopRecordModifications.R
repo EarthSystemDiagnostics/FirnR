@@ -1,4 +1,4 @@
-#' Find realistic set from range of temporal record modifications
+#' Find a realistic set from a range of temporal record modifications
 #'
 #' Loop over a given parameter space of temporal modification values
 #' (i.e. advection, diffusion and compression) to modify a given firn proxy
@@ -7,15 +7,15 @@
 #'
 #' Note that for computational efficiency, the implemented order of
 #' modifications is (1) diffusion, (2) compression from densification, and (3)
-#' downward advection. This is slightly unphysical since the diffusional
-#' smoothing so acts over the uncompressed depth scale. However, this only
-#' slightly affects the results in the domain of high diffusion lengths and high
-#' compression values.
+#' downward advection. This is somewhat unphysical, since the diffusional
+#' smoothing acts thus on the uncompressed depth scale. However, this only
+#' affects the results slightly within the domain of high diffusion lengths and
+#' high compression values.
 #'
 #' @param record a data frame of a proxy record with components \code{depth} and
 #'   \code{y} holding the depth scale and the proxy values. The depth scale must
 #'   be equidistant. This record is modified according to every combination of
-#'   \code{advection}, \code{sigma} and \code{compression}.
+#'   \code{advection}, \code{diffusion} and \code{compression}.
 #' @param reference a data frame with a reference record (components
 #'   \code{depth} and \code{y}) against which the root mean square deviation of
 #'   each realisation of the modified record is calculated; must have the same
@@ -24,7 +24,7 @@
 #'   values by which the record is moved downwards (or upwards) through the
 #'   firn), measured in the same physical units as component \code{depth} in
 #'   \code{record}.
-#' @param sigma numeric vector with a set of (differential) diffusion length
+#' @param diffusion numeric vector with a set of (differential) diffusion length
 #'   values (see also \code{\link{GetDifferentialDiffusion}}), measured in the
 #'   same physical units as component \code{depth} in \code{record}; must be
 #'   >= 0.
@@ -37,13 +37,13 @@
 #' @return A list of five components:
 #' \describe{
 #'   \item{advection:}{copy of input \code{advection};}
-#'   \item{sigma:}{copy of input \code{sigma};}
+#'   \item{diffusion:}{copy of input \code{diffusion};}
 #'   \item{compression:}{copy of input \code{compression};}
 #'   \item{optimum:}{a named vector with the overall minimum RMSD from the
 #'     reference record and the corresponding set of optimal advection,
 #'     diffusion and compression values.}
 #'   \item{RMSD:}{an array of dimension \code{length(advection)} x
-#'     \code{length(sigma)} x \code{length(compression)} which contains the
+#'     \code{length(diffusion)} x \code{length(compression)} which contains the
 #'     RMSD value between the reference and the modified input record for every
 #'     combination of advection, diffusion and compression.}
 #' }
@@ -52,7 +52,7 @@
 #'   \code{\link{CompressRecord}}; \code{\link{AdvectRecord}}
 #' @export
 #'
-LoopRecordModifications <- function(record, reference, advection, sigma,
+LoopRecordModifications <- function(record, reference, advection, diffusion,
                                     compression, verbose = TRUE) {
 
   if (!is.data.frame(record)) {
@@ -79,19 +79,19 @@ LoopRecordModifications <- function(record, reference, advection, sigma,
          call. = FALSE)
   }
 
-  RMSD <- array(dim = c(length(advection), length(sigma), length(compression)))
+  RMSD <- array(dim = c(length(advection), length(diffusion), length(compression)))
 
   rmsd <- function(v1, v2) {sqrt(mean((v1 - v2)^2, na.rm = TRUE))}
 
   if (verbose) {
 
-    progress <- (1 : length(sigma)) / length(sigma) * 100
+    progress <- (1 : length(diffusion)) / length(diffusion) * 100
     cat("\n")
   }
 
-  for (i in 1 : length(sigma)) {
+  for (i in 1 : length(diffusion)) {
 
-    record.d <- ModifyRecord(record, sigma = sigma[i])
+    record.d <- ModifyRecord(record, diffusion = diffusion[i])
 
     for (j in 1 : length(compression)) {
 
@@ -116,10 +116,11 @@ LoopRecordModifications <- function(record, reference, advection, sigma,
   # return results
   list(
     advection = advection,
-    sigma = sigma,
+    diffusion = diffusion,
     compression = compression,
     optimum = c(rmsd = RMSD[i.min], advection = advection[i.min[1]],
-                sigma = sigma[i.min[2]], compression = compression[i.min[3]]),
+                diffusion = diffusion[i.min[2]],
+                compression = compression[i.min[3]]),
     RMSD = RMSD
   )
 

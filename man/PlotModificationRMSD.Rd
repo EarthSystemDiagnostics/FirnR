@@ -73,13 +73,13 @@ data independently, you need to shape it into the following list format for
 plotting it here:
 \describe{
   \item{advection:}{vector of studied downward advection values;}
-  \item{sigma:}{vector of studied (differential) diffusion lengths;}
+  \item{diffusion:}{vector of studied (differential) diffusion lengths;}
   \item{compression:}{vector of studied compression values;}
   \item{optimum:}{a named vector with the overall minimum RMSD from the
     reference record and the corresponding set of optimal advection,
     diffusion and compression values.}
   \item{RMSD:}{an array of dimension \code{length(advection)} x
-    \code{length(sigma)} x \code{length(compression)} which contains the
+    \code{length(diffusion)} x \code{length(compression)} which contains the
     RMSD value between the reference and the modified record for every
     combination of advection, diffusion and compression.}
 }
@@ -106,7 +106,7 @@ record <- reference <- data.frame(depth = seq(n), y = seq(n))
 rmsd.data <- LoopRecordModifications(
   record, reference,
   advection = seq(10) - 1,
-  sigma = 0 : 5,
+  diffusion = 0 : 5,
   compression = 0 : 5
  ) \%>\%
    PlotModificationRMSD(cex = 2)
