@@ -53,32 +53,40 @@ test_that("diffusion works", {
   sigma[i] <- 0
   diffused2 <- DiffuseRecord(record, sigma = sigma)
 
-  expect_equal(diffused1, record$y)
-  expect_equal(diffused2[i], record$y[i])
+  expect_true(is.data.frame(diffused1))
+  expect_true(is.data.frame(diffused2))
+  expect_equal(diffused1, record)
+  expect_equal(diffused2$depth, record$depth)
+  expect_equal(diffused2$y[i], record$y[i])
 
   # test diffusion for constant diffusion length
 
   record <- data.frame(depth = seq(0, 1000, 0.1), y = sin(seq(0, 1000, 0.1)))
   diffused <- DiffuseRecord(record, sigma = sqrt(2))
 
-  expected <- round(record$y * exp(-1), 3)
-  diffused <- round(diffused, 3)
+  # check tibble conservation
+  expect_equal(tibble::as_tibble(DiffuseRecord(record, sigma = sqrt(2))),
+               tibble::as_tibble(diffused))
+
+  diffused$y <- round(diffused$y, 3)
+  expected <- data.frame(depth = record$depth, y = round(record$y * exp(-1), 3))
 
   # use only subset to circumvent edge effects
   edgeLength <- ceiling(5 * sqrt(2) / 0.1) # as defined in code
   compare <- (edgeLength + 1) : (nrow(record) - edgeLength)
-  expect_equal(diffused[compare], expected[compare])
+  expect_equal(diffused$depth, expected$depth)
+  expect_equal(diffused$y[compare], expected$y[compare])
 
   # results need to be different in the edge areas
-  expect_false(all(diffused[-compare] == expected[-compare]))
+  expect_false(all(diffused$y[-compare] == expected$y[-compare]))
 
   # switch off padding
   diffused <- DiffuseRecord(record, sigma = sqrt(2), pad = FALSE)
-  diffused <- round(diffused, 3)
-  compare <- which(!is.na(diffused))
-  expect_equal(diffused[compare], expected[compare])
+  diffused$y <- round(diffused$y, 3)
+  compare <- which(!is.na(diffused$y))
+  expect_equal(diffused$y[compare], expected$y[compare])
 
   # check padding length
-  expect_equal(length(which(is.na(diffused))), 2 * edgeLength)
+  expect_equal(length(which(is.na(diffused$y))), 2 * edgeLength)
 
 })

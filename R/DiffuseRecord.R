@@ -145,6 +145,9 @@ DiffuseRecord <- function(record, sigma, pad = TRUE) {
     }
   }
 
-  return(rec.diffused)
+  output <- data.frame(depth = record$depth, y = rec.diffused) %>%
+    {if (tibble::is_tibble(record)) {tibble::as_tibble(.)} else { . }}
+
+  return(output)
 
 }
