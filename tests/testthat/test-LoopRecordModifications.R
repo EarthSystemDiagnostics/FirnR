@@ -45,33 +45,33 @@ test_that("calculations work", {
 
   actual <- LoopRecordModifications(data.frame(depth = 1: 10, y = 1 : 10),
                                     data.frame(depth = 1: 10, y = 11 : 20),
-                                    advection = 3, sigma = 1, compression = 2,
-                                    verbose = FALSE)
+                                    advection = 3, diffusion = 1,
+                                    compression = 2, verbose = FALSE)
 
   expect_type(actual, "list")
   expect_length(actual, 5)
   expect_length(actual$advection, 1)
-  expect_length(actual$sigma, 1)
+  expect_length(actual$diffusion, 1)
   expect_length(actual$compression, 1)
   expect_length(actual$optimum, 4)
   expect_equal(dim(actual$RMSD), c(1, 1, 1))
   expect_equal(names(actual$optimum),
-               c("rmsd", "advection", "sigma", "compression"))
+               c("rmsd", "advection", "diffusion", "compression"))
 
   record <- data.frame(depth = 1: 10, y = 1 : 10)
   reference <- record
   actual <- LoopRecordModifications(record, reference,
-                                    advection = c(0, 5), sigma = 0 : 1,
+                                    advection = c(0, 5), diffusion = 0 : 1,
                                     compression = c(0, 3), verbose = FALSE)
 
-  y1 <- ModifyRecord(record, sigma = 0, compression = 0, advection = 0)
-  y2 <- ModifyRecord(record, sigma = 0, compression = 0, advection = 5)
-  y3 <- ModifyRecord(record, sigma = 1, compression = 0, advection = 0)
-  y4 <- ModifyRecord(record, sigma = 1, compression = 0, advection = 5)
-  y5 <- ModifyRecord(record, sigma = 0, compression = 3, advection = 0)
-  y6 <- ModifyRecord(record, sigma = 0, compression = 3, advection = 5)
-  y7 <- ModifyRecord(record, sigma = 1, compression = 3, advection = 0)
-  y8 <- ModifyRecord(record, sigma = 1, compression = 3, advection = 5)
+  y1 <- ModifyRecord(record, advection = 0, diffusion = 0, compression = 0)
+  y2 <- ModifyRecord(record, advection = 5, diffusion = 0, compression = 0)
+  y3 <- ModifyRecord(record, advection = 0, diffusion = 1, compression = 0)
+  y4 <- ModifyRecord(record, advection = 5, diffusion = 1, compression = 0)
+  y5 <- ModifyRecord(record, advection = 0, diffusion = 0, compression = 3)
+  y6 <- ModifyRecord(record, advection = 5, diffusion = 0, compression = 3)
+  y7 <- ModifyRecord(record, advection = 0, diffusion = 1, compression = 3)
+  y8 <- ModifyRecord(record, advection = 5, diffusion = 1, compression = 3)
 
   rmsd <- function(v1, v2) {sqrt(mean((v1 - v2)^2, na.rm = TRUE))}
 
@@ -81,6 +81,6 @@ test_that("calculations work", {
 
   expect_equal(actual$RMSD, expected)
   expect_equal(actual$optimum,
-               c(rmsd = 0, advection = 0, sigma = 0, compression = 0))
+               c(rmsd = 0, advection = 0, diffusion = 0, compression = 0))
 
 })

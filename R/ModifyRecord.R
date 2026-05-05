@@ -14,17 +14,17 @@
 #'
 #' @param record a data frame with components \code{depth} and \code{y} holding
 #'   the original depth scale and proxy values.
-#' @param sigma numeric value for the diffusion length to smooth the record;
+#' @param advection numeric value for the advection, i.e. the depth value by
+#'   which the record is moved downwards (or also upwards) through the firn,
+#'   measured in the same physical units as component \code{depth} in
+#'   \code{record}. If \code{NULL}, no advection is modelled.
+#' @param diffusion numeric value for the diffusion length to smooth the record;
 #'   must be in the same physical units as the depth resolution of the
 #'   \code{record}. If \code{NULL}, no diffusional smoothing is applied.
 #' @param compression numeric value of the amount of compression of the original
 #'   depth scale measured in the same physical units as component \code{depth}
 #'   in \code{record}; cannot be larger than the length of the original
 #'   record. If \code{NULL}, no compression by densification is modelled.
-#' @param advection numeric value for the advection, i.e. the depth value by
-#'   which the record is moved downwards (or also upwards) through the firn,
-#'   measured in the same physical units as component \code{depth} in
-#'   \code{record}. If \code{NULL}, no downward advection is modelled.
 #' @param output.res optional numeric value for the depth resolution the
 #'   modified record shall be interpolated to upon output; see Details. The
 #'   default outputs the modified record on the depth resolution of the input.
@@ -32,8 +32,8 @@
 #'   the amount of the downward advection; see \code{\link{AdvectRecord}} for
 #'   details.
 #' @return a data frame with components \code{depth} and \code{y} holding the
-#'   modified proxy record. If no moficiation parameters are specified, returned
-#'   is simply the input record.
+#'   modified proxy record. If no modification parameters are specified, simply,
+#'   the input record is returned.
 #' @author Thomas Münch
 #' @seealso \code{\link{DiffuseRecord}}; \code{\link{CompressRecord}};
 #'   \code{\link{AdvectRecord}}
@@ -42,14 +42,15 @@
 #' original <- data.frame(depth = 1 : 10, y = 1 : 10)
 #'
 #' ModifyRecord(original) # = input
-#' ModifyRecord(original, advection = 4.5, sigma = 1.5, compression = 2.1)
-#' ModifyRecord(original, advection = 4.5, sigma = 1.5, compression = 2.1,
+#' ModifyRecord(original, advection = 4.5, diffusion = 1.5, compression = 2.1)
+#' ModifyRecord(original, advection = 4.5, diffusion = 1.5, compression = 2.1,
 #'              output.res = 3)
+#' ModifyRecord(original, advection = 4.5, diffusion = 1.5, clip = FALSE)
 #'
 #' @export
 #'
-ModifyRecord <- function(record, sigma = NULL, compression = NULL,
-                         advection = NULL, output.res = NULL, clip = TRUE) {
+ModifyRecord <- function(record, advection = NULL, diffusion = NULL,
+                         compression = NULL, output.res = NULL, clip = TRUE) {
 
   if (!is.null(output.res)) {
 
@@ -64,21 +65,21 @@ ModifyRecord <- function(record, sigma = NULL, compression = NULL,
     }
   }
 
-  if (is.null(c(sigma, compression, advection))) {
+  if (is.null(c(advection, diffusion, compression))) {
 
     warning("No modification parameters - returning input.", call. = FALSE)
     return(record)
 
   }
 
-  diffuse  <- !is.null(sigma)
-  compress <- !is.null(compression)
   advect   <- !is.null(advection)
+  diffuse  <- !is.null(diffusion)
+  compress <- !is.null(compression)
 
   interpolate <- !is.null(output.res)
   
   # helper function for diffusion until DiffuseRecord can handle data frames
-  .hlp.diffuse <- function(record, sigma) {
+  .hlp.diffuse <- function(record, diffusion) {
 
     if (!is.data.frame(record)) {
       stop("'record' must be a data.frame.", call. = FALSE)
@@ -95,7 +96,7 @@ ModifyRecord <- function(record, sigma = NULL, compression = NULL,
     # remove leading and trailing NA's, diffuse, and merge with trimmed part
     record %>%
       zoo::na.trim() %>%
-      dplyr::mutate(yd = DiffuseRecord(.data$y, sigma, depth.res),
+      dplyr::mutate(yd = DiffuseRecord(.data$y, diffusion, depth.res),
                     .keep = "unused") %>%
       dplyr::left_join(record, ., by = dplyr::join_by("depth")) %>%
       dplyr::select("depth", y = "yd")
@@ -105,7 +106,7 @@ ModifyRecord <- function(record, sigma = NULL, compression = NULL,
   # make modifications
 
   output <- record %>%
-    {if (diffuse) {.hlp.diffuse(., sigma)} else { . }} %>%
+    {if (diffuse) {.hlp.diffuse(., diffusion)} else { . }} %>%
     {if (compress) {CompressRecord(., compression)} else { . }} %>%
     {if (advect) {AdvectRecord(., advection, clip = clip)} else { . }}
 

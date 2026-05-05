@@ -6,9 +6,9 @@
 \usage{
 ModifyRecord(
   record,
-  sigma = NULL,
-  compression = NULL,
   advection = NULL,
+  diffusion = NULL,
+  compression = NULL,
   output.res = NULL,
   clip = TRUE
 )
@@ -17,7 +17,12 @@ ModifyRecord(
 \item{record}{a data frame with components \code{depth} and \code{y} holding
 the original depth scale and proxy values.}
 
-\item{sigma}{numeric value for the diffusion length to smooth the record;
+\item{advection}{numeric value for the advection, i.e. the depth value by
+which the record is moved downwards (or also upwards) through the firn,
+measured in the same physical units as component \code{depth} in
+\code{record}. If \code{NULL}, no advection is modelled.}
+
+\item{diffusion}{numeric value for the diffusion length to smooth the record;
 must be in the same physical units as the depth resolution of the
 \code{record}. If \code{NULL}, no diffusional smoothing is applied.}
 
@@ -25,11 +30,6 @@ must be in the same physical units as the depth resolution of the
 depth scale measured in the same physical units as component \code{depth}
 in \code{record}; cannot be larger than the length of the original
 record. If \code{NULL}, no compression by densification is modelled.}
-
-\item{advection}{numeric value for the advection, i.e. the depth value by
-which the record is moved downwards (or also upwards) through the firn,
-measured in the same physical units as component \code{depth} in
-\code{record}. If \code{NULL}, no downward advection is modelled.}
 
 \item{output.res}{optional numeric value for the depth resolution the
 modified record shall be interpolated to upon output; see Details. The
@@ -41,8 +41,8 @@ details.}
 }
 \value{
 a data frame with components \code{depth} and \code{y} holding the
-  modified proxy record. If no moficiation parameters are specified, returned
-  is simply the input record.
+  modified proxy record. If no modification parameters are specified, simply,
+  the input record is returned.
 }
 \description{
 Modify a firn proxy record (e.g., an isotope record) to simulate the changes
@@ -63,9 +63,10 @@ resolution of the record.
 original <- data.frame(depth = 1 : 10, y = 1 : 10)
 
 ModifyRecord(original) # = input
-ModifyRecord(original, advection = 4.5, sigma = 1.5, compression = 2.1)
-ModifyRecord(original, advection = 4.5, sigma = 1.5, compression = 2.1,
+ModifyRecord(original, advection = 4.5, diffusion = 1.5, compression = 2.1)
+ModifyRecord(original, advection = 4.5, diffusion = 1.5, compression = 2.1,
              output.res = 3)
+ModifyRecord(original, advection = 4.5, diffusion = 1.5, clip = FALSE)
 
 }
 \seealso{

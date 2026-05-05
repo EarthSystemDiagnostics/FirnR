@@ -195,7 +195,8 @@ plot(profile, xlab = "Depth (cm)", type = "l",
      ylab = "Some profile", xlim = c(0, 400))
 
 profile %>%
-  ModifyRecord(sigma = 3, compression = 50, advection = 200, clip = FALSE) %>%
+  ModifyRecord(advection = 200, diffusion = 3, compression = 50,
+               clip = FALSE) %>%
   lines(col = "firebrick4", lwd = 1.5)
 
 legend("topright", "original", col = "black", lwd = 1, bty = "n")

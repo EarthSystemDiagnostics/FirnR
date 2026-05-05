@@ -15,13 +15,13 @@
 #' plotting it here:
 #' \describe{
 #'   \item{advection:}{vector of studied downward advection values;}
-#'   \item{sigma:}{vector of studied (differential) diffusion lengths;}
+#'   \item{diffusion:}{vector of studied (differential) diffusion lengths;}
 #'   \item{compression:}{vector of studied compression values;}
 #'   \item{optimum:}{a named vector with the overall minimum RMSD from the
 #'     reference record and the corresponding set of optimal advection,
 #'     diffusion and compression values.}
 #'   \item{RMSD:}{an array of dimension \code{length(advection)} x
-#'     \code{length(sigma)} x \code{length(compression)} which contains the
+#'     \code{length(diffusion)} x \code{length(compression)} which contains the
 #'     RMSD value between the reference and the modified record for every
 #'     combination of advection, diffusion and compression.}
 #' }
@@ -74,7 +74,7 @@
 #' rmsd.data <- LoopRecordModifications(
 #'   record, reference,
 #'   advection = seq(10) - 1,
-#'   sigma = 0 : 5,
+#'   diffusion = 0 : 5,
 #'   compression = 0 : 5
 #'  ) %>%
 #'    PlotModificationRMSD(cex = 2)
@@ -90,7 +90,7 @@ PlotModificationRMSD <- function(data, palette = NULL, xlim = NULL, ylim = NULL,
 
   if (!is.list(data)) stop("Input 'data' must be a list.", call. = FALSE)
 
-  nm <- c("advection", "sigma", "compression", "optimum", "RMSD")
+  nm <- c("advection", "diffusion", "compression", "optimum", "RMSD")
   if (any(is.na(match(nm, names(data))))) {
     stop("Input 'data' structure lacks required elements.", call. = FALSE)
   }
@@ -99,12 +99,12 @@ PlotModificationRMSD <- function(data, palette = NULL, xlim = NULL, ylim = NULL,
     stop("Element 'optimum' must have length 4.", call. = FALSE)
   }
 
-  nm <- c("rmsd", "advection", "sigma", "compression")
+  nm <- c("rmsd", "advection", "diffusion", "compression")
   if (any(is.na(match(nm, names(data$optimum))))) {
     stop("Missing required elements for 'optimum'.", call. = FALSE)
   }
 
-  is.dim <- sapply(list(data$advection, data$sigma, data$compression), length)
+  is.dim <- lengths(list(data$advection, data$diffusion, data$compression))
   if (!identical(dim(data$RMSD), is.dim)) {
     stop("Dimensions of 'RMSD' array do not match ",
          "number of modification parameters.", call. = FALSE)
@@ -119,7 +119,7 @@ PlotModificationRMSD <- function(data, palette = NULL, xlim = NULL, ylim = NULL,
 
   # make filled contour plot
 
-  x <- data$sigma
+  x <- data$diffusion
   y <- data$compression
   z <- opt.adv.surface
 
@@ -135,7 +135,7 @@ PlotModificationRMSD <- function(data, palette = NULL, xlim = NULL, ylim = NULL,
     palette <- ColorPal("RdYlBu", 10, rev = TRUE, fun = TRUE)
   }
 
-  minimum <- as.list(data$optimum[c("sigma", "compression")]) %>%
+  minimum <- as.list(data$optimum[c("diffusion", "compression")]) %>%
     setNames(c("x", "y"))
 
   graphics::filled.contour(x, y, z, xlim = xlim, ylim = ylim, zlim = zlim,
@@ -146,7 +146,8 @@ PlotModificationRMSD <- function(data, palette = NULL, xlim = NULL, ylim = NULL,
                          cex = par()$cex.lab, font = par()$font.lab);
                    mtext(ylab, side = 2, line = line.v,
                          cex = par()$cex.lab, font = par()$font.lab, las = 0);
-                   contour(data$sigma, data$compression, RMSD.opt.adv.surface,
+                   contour(data$diffusion, data$compression,
+                           RMSD.opt.adv.surface,
                            add = TRUE, labcex = contour.labcex);
                    points(minimum, pch = 21, col = "black",
                           bg = "black", cex = cex)}

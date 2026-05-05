@@ -1,6 +1,6 @@
 Package: FirnR
 Title: Simulate Polar Snow and Firn Cores
-Version: 0.1.0.9018
+Version: 0.1.0.9019
 Authors@R: c(
     person("Thomas", "Laepple", email = "thomas.laepple@awi.de",
            role = c("aut", "cre")),
