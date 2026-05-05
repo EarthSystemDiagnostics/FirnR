@@ -57,7 +57,16 @@
 #'
 #' @export
 #'
-DiffuseRecord <- function(rec, sigma, res = 1, pad = TRUE){
+DiffuseRecord <- function(record, sigma, pad = TRUE) {
+
+  if (!is.data.frame(record)) {
+    stop("'record' must be a data.frame.", call. = FALSE)
+  }
+  if (any(is.na(match(c("depth", "y"), colnames(record))))) {
+    stop("Expected column names for 'record' are: 'depth', 'y'.",
+         call. = FALSE)
+  }
+  if ((nr <- nrow(record)) <= 1) stop("Length of 'record' needs to be > 1.")
 
   if (missing(sigma)) {
     stop("No diffusion length passed as input.", call. = FALSE)
@@ -67,20 +76,26 @@ DiffuseRecord <- function(rec, sigma, res = 1, pad = TRUE){
   }
 
   ns <- length(sigma)
-  n <- length(rec)
 
-  if (ns != 1 & ns != n) {
+  if (ns != 1 & ns != nr) {
     stop("Diffusion length neither of length 1 nor matches length of record.",
          call. = FALSE)
   }
 
+  if (!is.equidistant(record$depth))
+    stop("Require constant depth resolution for diffusion.", call. = FALSE)
+
   # recycle sigma if needed
   if (ns == 1) {
-    sigma <- rep(sigma, n)
+    sigma <- rep(sigma, nr)
   }
 
   # scale diffusion length according to resolution of record
+  res <- diff(record$depth)[1]
   sigma <- sigma / res
+
+  # extract record data
+  rec <- record$y
 
   # pad record end with its mean to avoid NA's at the end of diffused record
   if (pad) {
@@ -88,10 +103,10 @@ DiffuseRecord <- function(rec, sigma, res = 1, pad = TRUE){
   }
 
   # vector to store diffused data
-  rec.diffused <- rep(NA, n)
+  rec.diffused <- rep(NA, nr)
 
   # loop over record
-  for (i in 1 : n) {
+  for (i in 1 : nr) {
 
     # diffusion length for current depth
     sig <- sigma[i]
