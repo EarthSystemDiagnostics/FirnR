@@ -33,10 +33,6 @@ test_that("error handling works", {
   expect_error(CompressRecord(data.frame(depth = 1 : 5, y = 1 : 5),
                               compression = 8), msg, fixed = TRUE)
   
-  msg <- "Negative 'compression' parameter yields longer record."
-  expect_warning(
-    CompressRecord(data.frame(depth = 1 : 10, y = 1 : 10), compression = -1),
-    msg, fixed = TRUE)
 
 })
 
@@ -77,6 +73,15 @@ test_that("compression simulation works", {
   original <- dplyr::as_tibble(original)
   expected <- dplyr::as_tibble(expected)
   actual <- CompressRecord(original, compression = 4.5)
+
+  expect_equal(expected, actual)
+
+  # test record stretching
+
+  ycp <- c(1., 1.9, 2.8, 3.7, 4.6, 5.5, 6.4, 7.3, 8.2, 9.1)
+  original <- data.frame(depth = d, y = yin)
+  expected <- data.frame(depth = d, y = ycp)
+  actual <- CompressRecord(original, compression = -1)
 
   expect_equal(expected, actual)
 

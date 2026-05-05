@@ -17,7 +17,10 @@
 #'   the original depth scale and proxy values.
 #' @param compression numeric value of the amount of compression of the original
 #'   depth scale measured in the same physical units as \code{depth} in
-#'   \code{record}; cannot be larger than the length of the original record.
+#'   \code{record}; must not be larger than the length of the original
+#'   record. Note that for general applicability a value < 0 is also allowed,
+#'   yielding a stretched record, which, however, cannot be the result of a
+#'   densification process.
 #' @importFrom rlang .data
 #' @return a data frame with components \code{depth} and \code{y} holding the
 #'   original depth scale and the interpolated (compressed) proxy values.
@@ -53,9 +56,6 @@ CompressRecord <- function(record, compression) {
 
   if (compression >= (len <- diff(range(x$depth)))) {
     stop("Compression value >= range (max - min) of original depth scale.")
-  }
-  if (compression < 0) {
-    warning("Negative 'compression' parameter yields longer record.")
   }
 
   # new bin sizes
