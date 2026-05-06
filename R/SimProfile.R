@@ -58,12 +58,13 @@
 ##' @param diffuse logical to control whether the simulated firn profile
 ##'   shall be diffused according to the standard firn diffusion model.
 ##' @return A data frame of three variables with the simulated firn profile:
-##'   firn/ice midpoint depths in m, time relative to the first observation
-##'   point of the input time series, and corresponding firn profile (proxy)
-##'   value. Additionally, attributes are attached to the data frame which
-##'   include information on the simulation run: applied linear calibration
-##'   parameters, used atmospheric pressure, surface snow density and output
-##'   resolution, the diffusion flag, and the date of the run.
+##'   firn/ice midpoint depths in m (column \code{depth}), time relative to the
+##'   first observation point of the input time series (column \code{time}), and
+##'   corresponding firn profile (proxy) value (column \code{y}). Additionally,
+##'   attributes are attached to the data frame which include information on the
+##'   simulation run: applied linear calibration parameters, used atmospheric
+##'   pressure, surface snow density and output resolution, the diffusion flag,
+##'   and the date of the run.
 ##' @examples
 ##'
 ##' # --- Simple simulation example with constant daily accumulation ---
@@ -89,17 +90,17 @@
 ##' # compare original time series to simulated time series in the firn
 ##' plot(time, temperature, type = "l", ylim = c(-65, -15),
 ##'      xlab = "Time", ylab = "Original and simulated profiles (a.u.)")
-##' lines(profile.nodiff$time, profile.nodiff$d18O, col = 4, lwd = 2)
-##' lines(profile$time, profile$d18O, col = 2, lwd = 2)
+##' lines(profile.nodiff$time, profile.nodiff$y, col = 4, lwd = 2)
+##' lines(profile$time, profile$y, col = 2, lwd = 2)
 ##' legend("topright",
 ##'        c("Original ts", "Simulated ts w/o diffusion",
 ##'          "Simulated ts with diffusion"),
 ##'        lty = 1, lwd = c(1, 2, 2), col = c(1, 4, 2))
 ##'
 ##' # show simulated depth profile
-##' plot(profile$depth, profile$d18O, col = 2, type = "l", lwd = 2,
+##' plot(profile$depth, profile$y, col = 2, type = "l", lwd = 2,
 ##'      xlab = "Depth (m)", ylab = "Simulated depth profile")
-##' abline(h = mean(profile$d18O), lty = 2)
+##' abline(h = mean(profile$y), lty = 2)
 ##'
 ##' @author Thomas Münch
 ##' @export
@@ -158,7 +159,7 @@ SimProfile <- function(time, precip, temperature, data = temperature,
   profile <- (depthProfileWE$thickness * rhoWater / depthProfileWE$density) %>%
     ObtainDepthScale() %>%
     dplyr::mutate(time = time) %>%
-    dplyr::mutate(d18O = CalibrateLinear(data, alpha, beta))
+    dplyr::mutate(y = CalibrateLinear(data, alpha, beta))
   
   # interpolate data to a high equidistant resolution of maximum 0.1 mm;
   # add density and diffusion length data on that depth scale
@@ -166,7 +167,7 @@ SimProfile <- function(time, precip, temperature, data = temperature,
   profileEqui <- data.frame(depth = seq(min(profile$depth),
                                         max(profile$depth), res)) %>%
     dplyr::mutate(time = approx.y(profile$depth, profile$time, .data$depth)) %>%
-    dplyr::mutate(d18O = approx.y(profile$depth, profile$d18O, .data$depth)) %>%
+    dplyr::mutate(y = approx.y(profile$depth, profile$y, .data$depth)) %>%
     dplyr::mutate(
       density = DensityHL(.data$depth, rho.surface = rho.surface,
                           T = T, bdot = bdot)$rho) %>%
@@ -177,8 +178,7 @@ SimProfile <- function(time, precip, temperature, data = temperature,
   # diffuse isotope record if requested
   if (diffuse) {
     profileEqui <- profileEqui %>%
-      dplyr::mutate(d18O = DiffuseRecord(.data$d18O, .data$sigma,
-                                         res = 100. * mean(diff(.data$depth))))
+      DiffuseRecord(sigma = 1e-2 * profileEqui$sigma)
   }
 
   # block-average data to desired output resolution
@@ -188,8 +188,8 @@ SimProfile <- function(time, precip, temperature, data = temperature,
                                    breaks = breaks)[c("centers", "avg")] %>%
     data.frame() %>%
     dplyr::rename(depth = "centers", time = "avg") %>%
-    dplyr::mutate(d18O = paleospec.AvgToBin(profileEqui$depth, profileEqui$d18O,
-                                            breaks = breaks)[["avg"]])
+    dplyr::mutate(y = paleospec.AvgToBin(profileEqui$depth, profileEqui$y,
+                                         breaks = breaks)[["avg"]])
 
   # convert date vector back to proper format
   profileAvg <- profileAvg %>%
