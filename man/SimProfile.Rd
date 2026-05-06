@@ -66,12 +66,13 @@ shall be diffused according to the standard firn diffusion model.}
 }
 \value{
 A data frame of three variables with the simulated firn profile:
-  firn/ice midpoint depths in m, time relative to the first observation
-  point of the input time series, and corresponding firn profile (proxy)
-  value. Additionally, attributes are attached to the data frame which
-  include information on the simulation run: applied linear calibration
-  parameters, used atmospheric pressure, surface snow density and output
-  resolution, the diffusion flag, and the date of the run.
+  firn/ice midpoint depths in m (column \code{depth}), time relative to the
+  first observation point of the input time series (column \code{time}), and
+  corresponding firn profile (proxy) value (column \code{y}). Additionally,
+  attributes are attached to the data frame which include information on the
+  simulation run: applied linear calibration parameters, used atmospheric
+  pressure, surface snow density and output resolution, the diffusion flag,
+  and the date of the run.
 }
 \description{
 Forward-simulate a virtual firn proxy depth profile based on given
@@ -125,17 +126,17 @@ profile <- SimProfile(time, precip, temperature)
 # compare original time series to simulated time series in the firn
 plot(time, temperature, type = "l", ylim = c(-65, -15),
      xlab = "Time", ylab = "Original and simulated profiles (a.u.)")
-lines(profile.nodiff$time, profile.nodiff$d18O, col = 4, lwd = 2)
-lines(profile$time, profile$d18O, col = 2, lwd = 2)
+lines(profile.nodiff$time, profile.nodiff$y, col = 4, lwd = 2)
+lines(profile$time, profile$y, col = 2, lwd = 2)
 legend("topright",
        c("Original ts", "Simulated ts w/o diffusion",
          "Simulated ts with diffusion"),
        lty = 1, lwd = c(1, 2, 2), col = c(1, 4, 2))
 
 # show simulated depth profile
-plot(profile$depth, profile$d18O, col = 2, type = "l", lwd = 2,
+plot(profile$depth, profile$y, col = 2, type = "l", lwd = 2,
      xlab = "Depth (m)", ylab = "Simulated depth profile")
-abline(h = mean(profile$d18O), lty = 2)
+abline(h = mean(profile$y), lty = 2)
 
 }
 \author{
