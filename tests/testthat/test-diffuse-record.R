@@ -53,10 +53,18 @@ test_that("diffusion works", {
   i <- c(11, 33, 56, 98)
   sigma[i] <- 0
   diffused_some_zero_sigma <- DiffuseRecord(record, sigma = sigma)
+  diffused_some_zero_sigma_tibble <- DiffuseRecord(tibble::as_tibble(record),
+                                                   sigma = sigma)
 
+  # check correct data object
   expect_true(is.data.frame(diffused_zero_sigma))
   expect_true(is.data.frame(diffused_some_zero_sigma))
+  expect_false(tibble::is_tibble(diffused_some_zero_sigma))
+  expect_true(tibble::is_tibble(diffused_some_zero_sigma_tibble))
+  expect_equal(diffused_some_zero_sigma_tibble,
+               tibble::as_tibble(diffused_some_zero_sigma))
 
+  # check return data
   expect_equal(diffused_zero_sigma, record)
   expect_equal(diffused_some_zero_sigma$depth, record$depth)
   expect_equal(diffused_some_zero_sigma$y[i], record$y[i])
@@ -69,10 +77,6 @@ test_that("diffusion works", {
   record <- data.frame(depth = depth, y = sin(seq(0, 1000, 0.1)))
 
   diffused <- DiffuseRecord(record, sigma = sqrt(2))
-
-  # check tibble conservation
-  expect_equal(tibble::as_tibble(DiffuseRecord(record, sigma = sqrt(2))),
-               tibble::as_tibble(diffused))
 
   # take rounded data to avoid numerical differences and use only subset to
   # circumvent edge effects

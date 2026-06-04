@@ -148,11 +148,10 @@ DiffuseRecord <- function(record, sigma, pad = TRUE) {
   }
 
   # merge with original record to retain original length in case of NA trimming
-  dplyr::tibble(depth = x$depth, ydiff = rec.diffused) %>%
+  # (left_join step makes a tibble if input record was a tibble)
+  data.frame(depth = x$depth, ydiff = rec.diffused) %>%
     dplyr::left_join(record, ., by = dplyr::join_by("depth")) %>%
       dplyr::select(-y) %>%
       dplyr::rename(y = ydiff)
-  ## record %>%
-  ##   dplyr::mutate(y = rec.diffused)
 
 }
