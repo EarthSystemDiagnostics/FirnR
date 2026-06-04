@@ -94,8 +94,10 @@ DiffuseRecord <- function(record, sigma, pad = TRUE) {
   res <- diff(record$depth)[1]
   sigma <- sigma / res
 
-  # extract record data
-  rec <- record$y
+  # remove any leading and trailing NA's and extract record data
+  x <- zoo::na.trim(record)
+  rec <- x$y
+  nr <- length(rec)
 
   # pad record end with its mean to avoid NA's at the end of diffused record
   if (pad) {
@@ -145,7 +147,12 @@ DiffuseRecord <- function(record, sigma, pad = TRUE) {
     }
   }
 
-  record %>%
-    dplyr::mutate(y = rec.diffused)
+  # merge with original record to retain original length in case of NA trimming
+  dplyr::tibble(depth = x$depth, ydiff = rec.diffused) %>%
+    dplyr::left_join(record, ., by = dplyr::join_by("depth")) %>%
+      dplyr::select(-y) %>%
+      dplyr::rename(y = ydiff)
+  ## record %>%
+  ##   dplyr::mutate(y = rec.diffused)
 
 }
