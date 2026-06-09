@@ -78,35 +78,10 @@ ModifyRecord <- function(record, advection = NULL, diffusion = NULL,
 
   interpolate <- !is.null(output.res)
   
-  # helper function for diffusion until DiffuseRecord can handle data frames
-  .hlp.diffuse <- function(record, diffusion) {
-
-    if (!is.data.frame(record)) {
-      stop("'record' must be a data.frame.", call. = FALSE)
-    }
-    if (any(is.na(match(c("depth", "y"), colnames(record))))) {
-      stop("Expected column names for 'record' are: 'depth', 'y'.",
-           call. = FALSE)
-    }
-    if (nrow(record) <= 1) stop("Length of proxy record needs to be > 1.")
-    if (!is.equidistant(record$depth))
-      stop("Require constant depth resolution for diffusion.", call. = FALSE)
-    depth.res <- diff(record$depth)[1]
-
-    # remove leading and trailing NA's, diffuse, and merge with trimmed part
-    record %>%
-      zoo::na.trim() %>%
-      dplyr::mutate(yd = DiffuseRecord(.data$y, diffusion, depth.res),
-                    .keep = "unused") %>%
-      dplyr::left_join(record, ., by = dplyr::join_by("depth")) %>%
-      dplyr::select("depth", y = "yd")
-
-  }
-  
   # make modifications
 
   output <- record %>%
-    {if (diffuse) {.hlp.diffuse(., diffusion)} else { . }} %>%
+    {if (diffuse) {DiffuseRecord(., diffusion)} else { . }} %>%
     {if (compress) {CompressRecord(., compression)} else { . }} %>%
     {if (advect) {AdvectRecord(., advection, clip = clip)} else { . }}
 

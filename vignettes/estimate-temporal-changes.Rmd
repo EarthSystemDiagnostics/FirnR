@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(FirnR)
-library(dplyr)
+library(magrittr)
 ```
 
 ## Abstract
@@ -104,10 +104,11 @@ data.frame(depth = d, sigma = s) %>%
 ## Modelling of firn profile changes
 
 The main processes that affect firn profiles in the upper firn column are
-advection, compression due to the increase of the density with depth, and, in
-case of isotope profiles, diffusion (Münch et al., 2017). In `FirnR`, the
-effects of these processes can be modelled with the functions `AdvectRecord`,
-`CompressRecord`, and `DiffuseRecord`.
+advection as a result of new snowfall, compression due to the increasing density
+with depth, and, in case of isotope profiles, diffusion from the thermal motion
+of the molecules (Münch et al., 2017). The effects of these processes can be
+modelled in `FirnR` with the functions `AdvectRecord`, `CompressRecord`, and
+`DiffuseRecord`.
 
 ### Advection
 
@@ -165,19 +166,13 @@ sigma.depth <- seq(0, 4, length.out = length(z))
 plot(profile, xlab = "Depth (cm)", type = "l", lwd = 2.5,
      ylab = "Some profile", xlim = c(0, 225))
 
-profile.diff.const <- data.frame(
-  depth = profile$depth,
-  y     = DiffuseRecord(rec = profile$y, sigma = sigma.const, res = diff(z)[1])
-)
+profile %>%
+  DiffuseRecord(sigma = sigma.const) %>%
+  lines(col = "darkorange3", lwd = 2.5)
 
-lines(profile.diff.const, col = "darkorange3", lwd = 2.5)
-
-profile.diff.depth <- data.frame(
-  depth = profile$depth,
-  y     = DiffuseRecord(rec = profile$y, sigma = sigma.depth, res = diff(z)[1])
-)
-
-lines(profile.diff.depth, col = "firebrick3", lwd = 2)
+profile %>%
+  DiffuseRecord(sigma = sigma.depth) %>%
+  lines(col = "firebrick3", lwd = 2)
 
 legend("topright", c("original", "const. diffusion", "incr. diffusion"),
        col = c("black", "darkorange3", "firebrick3"), seg.len = 1,

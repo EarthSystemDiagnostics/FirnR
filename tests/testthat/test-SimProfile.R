@@ -45,7 +45,7 @@ test_that("SimProfile reproduces target data", {
   expect_true(is.data.frame(actual$nodiff))
   expect_true(is.data.frame(actual$diff))
 
-  nms <- c("depth", "time", "d18O")
+  nms <- c("depth", "time", "y")
   expect_equal(names(actual$nodiff), nms)
   expect_equal(names(actual$diff), nms)
 
@@ -56,11 +56,11 @@ test_that("SimProfile reproduces target data", {
 
   expect_equal(actual$nodiff$depth, target$nodiff$depth)
   expect_equal(actual$nodiff$time, target$nodiff$time)
-  expect_equal(actual$nodiff$d18O, target$nodiff$d18O)
+  expect_equal(actual$nodiff$y, target$nodiff$d18O)
 
   expect_equal(actual$diff$depth, target$diff$depth)
   expect_equal(actual$diff$time, target$diff$time)
-  expect_equal(actual$diff$d18O, target$diff$d18O)
+  expect_equal(actual$diff$y, target$diff$d18O)
 
   # compare attributes, allowing column names to change
   names(actual$nodiff) <- NULL
