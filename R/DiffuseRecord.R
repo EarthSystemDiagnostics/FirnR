@@ -151,9 +151,11 @@ DiffuseRecord <- function(record, sigma, pad = TRUE) {
 
   # merge with original record to retain original length in case of NA trimming
   # (left_join step makes a tibble if input record was a tibble)
+  # (last select step reestablishes original column order)
   data.frame(depth = x$depth, ydiff = rec.diffused) %>%
     dplyr::left_join(record, ., by = dplyr::join_by("depth")) %>%
       dplyr::select(-y) %>%
-      dplyr::rename(y = ydiff)
+      dplyr::rename(y = ydiff) %>%
+      dplyr::select(colnames(record))
 
 }

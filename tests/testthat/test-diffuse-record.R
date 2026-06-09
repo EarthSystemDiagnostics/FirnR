@@ -98,6 +98,23 @@ test_that("diffusion works", {
 
   expect_false(all(diffused_rounded$y[-compare] == expected$y[-compare]))
 
+  # check conservation and order of additional data columns
+
+  record_2 <- dplyr::mutate(record,
+                            foo = rnorm(n = length(depth)),
+                            bar = runif(n = length(depth)))
+  diffused_2 <- DiffuseRecord(record_2, sigma = sqrt(2))
+
+  expect_equal(diffused_2$y, diffused$y)
+  expect_equal(names(diffused_2), names(record_2))
+  expect_equal(dplyr::select(diffused_2, -y), dplyr::select(record_2, -y))
+
+  record_3 <- dplyr::select(record_2, c("y", "bar", "depth", "foo"))
+  diffused_3 <- DiffuseRecord(record_3, sigma = sqrt(2))
+
+  expect_equal(diffused_3$y, diffused$y)
+  expect_equal(names(diffused_3), names(record_3))
+
   # switch off padding
 
   diffused_no_pad <- DiffuseRecord(record, sigma = sqrt(2), pad = FALSE)
