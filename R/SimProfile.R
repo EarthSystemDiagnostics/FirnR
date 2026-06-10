@@ -162,23 +162,24 @@ SimProfile <- function(time, precip, temperature, data = temperature,
     dplyr::mutate(y = CalibrateLinear(data, alpha, beta))
   
   # interpolate data to a high equidistant resolution of maximum 0.1 mm;
-  # add density and diffusion length data on that depth scale
+  # calculate density data on that depth scale
   res <- max(1.e-4, min(profile$thickness))
   profileEqui <- data.frame(depth = seq(min(profile$depth),
                                         max(profile$depth), res)) %>%
     dplyr::mutate(time = approx.y(profile$depth, profile$time, .data$depth)) %>%
-    dplyr::mutate(y = approx.y(profile$depth, profile$y, .data$depth)) %>%
-    dplyr::mutate(
-      density = DensityHL(.data$depth, rho.surface = rho.surface,
-                          T = T, bdot = bdot)$rho) %>%
-    dplyr::mutate(
-      sigma = DiffusionLength(.data$depth, .data$density,
-                              T = T, P = pressure, bdot = bdot))
+    dplyr::mutate(y = approx.y(profile$depth, profile$y, .data$depth))
 
-  # diffuse isotope record if requested
+  # diffuse proxy record if requested
   if (diffuse) {
-    profileEqui <- profileEqui %>%
-      DiffuseRecord(sigma = 1e-2 * profileEqui$sigma)
+
+    # calculate density for the proxy profile observations
+    rho <- DensityHL(profileEqui$depth, rho.surface = rho.surface,
+                     T = T, bdot = bdot)$rho
+    # calculate diffusion length and convert it to [m]
+    sigma <- 1e-2 * DiffusionLength(profileEqui$depth, rho,
+                                    T = T, P = pressure, bdot = bdot)
+
+    profileEqui <- DiffuseRecord(profileEqui, sigma = sigma)
   }
 
   # block-average data to desired output resolution
