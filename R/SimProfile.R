@@ -137,59 +137,56 @@ SimProfile <- function(time, precip, temperature, data = temperature,
   temperature <- temperature[events2record]
   data        <- data[events2record]
 
-  # build profile of top, bottom and midpoint depths of the precipitated layers
-  depthProfileWE <- ObtainDepthScale(thickness = depth.scale * precip)
+  # build water-equivalent depth scale of the precipitated layers:
+  # thickness, and top, bottom and midpoint depths
+  weqDepthScale <- ObtainDepthScale(thickness = depth.scale * precip)
 
-  # simulate a high-resolution equidistant firn density profile;
-  # based on a given, sufficiently long input depth vector obtained from the
-  # depth of the precipitated layer profile transformed to real depth units
-  # using the local surface density
+  # simulate a high-resolution equidistant firn density profile and interpolate
+  # it to the midpoint depths of the precipitated layers;
+  # the density is based on a given, sufficiently long input depth vector
+  # obtained from the depth of the precipitated layer profile transformed to
+  # real depth units using the local surface density
   rhoWater <- 1000
   convFac  <- round(rhoWater / rho.surface, 1)
-  densityProfile <-
-    seq(0, convFac * max(depthProfileWE$depth), min(depthProfileWE$thickness)) %>%
-    DensityHL(rho.surface = rho.surface, T = T, bdot = bdot)
+  density <-
+    seq(0, convFac * max(weqDepthScale$depth), min(weqDepthScale$thickness)) %>%
+    DensityHL(rho.surface = rho.surface, T = T, bdot = bdot) %>%
+    approx.y(xout = weqDepthScale$depth)
 
-  # interpolate the density profile to the midpoint depths of the precipitated
-  # layer profile and add it
-  depthProfileWE <- depthProfileWE %>%
-    dplyr::mutate(density = approx.y(densityProfile, xout = .data$depth))
-
-  # create depth profile in real units and add proxy data of precip events
-  profile <- (depthProfileWE$thickness * rhoWater / depthProfileWE$density) %>%
+  # create proxy profile with depth in real units (= irregular depth scale)
+  profile <- (weqDepthScale$thickness * rhoWater / density) %>%
     ObtainDepthScale() %>%
     dplyr::mutate(time = time) %>%
     dplyr::mutate(y = CalibrateLinear(data, alpha, beta))
-  
-  # interpolate data to a high equidistant resolution of maximum 0.1 mm;
-  # calculate density data on that depth scale
-  res <- max(1.e-4, min(profile$thickness))
-  profileEqui <- data.frame(depth = seq(min(profile$depth),
-                                        max(profile$depth), res)) %>%
+
+  # interpolate proxy profile to an equidistant high resolution
+  res <- max(1.e-4, min(profile$thickness)) # resolution not smaller than 0.1 mm
+  equidistProfile <- seq(min(profile$depth), max(profile$depth), res) %>%
+    data.frame(depth = .) %>%
     dplyr::mutate(time = approx.y(profile$depth, profile$time, .data$depth)) %>%
     dplyr::mutate(y = approx.y(profile$depth, profile$y, .data$depth))
 
   # diffuse proxy record if requested
   if (diffuse) {
 
-    # calculate density for the proxy profile observations
-    rho <- DensityHL(profileEqui$depth, rho.surface = rho.surface,
-                     T = T, bdot = bdot)$rho
-    # calculate diffusion length and convert it to [m]
-    sigma <- 1e-2 * DiffusionLength(profileEqui$depth, rho,
-                                    T = T, P = pressure, bdot = bdot)
+    # compute diffusion length at the proxy profile depths and convert it to [m]
+    sigma <- DensityHL(equidistProfile$depth, rho.surface, T, bdot) %>%
+      dplyr::pull("rho") %>%
+      DiffusionLength(equidistProfile$depth, ., T, pressure, bdot) %>%
+      {.} * (1e-2)
 
-    profileEqui <- DiffuseRecord(profileEqui, sigma = sigma)
+    equidistProfile <- DiffuseRecord(equidistProfile, sigma)
   }
 
   # block-average data to desired output resolution
-  breaks <- seq(0, max(profileEqui$depth), dz.out)
+  breaks <- seq(0, max(equidistProfile$depth), dz.out)
 
-  profileAvg <- paleospec.AvgToBin(profileEqui$depth, profileEqui$time,
+  profileAvg <- paleospec.AvgToBin(equidistProfile$depth, equidistProfile$time,
                                    breaks = breaks)[c("centers", "avg")] %>%
     data.frame() %>%
     dplyr::rename(depth = "centers", time = "avg") %>%
-    dplyr::mutate(y = paleospec.AvgToBin(profileEqui$depth, profileEqui$y,
+    dplyr::mutate(y = paleospec.AvgToBin(equidistProfile$depth,
+                                         equidistProfile$y,
                                          breaks = breaks)[["avg"]])
 
   # convert date vector back to proper format
