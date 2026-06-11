@@ -106,4 +106,22 @@ test_that("advection shift works", {
   expect_equal(actual1, expected)
   expect_equal(actual2, expected)
 
+  # test dropping of any existing additional columns
+
+  record1 <- data.frame(depth = 1 : 10, y = 1 : 10, foo = rnorm(10))
+  record2 <- data.frame(depth = 1 : 10, foo = rnorm(10),
+                        y = 1 : 10, bar = rnorm(10))
+  expected <- data.frame(depth = 1 : 10, y = c(rep(NA, 3), 1 : 7))
+
+  tmp <- "Cannot handle additional columns when advecting;"
+  msg1 <- paste(tmp, "dropping `foo`.")
+  msg2 <- paste(tmp, "dropping `foo`, `bar`.")
+  expect_warning(actual1 <- AdvectRecord(record1, advection = 3),
+                 msg1, fixed = TRUE)
+  expect_warning(actual2 <- AdvectRecord(record2, advection = 3),
+                 msg2, fixed = TRUE)
+
+  expect_equal(actual1, expected)
+  expect_equal(actual2, expected)
+
 })

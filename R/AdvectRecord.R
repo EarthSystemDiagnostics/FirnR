@@ -9,7 +9,8 @@
 #'
 #' @param record a data frame of a proxy record with components \code{depth} and
 #'   \code{y} holding the depth scale and the proxy values. The depth scale must
-#'   be equidistant.
+#'   be equidistant. Any additional columns in \code{record} are ambiguous to
+#'   handle and therefore dropped with a warning.
 #' @param advection numeric value for the advection, i.e. the depth increment by
 #'   which the record is moved through the firn, measured in the same physical
 #'   units as component \code{depth} in \code{record}.
@@ -45,7 +46,8 @@ AdvectRecord <- function(record, advection, clip = TRUE) {
   if (!is.data.frame(record)) {
     stop("'record' must be a data.frame.", call. = FALSE)
   }
-  if (any(is.na(match(c("depth", "y"), colnames(record))))) {
+  nms <- colnames(record)
+  if (any(is.na(match(c("depth", "y"), nms)))) {
     stop("Expected column names for 'record' are: 'depth', 'y'.",
          call. = FALSE)
   }
@@ -53,6 +55,17 @@ AdvectRecord <- function(record, advection, clip = TRUE) {
   if (length(advection) != 1) stop("'advection' needs to be of length 1.")
   if (is.na(advection)) stop("Missing value passed for 'advection'.")
   if (!is.equidistant(record$depth)) stop("Require constant depth resolution.")
+
+  # remove any additional record columns
+  if (length(nms) > 2) {
+    drop <- names(dplyr::select(record, -c("depth", "y"))) %>%
+      sapply(function(x) {sprintf(fmt = "`%s`", x)}) %>%
+      paste(collapse = ", ")
+    warning("Cannot handle additional columns when advecting; dropping ",
+            drop, ".", call. = FALSE)
+
+    record <- dplyr::select(record, c("depth", "y"))
+  }
 
   depth.res <- diff(record$depth)[1]
   k <- round(advection / depth.res)

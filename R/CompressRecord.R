@@ -14,7 +14,9 @@
 #' the input.
 #'
 #' @param record a data frame with components \code{depth} and \code{y} holding
-#'   the original depth scale and proxy values.
+#'   the original depth scale and proxy values. Any additional columns in
+#'   \code{record} are ambiguous to handle and therefore dropped with a
+#'   warning.
 #' @param compression numeric value of the amount of compression of the original
 #'   depth scale measured in the same physical units as \code{depth} in
 #'   \code{record}; must not be larger than the length of the original
@@ -43,13 +45,25 @@ CompressRecord <- function(record, compression) {
   if (!is.data.frame(record)) {
     stop("'record' must be a data.frame.", call. = FALSE)
   }
-  if (any(is.na(match(c("depth", "y"), colnames(record))))) {
+  nms <- colnames(record)
+  if (any(is.na(match(c("depth", "y"), nms)))) {
     stop("Expected column names for 'record' are: 'depth', 'y'.",
          call. = FALSE)
   }
   if (nrow(record) <= 1) stop("Length of proxy record needs to be > 1.")
   if (length(compression) != 1) stop("'compression' needs to be of length 1.")
   if (is.na(compression)) stop("Missing value passed for 'compression'.")
+
+  # remove any additional record columns
+  if (length(nms) > 2) {
+    drop <- names(dplyr::select(record, -c("depth", "y"))) %>%
+      sapply(function(x) {sprintf(fmt = "`%s`", x)}) %>%
+      paste(collapse = ", ")
+    warning("Cannot handle additional columns when compressing; dropping ",
+            drop, ".", call. = FALSE)
+
+    record <- dplyr::select(record, c("depth", "y"))
+  }
 
   # remove leading and trailing NA's
   x <- zoo::na.trim(record)
@@ -67,7 +81,8 @@ CompressRecord <- function(record, compression) {
 
   # approximate record on original depth scale and
   # merge with trimmed part to retain original data frame length
-  dplyr::tibble(depth = x$depth, yc = approx(new.depth, x$y, x$depth)$y) %>%
+  # (left_join step makes a tibble if input record was a tibble)
+  data.frame(depth = x$depth, yc = approx(new.depth, x$y, x$depth)$y) %>%
     dplyr::left_join(record, ., by = dplyr::join_by("depth")) %>%
     dplyr::select("depth", y = "yc")
 

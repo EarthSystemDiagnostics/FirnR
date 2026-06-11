@@ -76,6 +76,29 @@ test_that("compression simulation works", {
 
   expect_equal(expected, actual)
 
+  # test dropping of any existing additional columns
+
+  tmp <- "Cannot handle additional columns when compressing;"
+
+  original_more_cols  <- dplyr::mutate(original, foo = rnorm(nrow(original)))
+  msg <- paste(tmp, "dropping `foo`.")
+
+  expect_warning(actual <- CompressRecord(original_more_cols,
+                                          compression = 4.5),
+                 msg, fixed = TRUE)
+  expect_equal(actual, expected)
+
+  original_more_cols <-
+    tibble::tibble(depth = original$depth,
+                   foo = rnorm(nrow(original)),
+                   y = original$y, bar = rnorm(nrow(original)))
+  msg <- paste(tmp, "dropping `foo`, `bar`.")
+
+  expect_warning(actual <- CompressRecord(original_more_cols,
+                                          compression = 4.5),
+                 msg, fixed = TRUE)
+  expect_equal(actual, expected)
+
   # test record stretching
 
   ycp <- c(1., 1.9, 2.8, 3.7, 4.6, 5.5, 6.4, 7.3, 8.2, 9.1)

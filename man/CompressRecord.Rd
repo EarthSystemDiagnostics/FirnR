@@ -8,7 +8,9 @@ CompressRecord(record, compression)
 }
 \arguments{
 \item{record}{a data frame with components \code{depth} and \code{y} holding
-the original depth scale and proxy values.}
+the original depth scale and proxy values. Any additional columns in
+\code{record} are ambiguous to handle and therefore dropped with a
+warning.}
 
 \item{compression}{numeric value of the amount of compression of the original
 depth scale measured in the same physical units as \code{depth} in

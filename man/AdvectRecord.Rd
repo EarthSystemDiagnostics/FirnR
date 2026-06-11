@@ -9,7 +9,8 @@ AdvectRecord(record, advection, clip = TRUE)
 \arguments{
 \item{record}{a data frame of a proxy record with components \code{depth} and
 \code{y} holding the depth scale and the proxy values. The depth scale must
-be equidistant.}
+be equidistant. Any additional columns in \code{record} are ambiguous to
+handle and therefore dropped with a warning.}
 
 \item{advection}{numeric value for the advection, i.e. the depth increment by
 which the record is moved through the firn, measured in the same physical
