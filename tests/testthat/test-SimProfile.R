@@ -18,6 +18,25 @@ test_that("error checks work", {
                           temperature = c(-30, -32), data = 1),
                msg, fixed = TRUE)
 
+  msg <- "`dz.out` must have length 1."
+  expect_error(SimProfile(time = c(1, 2), precip = c(10, 12),
+                          temperature = c(-30, -32), dz.out = c(1, 5.6)),
+               msg, fixed = TRUE)
+  msg <- "Invalid `dz.out` value."
+  expect_error(SimProfile(time = c(1, 2), precip = c(10, 12),
+                          temperature = c(-30, -32), dz.out = Inf),
+               msg, fixed = TRUE)
+  expect_error(SimProfile(time = c(1, 2), precip = c(10, 12),
+                          temperature = c(-30, -32), dz.out = NA),
+               msg, fixed = TRUE)
+  msg <- "`dz.out` must be > 0."
+  expect_error(SimProfile(time = c(1, 2), precip = c(10, 12),
+                          temperature = c(-30, -32), dz.out = 0),
+               msg, fixed = TRUE)
+  expect_error(SimProfile(time = c(1, 2), precip = c(10, 12),
+                          temperature = c(-30, -32), dz.out = -12.),
+               msg, fixed = TRUE)
+
 })
 
 test_that("SimProfile reproduces target data", {
@@ -33,8 +52,14 @@ test_that("SimProfile reproduces target data", {
 
 # run simulation
   actual <- list()
-  actual$nodiff <- SimProfile(time, precip, temperature, diffuse = FALSE)
-  actual$diff   <- SimProfile(time, precip, temperature)
+  actual$hires  <- SimProfile(time, precip, temperature, diffuse = FALSE)
+  actual$nodiff <- SimProfile(time, precip, temperature, dz.out = 0.03,
+                              diffuse = FALSE)
+  actual$diff   <- SimProfile(time, precip, temperature, dz.out = 0.03)
+
+  # w/o block-averaging, depth resolution should per code always >= 0.1 mm
+  dz <- diff(actual$hires$depth)[1]
+  expect_true(dz >= 1.e-4)
 
   # remove varying simulation date from output
   attr(actual$nodiff, "date") <- NULL
