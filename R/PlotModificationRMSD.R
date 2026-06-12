@@ -136,20 +136,22 @@ PlotModificationRMSD <- function(data, palette = NULL, xlim = NULL, ylim = NULL,
   }
 
   minimum <- as.list(data$optimum[c("diffusion", "compression")]) %>%
-    setNames(c("x", "y"))
+    stats::setNames(c("x", "y"))
 
   graphics::filled.contour(x, y, z, xlim = xlim, ylim = ylim, zlim = zlim,
                            color.palette = palette,
                  plot.title = {
-                   title(main = main);
-                   mtext(xlab, side = 1, line = line.h,
-                         cex = par()$cex.lab, font = par()$font.lab);
-                   mtext(ylab, side = 2, line = line.v,
-                         cex = par()$cex.lab, font = par()$font.lab, las = 0);
-                   contour(data$diffusion, data$compression,
+                   graphics::title(main = main);
+                   graphics::mtext(xlab, side = 1, line = line.h,
+                                   cex = graphics::par()$cex.lab,
+                                   font = graphics::par()$font.lab);
+                   graphics::mtext(ylab, side = 2, line = line.v,
+                                   cex = graphics::par()$cex.lab,
+                                   font = graphics::par()$font.lab, las = 0);
+                   graphics::contour(data$diffusion, data$compression,
                            RMSD.opt.adv.surface,
                            add = TRUE, labcex = contour.labcex);
-                   points(minimum, pch = 21, col = "black",
+                   graphics::points(minimum, pch = 21, col = "black",
                           bg = "black", cex = cex)}
                  )
   
@@ -159,9 +161,9 @@ PlotModificationRMSD <- function(data, palette = NULL, xlim = NULL, ylim = NULL,
   ypos <- 0.50
   srt  <- -90
 
-  op <- par(usr = c(0, 1, 0, 1), xlog = FALSE, ylog = FALSE)
-  text(xpos, ypos, labels = zlab, srt = srt, xpd = NA,
-       cex = par()$cex.lab, font = par()$font.lab)
-  par(op)
+  op <- graphics::par(usr = c(0, 1, 0, 1), xlog = FALSE, ylog = FALSE)
+  graphics::text(xpos, ypos, labels = zlab, srt = srt, xpd = NA,
+                 cex = graphics::par()$cex.lab, font = graphics::par()$font.lab)
+  graphics::par(op)
 
 }

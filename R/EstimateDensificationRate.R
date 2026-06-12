@@ -43,7 +43,7 @@ EstimateDensificationRate <- function(data, bottom.depth) {
 
   # linear regression
   i <- which(data$depth <= bottom.depth)
-  regression <- coefficients(lm(data$density[i] ~ data$depth[i]))
+  regression <- stats::coefficients(stats::lm(data$density[i] ~ data$depth[i]))
 
   # relative densification rate (1 per depth unit)
   as.numeric(regression[2] / regression[1])

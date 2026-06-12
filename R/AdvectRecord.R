@@ -20,7 +20,6 @@
 #'   number of bin shifts so that it can still hold all original proxy values;
 #'   see the examples. For negative advection values, the setting of \code{clip}
 #'   has no effect.
-#' @importFrom rlang .data
 #' @return a data frame with components \code{depth} and \code{y} holding the
 #'   shifted (advected) proxy record.
 #' @author Thomas Münch

@@ -70,14 +70,14 @@ paleospec.AvgToBin <- function(x, y, N = 2, breaks = pretty(x, N),
       selection <- y[which((x >= breaks[i]) & (x < breaks[i + 1]))]
     }
 
-    avg[i]  <- mean(na.omit(selection))
+    avg[i]  <- mean(stats::na.omit(selection))
     nObs[i] <- sum(!is.na(selection))
 
   }
 
   if ((sum(missing <- is.na(avg)) > 0) & (bFill)) {
 
-    avg[missing] <- (approx(x, y, centers)$y)[missing]
+    avg[missing] <- (stats::approx(x, y, centers)$y)[missing]
 
   }
 
@@ -177,6 +177,6 @@ paleospec.ApplyFilter <- function(data, filter, method = 0, na.rm = FALSE) {
   i <- seq(match(x[1], data), by = 1, length.out = n)
   result[i] <- xf
 
-  return(ts(result, frequency = frequency(data)))
+  return(stats::ts(result, frequency = stats::frequency(data)))
 
 }

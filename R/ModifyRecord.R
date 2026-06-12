@@ -93,7 +93,7 @@ ModifyRecord <- function(record, advection = NULL, diffusion = NULL,
 
     output <- data.frame(
       depth = output.depth,
-      y = approx(output$depth, output$y, output.depth)$y
+      y = stats::approx(output$depth, output$y, output.depth)$y
     ) %>%
       {if (tibble::is_tibble(record)) {tibble::as_tibble(.)} else { . }}
 

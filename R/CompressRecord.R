@@ -23,7 +23,6 @@
 #'   record. Note that for general applicability a value < 0 is also allowed,
 #'   yielding a stretched record, which, however, cannot be the result of a
 #'   densification process.
-#' @importFrom rlang .data
 #' @return a data frame with components \code{depth} and \code{y} holding the
 #'   original depth scale and the interpolated (compressed) proxy values.
 #' @author Thomas Münch
@@ -82,7 +81,7 @@ CompressRecord <- function(record, compression) {
   # approximate record on original depth scale and
   # merge with trimmed part to retain original data frame length
   # (left_join step makes a tibble if input record was a tibble)
-  data.frame(depth = x$depth, yc = approx(new.depth, x$y, x$depth)$y) %>%
+  data.frame(depth = x$depth, yc = stats::approx(new.depth, x$y, x$depth)$y) %>%
     dplyr::left_join(record, ., by = dplyr::join_by("depth")) %>%
     dplyr::select("depth", y = "yc")
 

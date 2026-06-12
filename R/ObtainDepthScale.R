@@ -40,8 +40,6 @@
 ##' @return A data frame of four variables with the complete set of depth
 ##'   information of layer thicknesses as well as midpoint, top and bottom
 ##'   depths.
-##' @importFrom rlang .data
-##' @importFrom dplyr %>%
 ##' @examples
 ##'
 ##' # given a vector of layer thicknesses; assume top layer is at surface
