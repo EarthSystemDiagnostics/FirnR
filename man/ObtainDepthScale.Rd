@@ -27,12 +27,12 @@ must have the same length. Only used if no \code{thickness} or
 \code{depth} vectors are provided.}
 
 \item{startDepth}{distance between the surface and the top of the first firn
-or ice layer. Mandatory input in case either \code{thicknesses} or
+or ice layer. Mandatory input in case either \code{thickness} or
 \code{depth} is provided (see details). Must be equal to or larger than
-zero. Default is to assume the first layer to be directly at the surface.}
+zero. The default assumes the first layer to be directly at the surface.}
 }
 \value{
-A data frame of four variables with the complete set of depth
+a data frame of four variables with the complete set of depth
   information of layer thicknesses as well as midpoint, top and bottom
   depths.
 }
@@ -45,22 +45,24 @@ depths.
 }
 \details{
 If a vector of layer thicknesses is provided, or a vector of midpoint
-depths, one needs for completing the depth information the additional
-information of how deep the top of the first layer is actually below the
-surface. For a given layer thickness this is straighforward, as top and
-bottom depths follow from the cumulative sum of the thicknesses and are then
-merely shifted \code{startDepth} units downwards relative to the surface. If
-midpoint depths are provided, it is slightly ambiguous. The implementation
-here assumes for such a case that one also knows the depth of the top of the
-first layer relative to the surface. This information is used to calculate
-the thickness of the first layer around the first midpoint depth, with the
-consecutive layer thicknesses then being calculated iteratively.
+depths, the additional information of how deep the top of the first layer is
+actually below the surface is needed to complete the depth information. For a
+given layer thickness this is straighforward, as top and bottom depths follow
+from the cumulative sum of the thicknesses and are then merely shifted
+\code{startDepth} units downwards relative to the surface. If midpoint depths
+are provided, it is slightly ambiguous. For such a case, the implementation
+here assumes that the first layer's top depth relative to the surface is also
+known. This information is used to calculate the thickness of the first layer
+around the first midpoint depth, with the consecutive layer thicknesses
+folowing from iteration.
 }
 \examples{
 
 # given a vector of layer thicknesses; assume top layer is at surface
 thickness <- c(1, 3, 6, 2, 4)
 ObtainDepthScale(thickness)
+# the same but we know that the top layer is 5 units below the surface
+ObtainDepthScale(thickness, startDepth = 5)
 
 # given a vector of midpoint depths;  assume top layer is at surface
 depth <- c(0.5, 2.5, 7, 11, 14)

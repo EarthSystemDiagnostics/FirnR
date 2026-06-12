@@ -1,24 +1,24 @@
-#' Calculate the diffusion length in years
+#' Firn diffusion length in time units
 #'
 #' This function calculates the diffusion length in firn in time units (years)
 #' based on calculating the diffusion length in depth units
-#' (see \code{\link{DiffusionLength}}) and converting it from depth units in
-#' temporal units using the firn density from the Herron-Langway model
-#' (see \code{\link{DensityHL}}).
+#' (see \code{\link{DiffusionLength}}) and converting it from depth units into
+#' time units using the firn density from the Herron-Langway model (see
+#' \code{\link{DensityHL}}).
 #'
 #' The diffusion length can be calculated for several sites with varying
 #' climatic input parameters \code{T}, \code{P}, \code{bdot} and
 #' \code{rho.surface}. Note that for this all input parameter vectors must
-#' either have the same length. Else, length-one vectors are recycled to match
-#' the length of the longest input; if this still results in varying vector
-#' lengths, an error is issued.
+#' either have the same length, or length-one vectors are recycled to match the
+#' length of the longest input; if this still results in varying vector lengths,
+#' an error is issued.
 #'
 #' @param core.length the simulated core length in metre for calculating the
 #'   Herron-Langway firn density and the diffusion length. If this length is
 #'   not sufficient to cover the requested time span given by \code{nt} and
 #'   \code{t.res}, diffusion length values for the remaining time points are
-#'   filled with the last properly obtained value. This issues only a warning
-#'   since if the simulated core is long enough to reach the ice, the diffusion
+#'   filled with the last properly obtained value. This issues only a warning,
+#'   since, if the simulated core is long enough to reach the ice, the diffusion
 #'   length is anyway constant, but it is a problem if the simulated core is
 #'   far too shallow.
 #' @param z.res the resolution in metre of the simulated firn core.

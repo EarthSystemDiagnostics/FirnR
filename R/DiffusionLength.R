@@ -1,32 +1,48 @@
-#' Calculate the diffusion length in polar firn.
+#' Diffusion length in polar firn
 #'
-#' This function calculates the diffusion length in polar firn for the stable
-#' water isotopes oxygen-18 and deuterium, depending on site-specific
-#' parameters.
+#' Calculate oxygen-18 and deuterium firn diffusion lengths depending on
+#' site-specific parameters.
 #'
-#' The calculation of the diffusion length in firn is an implementation of
-#' Eq. (8) in Gkinis et al. (2014) and is partly inspired by the corresponding
+#' The implementation of the diffusion length calculations is based on Eq. (8)
+#' in Gkinis et al. (2014) and is partly inspired by the corresponding
 #' implementation of the PRYSM model
 #' (\url{https://github.com/sylvia-dee/PRYSM}) presented in Dee et al. (2015).
 #'
-#' As input, a depth and a density vector have to be provided. If only a single
-#' density value is passed to the function, the function silently repeats this
-#' density value to build a density vector that matches the length of
-#' \code{depth} and calculates the diffusion length for zero strain rate (not
-#' yet implemented!). For a single temperature value as input, one diffusivity
-#' value from calling the \code{\link{Diffusivity}} function is used to
-#' calculate the diffusion length. Providing a vector of temperatures (which
-#' length has to match \code{depth}, otherwise the function exits with an
-#' error), results in polythermal diffusivity calculation where for each set of
-#' depth, density and temperature, the diffusivity is calculated. This
-#' depth-dependent diffusivity is then used to calculate the diffusion
-#' lengths.
+#' The input depth and density vector need to have the same length > 1. For the
+#' temperature, a single value can be input; then, one diffusivity value from
+#' calling the \code{\link{Diffusivity}} function is used to calculate the
+#' diffusion lengths. Providing a vector of temperatures (of the same length as
+#' \code{depth}) results in "polythermal" diffusivity calculation, where the
+#' diffusivity is calculated for each set of depth, density and
+#' temperature. This depth-dependent diffusivity is then used to calculate the
+#' diffusion lengths.
 #'
-#' \code{bFill} controls the output of the final diffusion length value at the
+#' \code{fill} controls the output of the final diffusion length value at the
 #' bottom of \code{depth}. This value depends on the unknown density and
-#' related gradients at this position. For \code{bFill = TRUE} (the default),
+#' related gradients at this position. For \code{fill = TRUE} (the default),
 #' the last known gradients are used for the calculation of the final diffusion
-#' length value. Otherwise \code{NA} is returned.
+#' length value; otherwise \code{NA} is returned.
+#'
+#' @param depth numeric vector of firn depths [m] at which the diffusion
+#'     lengths are calculated.
+#' @param rho numeric vector of firn density [kg/m^3]; of the same length as
+#'   \code{depth}.
+#' @param T numeric vector of firn temperature [K]; either of length one or of
+#'     same length as \code{depth}. Defaults to 10 m firn temperature at Kohnen
+#'     Station.
+#' @param P local surface pressure in [mbar]. Defaults to mean AWS9 value at
+#'     Kohnen Station.
+#' @param bdot local mass accumulation rate in [kg/m^2/year]. Defaults to
+#'     long-time mean value at Kohnen Station.
+#' @param dD if \code{TRUE} the diffusion length for deuterium is returned,
+#'     otherwise for oxygen-18. Defaults to \code{FALSE}.
+#' @param fill if \code{TRUE} (the default) use the last known density
+#'     and related gradients for the value at the bottom of \code{depth} to
+#'     calculate the final diffusion length; see Details.
+#' @return numeric vector of the calculated diffusion lengths in [m] at the
+#'     depths given by \code{depth}.
+#' @author Thomas Muench, modified by Thomas Laepple
+#' @seealso \code{\link{Diffusivity}}
 #' @references
 #' Gkinis, V., Simonsen, S. B., Buchardt, S. L., White, J. W. C., and Vinther,
 #' B. M.: Water isotope diffusion rates from the North-GRIP ice core for the
@@ -37,26 +53,6 @@
 #' Thompson, D. M.: PRYSM: An open-source framework for PRoxY System Modeling,
 #' with applications to oxygen-isotope systems, J. Adv. Model. Earth Syst., 7,
 #' 1220–1247, doi:10.1002/2015MS000447, 2015.
-#' @param depth Numeric vector of firn depths [m] at which the diffusion
-#'     lengths are calculated.
-#' @param rho Numeric vector of firn density [kg/m^3], either of length one or
-#'     of same length as \code{depth}.
-#' @param T Numeric vector of firn temperature [K], either of length one or of
-#'     same length as \code{depth}. Defaults to 10 m firn temperature at Kohnen
-#'     Station.
-#' @param P local surface pressure in [mbar]. Defaults to mean AWS9 value at
-#'     Kohnen Station.
-#' @param bdot local mass accumulation rate in [kg/m^2/year]. Defaults to
-#'     long-time mean value at Kohnen Station.
-#' @param dD if \code{TRUE} the diffusion length for deuterium is returned,
-#'     otherwise for oxygen-18. Defaults to \code{FALSE}.
-#' @param bFill if \code{TRUE} (the default) use the last known density
-#'     and related gradients for the value at the bottom of \code{depth} to
-#'     calculate the final diffusion length; see Details.
-#' @return Numeric vector of the calculated diffusion lengths in [m] at the
-#'     depths given by \code{depth}.
-#' @author Thomas Muench, modified by Thomas Laepple
-#' @seealso \code{\link{Diffusivity}}
 #' @examples
 #'
 #' # Diffusion length for NGRIP site
@@ -86,7 +82,7 @@
 #'        col = c("black", "red"), lwd = 2, bty = "n")
 #' @export
 DiffusionLength <- function(depth, rho, T = 273.15 - 44.5, P = 677, bdot = 64,
-                            dD = FALSE, bFill = TRUE) {
+                            dD = FALSE, fill = TRUE) {
     
     # Density of water
     kRhoW <- 1000.
@@ -113,7 +109,7 @@ DiffusionLength <- function(depth, rho, T = 273.15 - 44.5, P = 677, bdot = 64,
     dtdrho <- diff(ts) / diff(rho)
 
     # Fill unknown gradients at final depth
-    ifelse(bFill,
+    ifelse(fill,
            fill.gradient <- c(drho[length(drho)], dtdrho[length(dtdrho)]),
            fill.gradient <- rep(NA, 2))
     drho <- c(drho, fill.gradient[1])

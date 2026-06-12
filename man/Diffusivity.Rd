@@ -10,9 +10,9 @@ Diffusivity(rho, T, P, dD = FALSE)
 \item{rho}{numeric vector of firn density in [kg/m^3] at which diffusivity is
 calculated.}
 
-\item{T}{firn temperature in [K].}
+\item{T}{single value for the firn temperature in [K].}
 
-\item{P}{local surface pressure in [mbar].}
+\item{P}{single value for the local surface pressure in [mbar].}
 
 \item{dD}{if \code{TRUE} the diffusivity for deuterium is returned,
 otherwise for oxygen-18. Defaults to \code{FALSE}.}
@@ -35,9 +35,9 @@ dependence of the fractionation factors as well as the diffusivities in air
 for oxygen-18 and deuterium are given in the text on p. 127. However, note
 that Johnsen et al. here accidentally mix the factors controlling the isotope
 diffusivities in air; the correct factors are given in Merlivat and Jouzel,
-1979. For the water vapour saturation vapour pressure over ice we use instead
-of Johnsen et al.'s expression the newer parameterization given in van der
-Wel et al. (2015) (Eq. 5).
+1979. For the water vapour saturation vapour pressure over ice we use,
+instead of Johnsen et al.'s expression, the newer parameterization given in
+van der Wel et al. (2015) (Eq. 5).
 }
 \examples{
 

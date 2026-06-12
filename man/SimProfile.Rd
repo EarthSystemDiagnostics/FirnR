@@ -65,7 +65,7 @@ mimick a typical firn/ice core sampling process. Defaults to 3 cm.}
 shall be diffused according to the standard firn diffusion model.}
 }
 \value{
-A data frame of three variables with the simulated firn profile:
+a data frame of three variables with the simulated firn profile:
   firn/ice midpoint depths in m (column \code{depth}), time relative to the
   first observation point of the input time series (column \code{time}), and
   corresponding firn profile (proxy) value (column \code{y}). Additionally,

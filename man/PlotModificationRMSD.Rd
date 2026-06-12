@@ -25,8 +25,7 @@ PlotModificationRMSD(
 
 \item{palette}{a colour palette function to be used to assign colours; the
 default is to calculate the colour palette internally from ten colours of
-the diverging \code{RdYlBu} palette in the ColorBrewer 2.0
-collection.}
+the diverging \code{RdYlBu} palette in the ColorBrewer 2.0 collection.}
 
 \item{xlim}{x limits for the plot; default is to use the data range.}
 

@@ -20,7 +20,7 @@ calculated.}
 to the Arrhenius rate constants for central Greenland sites.}
 }
 \value{
-A data frame with two columns:
+a data frame with two columns:
     \itemize{
     \item \code{depth.we}: Numeric vector of water-equivalent depth in [m]
     corresponding to the true firn depths given by \code{depth}.

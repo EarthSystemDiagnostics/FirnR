@@ -8,8 +8,8 @@
 #' Note that for computational efficiency, the implemented order of
 #' modifications is (1) diffusion, (2) compression from densification, and (3)
 #' downward advection. This is somewhat unphysical, since the diffusional
-#' smoothing acts thus on the uncompressed depth scale. However, this only
-#' affects the results slightly within the domain of high diffusion lengths and
+#' smoothing thus acts on the uncompressed depth scale. This, however, affects
+#' the results only slightly within the domain of high diffusion lengths and
 #' high compression values.
 #'
 #' @param record a data frame of a proxy record with components \code{depth} and

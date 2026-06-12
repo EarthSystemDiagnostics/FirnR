@@ -14,7 +14,7 @@
 #' @param bdot local mass accumulation rate in [kg/m^2/year].
 #' @param JohnsenCorr logical; whether or not to apply the Johnsen correction
 #'   to the Arrhenius rate constants for central Greenland sites.
-#' @return A data frame with two columns:
+#' @return a data frame with two columns:
 #'     \itemize{
 #'     \item \code{depth.we}: Numeric vector of water-equivalent depth in [m]
 #'     corresponding to the true firn depths given by \code{depth}.

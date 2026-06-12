@@ -2,7 +2,7 @@
 % Please edit documentation in R/DiffusionLength.R
 \name{DiffusionLength}
 \alias{DiffusionLength}
-\title{Calculate the diffusion length in polar firn.}
+\title{Diffusion length in polar firn}
 \usage{
 DiffusionLength(
   depth,
@@ -11,17 +11,17 @@ DiffusionLength(
   P = 677,
   bdot = 64,
   dD = FALSE,
-  bFill = TRUE
+  fill = TRUE
 )
 }
 \arguments{
-\item{depth}{Numeric vector of firn depths [m] at which the diffusion
+\item{depth}{numeric vector of firn depths [m] at which the diffusion
 lengths are calculated.}
 
-\item{rho}{Numeric vector of firn density [kg/m^3], either of length one or
-of same length as \code{depth}.}
+\item{rho}{numeric vector of firn density [kg/m^3]; of the same length as
+\code{depth}.}
 
-\item{T}{Numeric vector of firn temperature [K], either of length one or of
+\item{T}{numeric vector of firn temperature [K]; either of length one or of
 same length as \code{depth}. Defaults to 10 m firn temperature at Kohnen
 Station.}
 
@@ -34,49 +34,44 @@ long-time mean value at Kohnen Station.}
 \item{dD}{if \code{TRUE} the diffusion length for deuterium is returned,
 otherwise for oxygen-18. Defaults to \code{FALSE}.}
 
-\item{bFill}{if \code{TRUE} (the default) use the last known density
+\item{fill}{if \code{TRUE} (the default) use the last known density
 and related gradients for the value at the bottom of \code{depth} to
 calculate the final diffusion length; see Details.}
 }
 \value{
-Numeric vector of the calculated diffusion lengths in [m] at the
+numeric vector of the calculated diffusion lengths in [m] at the
     depths given by \code{depth}.
 }
 \description{
-This function calculates the diffusion length in polar firn for the stable
-water isotopes oxygen-18 and deuterium, depending on site-specific
-parameters.
+Calculate oxygen-18 and deuterium firn diffusion lengths depending on
+site-specific parameters.
 }
 \details{
-The calculation of the diffusion length in firn is an implementation of
-Eq. (8) in Gkinis et al. (2014) and is partly inspired by the corresponding
+The implementation of the diffusion length calculations is based on Eq. (8)
+in Gkinis et al. (2014) and is partly inspired by the corresponding
 implementation of the PRYSM model
 (\url{https://github.com/sylvia-dee/PRYSM}) presented in Dee et al. (2015).
 
-As input, a depth and a density vector have to be provided. If only a single
-density value is passed to the function, the function silently repeats this
-density value to build a density vector that matches the length of
-\code{depth} and calculates the diffusion length for zero strain rate (not
-yet implemented!). For a single temperature value as input, one diffusivity
-value from calling the \code{\link{Diffusivity}} function is used to
-calculate the diffusion length. Providing a vector of temperatures (which
-length has to match \code{depth}, otherwise the function exits with an
-error), results in polythermal diffusivity calculation where for each set of
-depth, density and temperature, the diffusivity is calculated. This
-depth-dependent diffusivity is then used to calculate the diffusion
-lengths.
+The input depth and density vector need to have the same length > 1. For the
+temperature, a single value can be input; then, one diffusivity value from
+calling the \code{\link{Diffusivity}} function is used to calculate the
+diffusion lengths. Providing a vector of temperatures (of the same length as
+\code{depth}) results in "polythermal" diffusivity calculation, where the
+diffusivity is calculated for each set of depth, density and
+temperature. This depth-dependent diffusivity is then used to calculate the
+diffusion lengths.
 
-\code{bFill} controls the output of the final diffusion length value at the
+\code{fill} controls the output of the final diffusion length value at the
 bottom of \code{depth}. This value depends on the unknown density and
-related gradients at this position. For \code{bFill = TRUE} (the default),
+related gradients at this position. For \code{fill = TRUE} (the default),
 the last known gradients are used for the calculation of the final diffusion
-length value. Otherwise \code{NA} is returned.
+length value; otherwise \code{NA} is returned.
 }
 \examples{
 
 # Diffusion length for NGRIP site
 
-depth <- 0 : 150  
+depth <- 0 : 150
 t.mean <- 273.15 - 31.5
 bdot <- 200
 pressure <- 650
@@ -94,11 +89,11 @@ sigma.dD <-   DiffusionLength(depth, rho, T = t.mean,
 # for plotting it is more usual to display sigma in [cm]:
 plot(1.e2 * sigma.d18O, depth, type = "l",
      xlim = c(0, 12), ylim = c(150, 0),
-     xlab = "diffusion length (cm)", ylab = "depth (m)",
+     xlab = "Diffusion length (cm)", ylab = "Depth (m)",
      main = "NorthGRIP, no thinning", lwd = 2, las = 1)
 lines(1.e2 * sigma.dD, depth, lwd = 2, col = "red")
 legend("topleft", c("d18O", "dD"),
-       col = c("black", "red"), lwd = 2, bty = "n") 
+       col = c("black", "red"), lwd = 2, bty = "n")
 }
 \references{
 Gkinis, V., Simonsen, S. B., Buchardt, S. L., White, J. W. C., and Vinther,

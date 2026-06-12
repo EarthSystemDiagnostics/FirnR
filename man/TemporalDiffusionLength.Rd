@@ -2,7 +2,7 @@
 % Please edit documentation in R/TemporalDiffusionLength.R
 \name{TemporalDiffusionLength}
 \alias{TemporalDiffusionLength}
-\title{Calculate the diffusion length in years}
+\title{Firn diffusion length in time units}
 \usage{
 TemporalDiffusionLength(
   core.length = 1000,
@@ -23,8 +23,8 @@ TemporalDiffusionLength(
 Herron-Langway firn density and the diffusion length. If this length is
 not sufficient to cover the requested time span given by \code{nt} and
 \code{t.res}, diffusion length values for the remaining time points are
-filled with the last properly obtained value. This issues only a warning
-since if the simulated core is long enough to reach the ice, the diffusion
+filled with the last properly obtained value. This issues only a warning,
+since, if the simulated core is long enough to reach the ice, the diffusion
 length is anyway constant, but it is a problem if the simulated core is
 far too shallow.}
 
@@ -63,17 +63,17 @@ the temporal diffusion lengths in a data frame of \code{nt} rows and
 \description{
 This function calculates the diffusion length in firn in time units (years)
 based on calculating the diffusion length in depth units
-(see \code{\link{DiffusionLength}}) and converting it from depth units in
-temporal units using the firn density from the Herron-Langway model
-(see \code{\link{DensityHL}}).
+(see \code{\link{DiffusionLength}}) and converting it from depth units into
+time units using the firn density from the Herron-Langway model (see
+\code{\link{DensityHL}}).
 }
 \details{
 The diffusion length can be calculated for several sites with varying
 climatic input parameters \code{T}, \code{P}, \code{bdot} and
 \code{rho.surface}. Note that for this all input parameter vectors must
-either have the same length. Else, length-one vectors are recycled to match
-the length of the longest input; if this still results in varying vector
-lengths, an error is issued.
+either have the same length, or length-one vectors are recycled to match the
+length of the longest input; if this still results in varying vector lengths,
+an error is issued.
 }
 \examples{
 # do the calculation for the default parameters at Kohnen Station:

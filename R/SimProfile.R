@@ -57,7 +57,7 @@
 #'   mimick a typical firn/ice core sampling process. Defaults to 3 cm.
 #' @param diffuse logical to control whether the simulated firn profile
 #'   shall be diffused according to the standard firn diffusion model.
-#' @return A data frame of three variables with the simulated firn profile:
+#' @return a data frame of three variables with the simulated firn profile:
 #'   firn/ice midpoint depths in m (column \code{depth}), time relative to the
 #'   first observation point of the input time series (column \code{time}), and
 #'   corresponding firn profile (proxy) value (column \code{y}). Additionally,

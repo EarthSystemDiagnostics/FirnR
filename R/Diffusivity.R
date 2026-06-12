@@ -13,14 +13,14 @@
 #' for oxygen-18 and deuterium are given in the text on p. 127. However, note
 #' that Johnsen et al. here accidentally mix the factors controlling the isotope
 #' diffusivities in air; the correct factors are given in Merlivat and Jouzel,
-#' 1979. For the water vapour saturation vapour pressure over ice we use instead
-#' of Johnsen et al.'s expression the newer parameterization given in van der
-#' Wel et al. (2015) (Eq. 5).
+#' 1979. For the water vapour saturation vapour pressure over ice we use,
+#' instead of Johnsen et al.'s expression, the newer parameterization given in
+#' van der Wel et al. (2015) (Eq. 5).
 #'
 #' @param rho numeric vector of firn density in [kg/m^3] at which diffusivity is
 #'   calculated.
-#' @param T firn temperature in [K].
-#' @param P local surface pressure in [mbar].
+#' @param T single value for the firn temperature in [K].
+#' @param P single value for the local surface pressure in [mbar].
 #' @param dD if \code{TRUE} the diffusivity for deuterium is returned,
 #'     otherwise for oxygen-18. Defaults to \code{FALSE}.
 #' @return numeric vector of firn diffusivitiy in [m^2/s].

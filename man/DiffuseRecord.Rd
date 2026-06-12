@@ -9,7 +9,8 @@ DiffuseRecord(record, sigma, pad = TRUE)
 \arguments{
 \item{record}{a data frame with components \code{depth} and \code{y} holding
 the sampling (e.g., depth or time) scale and the proxy values to be
-diffused. The sampling scale must be equidistant.}
+diffused. The sampling scale must be equidistant. It can also contain any
+additional columns which remain unchanged.}
 
 \item{sigma}{numeric vector of diffusion lengths; either of the same length
 as the \code{record} to provide local diffusion lengths corresponding to
