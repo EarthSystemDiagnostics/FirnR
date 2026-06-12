@@ -115,8 +115,8 @@ SimProfile <- function(time, precip, temperature, data = temperature,
     stop("All input vectors must have the same length.", call. = FALSE)
   }
 
-  block.agerage <- (length(dz.out) > 0)
-  if (block.agerage) {
+  block.average <- (length(dz.out) > 0)
+  if (block.average) {
 
     if (length(dz.out) > 1) stop("`dz.out` must have length 1.", call. = FALSE)
     if (!is.finite(dz.out)) stop("Invalid `dz.out` value.", call. = FALSE)
@@ -174,6 +174,17 @@ SimProfile <- function(time, precip, temperature, data = temperature,
     dplyr::mutate(time = approx.y(profile$depth, profile$time, .data$depth)) %>%
     dplyr::mutate(y = approx.y(profile$depth, profile$y, .data$depth))
 
+  # check if requested output resolution is too small
+  if (block.average) {
+    if (dz.out < res) {
+
+      warning("Requested `dz.out` < simulated resolution; ",
+              "resetting it to the latter.", call. = FALSE)
+      block.average <- FALSE
+
+    }
+  }
+
   # diffuse proxy record if requested
   if (diffuse) {
 
@@ -186,7 +197,7 @@ SimProfile <- function(time, precip, temperature, data = temperature,
   }
 
   # block-average data to desired output resolution if requested
-  if (block.agerage) {
+  if (block.average) {
 
     breaks <- seq(0, max(equidistProfile$depth), dz.out)
 

@@ -63,6 +63,16 @@ test_that("SimProfile reproduces target data", {
   # and dz.out should be set to internally defined resolution
   expect_true(attr(actual$hires, "output resolution [cm]") == 100. * dz)
 
+  # and for a block-average resolution request smaller than the in-code
+  # simulated resolution, dz.out should be reset to the simulation value
+  msg <- paste("Requested `dz.out` < simulated resolution;",
+               "resetting it to the latter.")
+  expect_warning(tmp <- SimProfile(time, precip, temperature,
+                                   diffuse = FALSE, dz.out = 1.e-5),
+                 msg, fixed = TRUE)
+  expect_equal(attr(actual$hires, "output resolution [cm]"),
+               attr(tmp, "output resolution [cm]"))
+
   # remove varying simulation date from output
   attr(actual$nodiff, "date") <- NULL
   attr(actual$diff, "date") <- NULL
