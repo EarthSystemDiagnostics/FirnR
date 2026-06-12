@@ -115,6 +115,13 @@ SimProfile <- function(time, precip, temperature, data = temperature,
     stop("All input vectors must have the same length.", call. = FALSE)
   }
 
+  if (length(dz.out)) {
+
+    if (length(dz.out) > 1) stop("`dz.out` must have length 1.", call. = FALSE)
+    if (!is.finite(dz.out)) stop("Invalid `dz.out` value.", call. = FALSE)
+    if (dz.out <= 0) stop("`dz.out` must be > 0.", call. = FALSE)
+  }
+
   # average accumulation in mm w.eq. per year
   bdot <- mean(precip) * accumulation.scale
   # annual mean temperature in K
