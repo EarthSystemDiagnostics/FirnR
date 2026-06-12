@@ -169,11 +169,10 @@ SimProfile <- function(time, precip, temperature, data = temperature,
   # diffuse proxy record if requested
   if (diffuse) {
 
-    # compute diffusion length at the proxy profile depths and convert it to [m]
+    # compute diffusion length at the proxy profile depths
     sigma <- DensityHL(equidistProfile$depth, rho.surface, T, bdot) %>%
       dplyr::pull("rho") %>%
-      DiffusionLength(equidistProfile$depth, ., T, pressure, bdot) %>%
-      {.} * (1e-2)
+      DiffusionLength(equidistProfile$depth, ., T, pressure, bdot)
 
     equidistProfile <- DiffuseRecord(equidistProfile, sigma)
   }

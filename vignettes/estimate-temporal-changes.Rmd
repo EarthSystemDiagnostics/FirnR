@@ -94,7 +94,7 @@ al., 2017):
 ```{r}
 d <- b41.b42.density$stack$depth
 r <- b41.b42.density$stack$fitDensity
-s <- DiffusionLength(d, r, P = 650, T = 228.5, bdot = 64)
+s <- 1.e2 * DiffusionLength(d, r, P = 650, T = 228.5, bdot = 64) # in [cm]
 
 data.frame(depth = d, sigma = s) %>%
   GetDifferentialDiffusion(z00 = 0, z01 = 1, z10 = 0.5, z11 = 1.5) %>%

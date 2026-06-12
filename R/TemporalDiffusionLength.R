@@ -104,11 +104,11 @@ TemporalDiffusionLength <- function(core.length = 1000, z.res = 0.01,
     }
 
     # Diffusion length in [cm] for site 'i' as a function of depth
-    sig.cm <- DiffusionLength(depth = depth, rho = HL$rho, T = T[i],
-                              P = P[i], bdot = bdot[i], dD = dD)
+    sig.m <- DiffusionLength(depth = depth, rho = HL$rho, T = T[i],
+                             P = P[i], bdot = bdot[i], dD = dD)
 
-    # convert diffusion length from [cm] to [yr]
-    sig.yr <- 1e-2 * sig.cm * (HL$rho / bdot[i])
+    # convert diffusion length from [m] to [yr]
+    sig.yr <- sig.m * (HL$rho / bdot[i])
     
     # diffusion length in [yr] on equidistant time grid
     sigma <- stats::approx(t / t.res, sig.yr, seq_len(nt), rule = 2)$y

@@ -150,12 +150,12 @@ sigma.dD   <- DiffusionLength(density.hl$depth, density.hl$density,
 ```
 
 ```{r, fig.width = 7, fig.height = 5.25}
-
-plot(density.hl$depth, sigma.d18O, type = "n",
+# plot sigma in units of cm
+plot(density.hl$depth, 1.e2 * sigma.d18O, type = "n",
      xlab = "Depth (m)", ylab = "Diffusion length (cm)")
 
-lines(density.hl$depth, sigma.d18O, col = "black", lwd = 1.5)
-lines(density.hl$depth, sigma.dD, col = "dodgerblue4", lwd = 1.5)
+lines(density.hl$depth, 1.e2 * sigma.d18O, col = "black", lwd = 1.5)
+lines(density.hl$depth, 1.e2 * sigma.dD, col = "dodgerblue4", lwd = 1.5)
 
 legend("bottomright", c("d18O", "dD"), lty = 1, lwd = 1.5,
        col = c("black", "dodgerblue4"), bty = "n")

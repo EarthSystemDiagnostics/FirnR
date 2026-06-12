@@ -54,25 +54,35 @@
 ##' @param bFill if \code{TRUE} (the default) use the last known density
 ##'     and related gradients for the value at the bottom of \code{depth} to
 ##'     calculate the final diffusion length; see Details.
-##' @return Numeric vector of the calculated diffusion lengths in [cm] at the
+##' @return Numeric vector of the calculated diffusion lengths in [m] at the
 ##'     depths given by \code{depth}.
 ##' @author Thomas Muench, modified by Thomas Laepple
 ##' @seealso \code{\link{Diffusivity}}
 ##' @examples
-##' ## Diffusion length for NGRIP site
+##' 
+##' # Diffusion length for NGRIP site
+##'
 ##' depth <- 0 : 150  
 ##' t.mean <- 273.15 - 31.5
 ##' bdot <- 200
 ##' pressure <- 650
+##'
 ##' rho <- DensityHL(depth = depth, rho.surface = 340,
 ##'                  T = t.mean, bdot = bdot)$rho
-##' sigma.d18O <- DiffusionLength(depth, rho, T = t.mean, P = pressure,
-##'                               bdot = bdot, dD = FALSE)
-##' sigma.dD <- DiffusionLength(depth, rho, T = t.mean, bdot = bdot, dD = TRUE)
-##' plot(sigma.d18O, depth, ylim = c(150, 0), xlim = c(0, 12), type = "l",
-##'      xlab = "diffusion length (cm)", ylab = "depth (m)",
+##'
+##' sigma.d18O <- DiffusionLength(depth, rho, T = t.mean,
+##'                               P = pressure, bdot = bdot)
+##' sigma.dD <-   DiffusionLength(depth, rho, T = t.mean,
+##'                               P = pressure,bdot = bdot,
+##'                               dD = TRUE)
+##'
+##' # returned values are in SI units [m];
+##' # for plotting it is more usual to display sigma in [cm]:
+##' plot(1.e2 * sigma.d18O, depth, type = "l",
+##'      xlim = c(0, 12), ylim = c(150, 0),
+##'      xlab = "Diffusion length (cm)", ylab = "Depth (m)",
 ##'      main = "NorthGRIP, no thinning", lwd = 2, las = 1)
-##' lines(sigma.dD, depth, lwd = 2, col = "red")
+##' lines(1.e2 * sigma.dD, depth, lwd = 2, col = "red")
 ##' legend("topleft", c("d18O", "dD"),
 ##'        col = c("black", "red"), lwd = 2, bty = "n") 
 ##' @export
@@ -128,9 +138,7 @@ DiffusionLength <- function(depth, rho, T = 273.15 - 44.5, P = 677, bdot = 64,
     sigma_sqrd <- cumsum(sigma_sqrd_dummy * drho)
     sigma <- sqrt(1 / (rho^2) * sigma_sqrd)
 
-    # return in [cm]
-    return(1e2 * sigma)
+    # return (units [m])
+    return(sigma)
 
 }
-
-

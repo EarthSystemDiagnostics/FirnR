@@ -39,7 +39,7 @@ and related gradients for the value at the bottom of \code{depth} to
 calculate the final diffusion length; see Details.}
 }
 \value{
-Numeric vector of the calculated diffusion lengths in [cm] at the
+Numeric vector of the calculated diffusion lengths in [m] at the
     depths given by \code{depth}.
 }
 \description{
@@ -73,20 +73,30 @@ the last known gradients are used for the calculation of the final diffusion
 length value. Otherwise \code{NA} is returned.
 }
 \examples{
-## Diffusion length for NGRIP site
+
+# Diffusion length for NGRIP site
+
 depth <- 0 : 150  
 t.mean <- 273.15 - 31.5
 bdot <- 200
 pressure <- 650
+
 rho <- DensityHL(depth = depth, rho.surface = 340,
                  T = t.mean, bdot = bdot)$rho
-sigma.d18O <- DiffusionLength(depth, rho, T = t.mean, P = pressure,
-                              bdot = bdot, dD = FALSE)
-sigma.dD <- DiffusionLength(depth, rho, T = t.mean, bdot = bdot, dD = TRUE)
-plot(sigma.d18O, depth, ylim = c(150, 0), xlim = c(0, 12), type = "l",
+
+sigma.d18O <- DiffusionLength(depth, rho, T = t.mean,
+                              P = pressure, bdot = bdot)
+sigma.dD <-   DiffusionLength(depth, rho, T = t.mean,
+                              P = pressure,bdot = bdot,
+                              dD = TRUE)
+
+# returned values are in SI units [m];
+# for plotting it is more usual to display sigma in [cm]:
+plot(1.e2 * sigma.d18O, depth, type = "l",
+     xlim = c(0, 12), ylim = c(150, 0),
      xlab = "diffusion length (cm)", ylab = "depth (m)",
      main = "NorthGRIP, no thinning", lwd = 2, las = 1)
-lines(sigma.dD, depth, lwd = 2, col = "red")
+lines(1.e2 * sigma.dD, depth, lwd = 2, col = "red")
 legend("topleft", c("d18O", "dD"),
        col = c("black", "red"), lwd = 2, bty = "n") 
 }
