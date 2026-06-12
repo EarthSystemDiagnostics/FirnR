@@ -107,7 +107,7 @@
 SimProfile <- function(time, precip, temperature, data = temperature,
                        pressure = 677, rho.surface = 340,
                        accumulation.scale = 365, depth.scale = 10^-3,
-                       alpha = 1, beta = 0, dz.out = 0.03, diffuse = TRUE) {
+                       alpha = 1, beta = 0, dz.out = NULL, diffuse = TRUE) {
 
   ll <- stats::sd(c(length(precip), length(time),
                     length(temperature), length(data)))
@@ -115,7 +115,8 @@ SimProfile <- function(time, precip, temperature, data = temperature,
     stop("All input vectors must have the same length.", call. = FALSE)
   }
 
-  if (length(dz.out)) {
+  block.agerage <- (length(dz.out) > 0)
+  if (block.agerage) {
 
     if (length(dz.out) > 1) stop("`dz.out` must have length 1.", call. = FALSE)
     if (!is.finite(dz.out)) stop("Invalid `dz.out` value.", call. = FALSE)
@@ -184,30 +185,38 @@ SimProfile <- function(time, precip, temperature, data = temperature,
     equidistProfile <- DiffuseRecord(equidistProfile, sigma)
   }
 
-  # block-average data to desired output resolution
-  breaks <- seq(0, max(equidistProfile$depth), dz.out)
+  # block-average data to desired output resolution if requested
+  if (block.agerage) {
 
-  profileAvg <- paleospec.AvgToBin(equidistProfile$depth, equidistProfile$time,
+    breaks <- seq(0, max(equidistProfile$depth), dz.out)
+
+    averaged <- paleospec.AvgToBin(equidistProfile$depth, equidistProfile$time,
                                    breaks = breaks)[c("centers", "avg")] %>%
-    data.frame() %>%
-    dplyr::rename(depth = "centers", time = "avg") %>%
-    dplyr::mutate(y = paleospec.AvgToBin(equidistProfile$depth,
-                                         equidistProfile$y,
-                                         breaks = breaks)[["avg"]])
+      data.frame() %>%
+      dplyr::rename(depth = "centers", time = "avg") %>%
+      dplyr::mutate(y = paleospec.AvgToBin(equidistProfile$depth,
+                                           equidistProfile$y,
+                                           breaks = breaks)[["avg"]])
 
-  # convert date vector back to proper format
-  profileAvg <- profileAvg %>%
-    dplyr::mutate(time = as.Date(time, origin = "1970-01-01"))
+    equidistProfile <- averaged
+
+  } else {
+
+    dz.out <- res
+
+  }
 
   # set attributes for output with information on simulation
-  attr(profileAvg, "calibration slope") <- alpha
-  attr(profileAvg, "calibration intercept") <- beta
-  attr(profileAvg, "atmospheric pressure [mbar]") <- pressure
-  attr(profileAvg, "surface snow density [kg/m^3]") <- rho.surface
-  attr(profileAvg, "output resolution [cm]") <- 100. * dz.out
-  attr(profileAvg, "diffused") <- diffuse
-  attr(profileAvg, "date") <- Sys.time()
+  attr(equidistProfile, "calibration slope") <- alpha
+  attr(equidistProfile, "calibration intercept") <- beta
+  attr(equidistProfile, "atmospheric pressure [mbar]") <- pressure
+  attr(equidistProfile, "surface snow density [kg/m^3]") <- rho.surface
+  attr(equidistProfile, "output resolution [cm]") <- 100. * dz.out
+  attr(equidistProfile, "diffused") <- diffuse
+  attr(equidistProfile, "date") <- Sys.time()
 
-  return(profileAvg)
+  # convert date vector back to proper format and return
+  equidistProfile %>%
+    dplyr::mutate(time = as.Date(time, origin = "1970-01-01"))
 
 }

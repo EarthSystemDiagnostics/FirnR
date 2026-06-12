@@ -57,9 +57,11 @@ test_that("SimProfile reproduces target data", {
                               diffuse = FALSE)
   actual$diff   <- SimProfile(time, precip, temperature, dz.out = 0.03)
 
-  # w/o block-averaging, depth resolution should per code always >= 0.1 mm
+  # w/o block-averaging, depth resolution should per code always be >= 0.1 mm
   dz <- diff(actual$hires$depth)[1]
   expect_true(dz >= 1.e-4)
+  # and dz.out should be set to internally defined resolution
+  expect_true(attr(actual$hires, "output resolution [cm]") == 100. * dz)
 
   # remove varying simulation date from output
   attr(actual$nodiff, "date") <- NULL
