@@ -15,13 +15,13 @@
 #' associated with the time of the precipitation event and the proxy value
 #' in the snow, the latter being based on a climatic input time series and a
 #' linear proxy calibration. The uneven layers are converted to an
-#' unequidistant true depth scale based on a calculated Herron-Langway
-#' densification model. Subsequently, this depth scale is, together with the
-#' corresponding time information and proxy data, interpolated onto an
-#' equidistant high-resolution firn/ice depth scale with a depth resolution
-#' given by the minimum observed layer thickness in real units. If desired, the
-#' proxy depth profile is then diffused with a calculated diffusion length. For
-#' the output, the resulting depth profile is block averaged to a given coarser
+#' irregular true depth scale based on a calculated Herron-Langway densification
+#' model. Subsequently, this depth scale is, together with the corresponding
+#' time information and proxy data, interpolated onto an equidistant
+#' high-resolution firn/ice depth scale with a depth resolution given by the
+#' minimum observed layer thickness in real units. If desired, the proxy depth
+#' profile is then diffused with a calculated diffusion length. For the output,
+#' the resulting depth profile can be block averaged to a given coarser
 #' resolution mimicking the typical size of sampling intervals upon cutting a
 #' firn/ice core.
 #'
@@ -37,9 +37,9 @@
 #'   proxy profile is to be simulated, tabulated at the time points in
 #'   \code{time}; the default is to use the \code{temperature} time series, but
 #'   also any other suitable environmental proxy can be input here for profile
-#'   simulation. In such case, the \code{temperature} input is still needed but
-#'   only to obtain an average temperature value for the densification rate and
-#'   diffusion length calculations.
+#'   simulation. Note that in this case the \code{temperature} input is still
+#'   needed to obtain an average temperature value for the densification rate
+#'   and diffusion length calculations.
 #' @param pressure local atmospheric surface pressure in mbar. Defaults to
 #'   observed average pressure at EDML site.
 #' @param rho.surface local surface density in kg/m^3.
@@ -53,18 +53,25 @@
 #'   temperature-to-isotope calibration.
 #' @param beta the same as \code{alpha} but providing the intercept of the
 #'   linear calibration.
-#' @param dz.out output resolution in m of the simulated firn profile to
-#'   mimick a typical firn/ice core sampling process. Defaults to 3 cm.
+#' @param dz.out optional output resolution in m of the simulated firn profile
+#'   to mimick a typical firn/ice core sampling process by block-averaging the
+#'   simulated high-resolution proxy profile to this specified resolution. The
+#'   default \code{NULL} omits this step and outputs the proxy profile on the
+#'   simulation resolution, which equals the minimum simulated layer thickness,
+#'   or 0.1 mm, whichever is larger.
 #' @param diffuse logical to control whether the simulated firn profile
 #'   shall be diffused according to the standard firn diffusion model.
 #' @return a data frame of three variables with the simulated firn profile:
-#'   firn/ice midpoint depths in m (column \code{depth}), time relative to the
-#'   first observation point of the input time series (column \code{time}), and
-#'   corresponding firn profile (proxy) value (column \code{y}). Additionally,
-#'   attributes are attached to the data frame which include information on the
-#'   simulation run: applied linear calibration parameters, used atmospheric
-#'   pressure, surface snow density and output resolution, the diffusion flag,
-#'   and the date of the run.
+#'   \describe{
+#'     \item{\code{depth}:}{firn/ice midpoint depths in m;}
+#'     \item{\code{time}:}{time relative to the first observation point of the
+#'       input time series;}
+#'     \item{\code{y}:}{corresponding firn profile (proxy) value.}
+#'   }
+#'   Additionally, attributes are attached to the data frame which include
+#'   information on the simulation run: applied linear calibration parameters,
+#'   used atmospheric pressure, surface snow density and output resolution, the
+#'   diffusion flag, and the date of the run.
 #' @examples
 #'
 #' # --- Simple simulation example with constant daily accumulation ---
@@ -84,8 +91,10 @@
 #' time <- as.Date(-1 * (length(precip) : 1), origin = "2020-01-01")
 #'
 #' # run simulation
-#' profile.nodiff <- SimProfile(time, precip, temperature, diffuse = FALSE)
-#' profile <- SimProfile(time, precip, temperature)
+#' profile.nodiff <- SimProfile(time, precip, temperature,
+#'                              dz.out = 0.03, diffuse = FALSE)
+#' profile <- SimProfile(time, precip, temperature, dz.out = 0.03)
+#' profile.hires <- SimProfile(time, precip, temperature)
 #'
 #' # compare original time series to simulated time series in the firn
 #' plot(time, temperature, type = "l", ylim = c(-65, -15),
@@ -97,22 +106,35 @@
 #'          "Simulated ts with diffusion"),
 #'        lty = 1, lwd = c(1, 2, 2), col = c(1, 4, 2))
 #'
-#' # show simulated depth profile
+#' # compare simulated depth profiles between high and block-averaged resolution
 #' plot(profile$depth, profile$y, col = 2, type = "l", lwd = 2,
-#'      xlab = "Depth (m)", ylab = "Simulated depth profile")
+#'      xlab = "Depth (m)", ylab = "Simulated depth profile",
+#'      ylim = c(-60, -20))
+#' lines(profile.hires$depth, profile.hires$y, lwd = 1.5, col = 4)
 #' abline(h = mean(profile$y), lty = 2)
+#' legend("topright",
+#'        c("High resolution", "Block-averaged resolution (3 cm)"),
+#'        lty = 1, lwd = 2, col = c(4, 2))
 #'
 #' @author Thomas Münch
 #' @export
 SimProfile <- function(time, precip, temperature, data = temperature,
                        pressure = 677, rho.surface = 340,
                        accumulation.scale = 365, depth.scale = 10^-3,
-                       alpha = 1, beta = 0, dz.out = 0.03, diffuse = TRUE) {
+                       alpha = 1, beta = 0, dz.out = NULL, diffuse = TRUE) {
 
   ll <- stats::sd(c(length(precip), length(time),
                     length(temperature), length(data)))
   if (ll > 0) {
     stop("All input vectors must have the same length.", call. = FALSE)
+  }
+
+  block.average <- (length(dz.out) > 0)
+  if (block.average) {
+
+    if (length(dz.out) > 1) stop("`dz.out` must have length 1.", call. = FALSE)
+    if (!is.finite(dz.out)) stop("Invalid `dz.out` value.", call. = FALSE)
+    if (dz.out <= 0) stop("`dz.out` must be > 0.", call. = FALSE)
   }
 
   # average accumulation in mm w.eq. per year
@@ -166,6 +188,17 @@ SimProfile <- function(time, precip, temperature, data = temperature,
     dplyr::mutate(time = approx.y(profile$depth, profile$time, .data$depth)) %>%
     dplyr::mutate(y = approx.y(profile$depth, profile$y, .data$depth))
 
+  # check whether requested output resolution is too small
+  if (block.average) {
+    if (dz.out < res) {
+
+      warning("Requested `dz.out` < simulated resolution; ",
+              "resetting it to the latter.", call. = FALSE)
+      block.average <- FALSE
+
+    }
+  }
+
   # diffuse proxy record if requested
   if (diffuse) {
 
@@ -177,30 +210,38 @@ SimProfile <- function(time, precip, temperature, data = temperature,
     equidistProfile <- DiffuseRecord(equidistProfile, sigma)
   }
 
-  # block-average data to desired output resolution
-  breaks <- seq(0, max(equidistProfile$depth), dz.out)
+  # block-average data to desired output resolution if requested
+  if (block.average) {
 
-  profileAvg <- paleospec.AvgToBin(equidistProfile$depth, equidistProfile$time,
+    breaks <- seq(0, max(equidistProfile$depth), dz.out)
+
+    averaged <- paleospec.AvgToBin(equidistProfile$depth, equidistProfile$time,
                                    breaks = breaks)[c("centers", "avg")] %>%
-    data.frame() %>%
-    dplyr::rename(depth = "centers", time = "avg") %>%
-    dplyr::mutate(y = paleospec.AvgToBin(equidistProfile$depth,
-                                         equidistProfile$y,
-                                         breaks = breaks)[["avg"]])
+      data.frame() %>%
+      dplyr::rename(depth = "centers", time = "avg") %>%
+      dplyr::mutate(y = paleospec.AvgToBin(equidistProfile$depth,
+                                           equidistProfile$y,
+                                           breaks = breaks)[["avg"]])
 
-  # convert date vector back to proper format
-  profileAvg <- profileAvg %>%
-    dplyr::mutate(time = as.Date(time, origin = "1970-01-01"))
+    equidistProfile <- averaged
+
+  } else {
+
+    dz.out <- res
+
+  }
 
   # set attributes for output with information on simulation
-  attr(profileAvg, "calibration slope") <- alpha
-  attr(profileAvg, "calibration intercept") <- beta
-  attr(profileAvg, "atmospheric pressure [mbar]") <- pressure
-  attr(profileAvg, "surface snow density [kg/m^3]") <- rho.surface
-  attr(profileAvg, "output resolution [cm]") <- 100. * dz.out
-  attr(profileAvg, "diffused") <- diffuse
-  attr(profileAvg, "date") <- Sys.time()
+  attr(equidistProfile, "calibration slope") <- alpha
+  attr(equidistProfile, "calibration intercept") <- beta
+  attr(equidistProfile, "atmospheric pressure [mbar]") <- pressure
+  attr(equidistProfile, "surface snow density [kg/m^3]") <- rho.surface
+  attr(equidistProfile, "output resolution [cm]") <- 100. * dz.out
+  attr(equidistProfile, "diffused") <- diffuse
+  attr(equidistProfile, "date") <- Sys.time()
 
-  return(profileAvg)
+  # convert date vector back to proper format and return
+  equidistProfile %>%
+    dplyr::mutate(time = as.Date(time, origin = "1970-01-01"))
 
 }
