@@ -15,7 +15,7 @@ SimProfile(
   depth.scale = 10^-3,
   alpha = 1,
   beta = 0,
-  dz.out = 0.03,
+  dz.out = NULL,
   diffuse = TRUE
 )
 }
@@ -35,9 +35,9 @@ tabulated at the time points in \code{time}.}
 proxy profile is to be simulated, tabulated at the time points in
 \code{time}; the default is to use the \code{temperature} time series, but
 also any other suitable environmental proxy can be input here for profile
-simulation. In such case, the \code{temperature} input is still needed but
-only to obtain an average temperature value for the densification rate and
-diffusion length calculations.}
+simulation. Note that in this case the \code{temperature} input is still
+needed to obtain an average temperature value for the densification rate
+and diffusion length calculations.}
 
 \item{pressure}{local atmospheric surface pressure in mbar. Defaults to
 observed average pressure at EDML site.}
@@ -58,21 +58,28 @@ temperature-to-isotope calibration.}
 \item{beta}{the same as \code{alpha} but providing the intercept of the
 linear calibration.}
 
-\item{dz.out}{output resolution in m of the simulated firn profile to
-mimick a typical firn/ice core sampling process. Defaults to 3 cm.}
+\item{dz.out}{optional output resolution in m of the simulated firn profile
+to mimick a typical firn/ice core sampling process by block-averaging the
+simulated high-resolution proxy profile to this specified resolution. The
+default \code{NULL} omits this step and outputs the proxy profile on the
+simulation resolution, which equals the minimum simulated layer thickness,
+or 0.1 mm, whichever is larger.}
 
 \item{diffuse}{logical to control whether the simulated firn profile
 shall be diffused according to the standard firn diffusion model.}
 }
 \value{
 a data frame of three variables with the simulated firn profile:
-  firn/ice midpoint depths in m (column \code{depth}), time relative to the
-  first observation point of the input time series (column \code{time}), and
-  corresponding firn profile (proxy) value (column \code{y}). Additionally,
-  attributes are attached to the data frame which include information on the
-  simulation run: applied linear calibration parameters, used atmospheric
-  pressure, surface snow density and output resolution, the diffusion flag,
-  and the date of the run.
+  \describe{
+    \item{\code{depth}:}{firn/ice midpoint depths in m;}
+    \item{\code{time}:}{time relative to the first observation point of the
+      input time series;}
+    \item{\code{y}:}{corresponding firn profile (proxy) value.}
+  }
+  Additionally, attributes are attached to the data frame which include
+  information on the simulation run: applied linear calibration parameters,
+  used atmospheric pressure, surface snow density and output resolution, the
+  diffusion flag, and the date of the run.
 }
 \description{
 Forward-simulate a virtual firn proxy depth profile based on given
@@ -91,13 +98,13 @@ precipitation data with thickness in water equivalent units, and are
 associated with the time of the precipitation event and the proxy value
 in the snow, the latter being based on a climatic input time series and a
 linear proxy calibration. The uneven layers are converted to an
-unequidistant true depth scale based on a calculated Herron-Langway
-densification model. Subsequently, this depth scale is, together with the
-corresponding time information and proxy data, interpolated onto an
-equidistant high-resolution firn/ice depth scale with a depth resolution
-given by the minimum observed layer thickness in real units. If desired, the
-proxy depth profile is then diffused with a calculated diffusion length. For
-the output, the resulting depth profile is block averaged to a given coarser
+irregular true depth scale based on a calculated Herron-Langway densification
+model. Subsequently, this depth scale is, together with the corresponding
+time information and proxy data, interpolated onto an equidistant
+high-resolution firn/ice depth scale with a depth resolution given by the
+minimum observed layer thickness in real units. If desired, the proxy depth
+profile is then diffused with a calculated diffusion length. For the output,
+the resulting depth profile can be block averaged to a given coarser
 resolution mimicking the typical size of sampling intervals upon cutting a
 firn/ice core.
 }
@@ -120,8 +127,10 @@ temperature <- rep(FirnR:::CreateHarmonicSeries(seasonal.par), nyr) +
 time <- as.Date(-1 * (length(precip) : 1), origin = "2020-01-01")
 
 # run simulation
-profile.nodiff <- SimProfile(time, precip, temperature, diffuse = FALSE)
-profile <- SimProfile(time, precip, temperature)
+profile.nodiff <- SimProfile(time, precip, temperature,
+                             dz.out = 0.03, diffuse = FALSE)
+profile <- SimProfile(time, precip, temperature, dz.out = 0.03)
+profile.hires <- SimProfile(time, precip, temperature)
 
 # compare original time series to simulated time series in the firn
 plot(time, temperature, type = "l", ylim = c(-65, -15),
@@ -133,10 +142,15 @@ legend("topright",
          "Simulated ts with diffusion"),
        lty = 1, lwd = c(1, 2, 2), col = c(1, 4, 2))
 
-# show simulated depth profile
+# compare simulated depth profiles between high and block-averaged resolution
 plot(profile$depth, profile$y, col = 2, type = "l", lwd = 2,
-     xlab = "Depth (m)", ylab = "Simulated depth profile")
+     xlab = "Depth (m)", ylab = "Simulated depth profile",
+     ylim = c(-60, -20))
+lines(profile.hires$depth, profile.hires$y, lwd = 1.5, col = 4)
 abline(h = mean(profile$y), lty = 2)
+legend("topright",
+       c("High resolution", "Block-averaged resolution (3 cm)"),
+       lty = 1, lwd = 2, col = c(4, 2))
 
 }
 \author{
