@@ -1,15 +1,15 @@
 {
-  "title": "FirnR: tools for working with and simulating polar firn",
+  "title": "FirnR: Simulate Polar Snow and Firn Cores",
   "version": "0.2.0",
   "upload_type": "software",
   "license": "GPL-3.0-or-later",
   "creators": [
     {
-      "name": "Münch, Thomas",
+      "name": "Laepple, Thomas",
       "affiliation": "Alfred-Wegener-Institut Helmholtz-Zentrum für Polar- und Meeresforschung"
     },
     {
-      "name": "Laepple, Thomas",
+      "name": "Münch, Thomas",
       "affiliation": "Alfred-Wegener-Institut Helmholtz-Zentrum für Polar- und Meeresforschung"
     }
   ],
@@ -20,6 +20,6 @@
       "affiliation": "Alfred-Wegener-Institut Helmholtz-Zentrum für Polar- und Meeresforschung"
     }
   ],
-  "description": "R package providing tools to work with and simulate polar firn, including the forward model used to simulate firn-core isotope records: accumulation of individual snowfall events, densification following Herron and Langway (1980), and firn diffusion following Johnsen et al. (2000) with diffusion lengths after Gkinis et al. (2014).",
+  "description": "R package providing tools to work with and simulate polar firn and ice cores, with a focus on the isotopic composition. Methods implemented include the depth-dependent modelling of firn density and stable water isotopologue diffusion length; conversion of ice core depth scales; estimation of firn parameters and their changes over depth; simulation of temporal changes of firn isotope profiles from advection, depth scale compression and diffusion; and forward simulation of isotope profiles based on meteorological data.",
   "keywords": ["firn", "stable water isotopes", "ice cores", "Antarctica", "firn diffusion", "densification"]
 }
